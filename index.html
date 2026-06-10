@@ -36,48 +36,67 @@
       --teal-glow: rgba(64, 117, 196, 0.12); /* Glow effect matching your #4075c4 brand blue */
     }
 :root[data-theme="light"] {
-  /* Backgrounds (Day Mode) */
-  --bg-primary: #f8f9fa;       /* Clean light gray background */
-  --bg-secondary: #ffffff;     /* Pure white for containers/cards */
-  --bg-tertiary: #e9ecef;      /* Soft contrast gray for footers */
-  
-  /* Brand Accents remain consistent */
-  --teal: #4075c4;            
-  --cyan: #708090;            
-  --amber: #ffc107;           
-  --danger: #dc3545;          
-  
-  /* Typography & Neutrals for Day Mode */
-  --text-primary: #212529;     /* Dark charcoal text for ultimate readability */
-  --text-secondary: #495057;   /* Slate text for body content */
-  --text-muted: #6c757d;       /* Muted gray for smaller labels */
-  
-  /* Light mode glassmorphism */
-  --glass-bg: rgba(0, 0, 0, 0.02);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --teal-glow: rgba(64, 117, 196, 0.06);
-}
+      /* Backgrounds (Day Mode) */
+      --bg-primary: #f8f9fa;       
+      --bg-secondary: #ffffff;     
+      --bg-tertiary: #e9ecef;      
+      
+      /* Brand Accents */
+      --teal: #4075c4;            
+      --cyan: #708090;            
+      --amber: #ffc107;           
+      --danger: #dc3545;          
+      
+      /* Typography & Neutrals */
+      --text-primary: #212529;     
+      --text-secondary: #495057;   
+      --text-muted: #6c757d;       
+      
+      /* Light mode glassmorphism */
+      --glass-bg: rgba(0, 0, 0, 0.02);
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --teal-glow: rgba(64, 117, 196, 0.06);
 
-/* Style for the floating toggle button */
-.theme-toggle-btn {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: var(--teal);
-  color: #ffffff;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 50px;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999;
-  font-family: 'Inter', sans-serif;
-  transition: transform 0.2s ease;
-}
-.theme-toggle-btn:active {
-  transform: scale(0.95);
-}
+      /* ==========================================
+         THE VISIBILITY OVERRIDES GO RIGHT HERE!
+         ========================================== */
+      h1, h2, h3, h4, .hero-title, .section-title, .card-title, .feature-title {
+        color: #212529 !important;
+      }
+
+      input, textarea, .form-control, .input-field {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        border: 1px solid #708090 !important;
+      }
+      
+      input::placeholder, textarea::placeholder {
+        color: #6c757d !important;
+        opacity: 1;
+      }
+    }
+
+    /* Style for the floating toggle button */
+    .theme-toggle-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: var(--teal);
+      color: #ffffff;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      font-family: 'Inter', sans-serif;
+      transition: transform 0.2s ease;
+    }
+    
+    .theme-toggle-btn:active {
+      transform: scale(0.95);
+    }
     html { scroll-behavior: smooth; }
 
     body {
