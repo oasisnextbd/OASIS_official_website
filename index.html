@@ -125,6 +125,33 @@
     .theme-toggle-btn:active {
       transform: scale(0.95);
     }
+    /* Day Mode Deep Overrides for Buttons and Cards */
+    :root[data-theme="light"] .glow-card, 
+    :root[data-theme="light"] .card,
+    :root[data-theme="light"] .feature-card {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.12) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    :root[data-theme="light"] .glow-card *, 
+    :root[data-theme="light"] .card p {
+      color: #495057 !important;
+    }
+
+    :root[data-theme="light"] .btn-glow,
+    :root[data-theme="light"] .btn-primary,
+    :root[data-theme="light"] button[type="submit"]:not(.theme-toggle-btn) {
+      background: linear-gradient(135deg, #4075c4, #2b5596) !important;
+      color: #ffffff !important;
+      border: none !important;
+      box-shadow: 0 4px 14px rgba(64, 117, 196, 0.3) !important;
+    }
+
+    :root[data-theme="light"] .btn-glow span {
+      color: #ffffff !important;
+    }
     html { scroll-behavior: smooth; }
 
     body {
