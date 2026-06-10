@@ -11,19 +11,29 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #0d0d14;
-      --bg-tertiary: #0f0f1a;
-      --teal: #00d4aa;
-      --cyan: #00e5ff;
-      --amber: #f59e0b;
-      --text-primary: #f0f0f5;
-      --text-secondary: #9090a8;
-      --text-muted: #5a5a72;
-      --glass-bg: rgba(255,255,255,0.03);
-      --glass-border: rgba(255,255,255,0.07);
-      --teal-glow: rgba(0,212,170,0.15);
+   :root {
+      /* Backgrounds (Dark Mode) */
+      --bg-primary: #212529;      /* Dark graphite/charcoal for the main background */
+      --bg-secondary: #1a1d20;    /* Slightly darker shade for contrasting sections */
+      --bg-tertiary: #15171a;     /* Deepest shade for footers or dark panels */
+      
+      /* Brand Accents (Buttons, Gradients, and Highlights) */
+      --teal: #4075c4;            /* Your beautiful corporate steel blue as the primary accent */
+      --cyan: #708090;            /* Slate gray to create a subtle, premium gradient with the blue */
+      
+      /* Status / Warning Colors */
+      --amber: #ffc107;           /* Vibrant amber yellow for "In Development" badges */
+      --danger: #dc3545;          /* Crisp red for critical hazard/danger elements */
+      
+      /* Typography & Neutrals */
+      --text-primary: #dfe0df;    /* Crisp off-white for high-readability headings */
+      --text-secondary: #90959a;  /* Balanced gray for body text */
+      --text-muted: #62676d;      /* Muted gray for small labels, borders, and grid lines */
+      
+      /* Glassmorphism Overlays */
+      --glass-bg: rgba(255, 255, 255, 0.02);
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --teal-glow: rgba(64, 117, 196, 0.12); /* Glow effect matching your #4075c4 brand blue */
     }
 
     html { scroll-behavior: smooth; }
