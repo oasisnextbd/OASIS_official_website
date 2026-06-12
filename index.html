@@ -1781,14 +1781,13 @@ const sections = document.querySelectorAll('section[id]');
 window.addEventListener('scroll', () => {
   if (window.scrollY > 50) {
     navbar.classList.add('scrolled');
- document.getElementById('site-logo').style.height = '65px';
+    if (document.getElementById('site-logo')) document.getElementById('site-logo').style.height = '65px';
     navbar.style.height = '85px';
   } else {
     navbar.classList.remove('scrolled');
-    document.getElementById('site-logo').style.height = '80px';
+    if (document.getElementById('site-logo')) document.getElementById('site-logo').style.height = '80px';
     navbar.style.height = '110px';
   }
-});
 
   // Active nav link
   let current = '';
@@ -1870,6 +1869,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 </script>
+
 <button class="theme-toggle-btn" id="themeToggle">☀️ Day Mode</button>
 <script>
   const toggleBtn = document.getElementById('themeToggle');
@@ -1882,12 +1882,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       // Switch to Dark/Night Mode
       document.documentElement.removeAttribute('data-theme');
       toggleBtn.innerHTML = '☀️ Day Mode';
-      if (logoImg) logoImg.src = 'darkmode_logo.png';
+      if (logoImg) logoImg.src = 'darkmode_logo.jpg';
     } else {
       // Switch to Light/Day Mode
       document.documentElement.setAttribute('data-theme', 'light');
       toggleBtn.innerHTML = '🌙 Night Mode';
-      if (logoImg) logoImg.src = 'oasis final.png';
+      if (logoImg) logoImg.src = 'oasis_final.png';
     }
   });
 </script>
