@@ -1135,7 +1135,40 @@
       .tech-arrow { display: none; }
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 991px) {
+  nav {
+    height: 80px !important;
+    padding: 0 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  /* Centers the logo anchor container and structural element on mobile */
+  .nav-logo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important; /* Pushes the logo perfectly to the horizontal center */
+    padding-left: 40px; /* Counter-balances the hamburger menu spacing so the logo centers exactly */
+  }
+  .nav-logo img {
+    height: 55px !important;
+    width: auto !important;
+  }
+  /* Safely hides clunky desktop text elements and menu targets */
+  .nav-links, .nav-cta { 
+    display: none !important; 
+  }
+
+  /* Forces the 3-line interactive action hamburger icon to display */
+  .hamburger { 
+    display: flex !important;
+    order: 2; /* Keeps the hamburger menu pinned cleanly to the right side */
+  }
+}
+
+/* 2. LAYOUT GRID REARRANGEMENT (Starts at 900px down) */
+@media (max-width: 900px) {
   .feature-grid { grid-template-columns: 1fr 1fr; }
   .industrial-grid { grid-template-columns: 1fr; }
   .rd-grid { grid-template-columns: 1fr; }
@@ -1148,22 +1181,8 @@
   .tech-arrow { display: none; }
 }
 
-/* This handles the clean 3-line navigation menu from 991px down */
-@media (max-width: 991px) {
-  nav {
-    height: 80px !important;
-    padding: 0 1.5rem !important;
-  }
-  .nav-logo img {
-    height: 55px !important;
-    width: auto !important;
-  }
-  .nav-links, .nav-cta { 
-    display: none !important; 
-  }
-  .hamburger { 
-    display: flex !important; 
-  }
+/* 3. ULTRA-SMALL SMARTPHONE VIEW (Starts at 768px down) */
+@media (max-width: 768px) {
   section { padding: 70px 1.2rem; }
   .gauges-row { gap: 0.5rem; }
 }
