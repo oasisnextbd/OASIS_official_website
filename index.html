@@ -277,12 +277,12 @@
      
     .nav-logo img {
   display: block;
-  height: 150px !important;
+  height: 80px !important;
   width: auto;
   transition: opacity 0.2s ease-in-out;
 }
 .nav-logo:hover img {
-  opacity: 0.95;
+  opacity: 0.85;
 }
     .nav-links {
       display: flex;
@@ -1178,10 +1178,10 @@
 <body>
 
 <!-- ===== NAVIGATION ===== -->
-<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; height: 170px; display: flex; align-items: center; justify-content: space-between; transition: background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease; width: 100%;">
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; height: 110px; display: flex; align-items: center; justify-content: space-between; transition: background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease; width: 100%;">
   
   <a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none; padding-top: 5px;">
-    <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 150px; width: auto; object-fit: contain;">
+    <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 80px; width: auto; object-fit: contain;">
   </a>
 
   <ul class="nav-links" id="navLinks" style="display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0 auto;">
@@ -1785,8 +1785,8 @@ window.addEventListener('scroll', () => {
     navbar.style.height = '85px';
   } else {
     navbar.classList.remove('scrolled');
-    document.getElementById('site-logo').style.height = '150px';
-    navbar.style.height = '170px';
+    document.getElementById('site-logo').style.height = '80px';
+    navbar.style.height = '110px';
   }
 });
 
