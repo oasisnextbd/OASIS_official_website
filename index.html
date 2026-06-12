@@ -274,7 +274,13 @@
       letter-spacing: 0.05em;
     }
     .nav-logo svg { flex-shrink: 0; }
-
+    .nav-logo img {
+  display: block;
+  transition: opacity 0.2s ease-in-out;
+}
+.nav-logo:hover img {
+  opacity: 0.85;
+}
     .nav-links {
       display: flex;
       align-items: center;
@@ -1169,18 +1175,8 @@
 <body>
 
 <!-- ===== NAVIGATION ===== -->
-<nav id="navbar">
-  <a href="#hero" class="nav-logo">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#00d4aa" stroke-width="1.5" fill="none"/>
-      <polygon points="14,7 21,11 21,17 14,21 7,17 7,11" stroke="#00e5ff" stroke-width="1" fill="rgba(0,212,170,0.08)"/>
-      <circle cx="14" cy="14" r="2.5" fill="#00d4aa"/>
-      <line x1="14" y1="7" x2="14" y2="11" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="14" y1="17" x2="14" y2="21" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="7" y1="11" x2="10.5" y2="13" stroke="#00d4aa" stroke-width="1"/>
-      <line x1="17.5" y1="15" x2="21" y2="17" stroke="#00d4aa" stroke-width="1"/>
-    </svg>
-    OASIS
+<a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none;">
+    <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 42px; width: auto; object-fit: contain;">
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#products">Products</a></li>
@@ -1863,8 +1859,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 </script>
 <button class="theme-toggle-btn" id="themeToggle">☀️ Day Mode</button>
-  <script>
+<script>
   const toggleBtn = document.getElementById('themeToggle');
+  const logoImg = document.getElementById('site-logo');
   
   toggleBtn.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -1873,10 +1870,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       // Switch to Dark/Night Mode
       document.documentElement.removeAttribute('data-theme');
       toggleBtn.innerHTML = '☀️ Day Mode';
+      if (logoImg) logoImg.src = 'darkmode_logo.png';
     } else {
       // Switch to Light/Day Mode
       document.documentElement.setAttribute('data-theme', 'light');
       toggleBtn.innerHTML = '🌙 Night Mode';
+      if (logoImg) logoImg.src = 'oasis final.png';
     }
   });
 </script>
