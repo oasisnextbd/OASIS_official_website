@@ -274,7 +274,16 @@
       letter-spacing: 0.05em;
     }
     .nav-logo svg { flex-shrink: 0; }
-   
+     
+    .nav-logo img {
+  display: block;
+  height: 65px !important;
+  width: auto;
+  transition: opacity 0.2s ease-in-out;
+}
+.nav-logo:hover img {
+  opacity: 0.85;
+}
     .nav-links {
       display: flex;
       align-items: center;
@@ -1169,20 +1178,24 @@
 <body>
 
 <!-- ===== NAVIGATION ===== -->
-<a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none;">
-    <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 42px; width: auto; object-fit: contain;">
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; height: 90px; display: flex; align-items: center; justify-content: space-between; transition: background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease; width: 100%;">
+  
+  <a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none; padding-top: 5px;">
+    <img id="site-logo" src="darkmode_logo.jpg" alt="OASIS Logo" style="height: 65px; width: auto; object-fit: contain;">
   </a>
-  <ul class="nav-links" id="navLinks">
+
+  <ul class="nav-links" id="navLinks" style="display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0 auto;">
     <li><a href="#products">Products</a></li>
     <li><a href="#technology">Technology</a></li>
     <li><a href="#rd">R&amp;D</a></li>
     <li><a href="#partners">Partners</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="btn-cta nav-cta">Get Protected</a>
-  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
-    <span></span><span></span><span></span>
+
+  <div style="display: flex; align-items: center;">
+    <a href="#contact" class="btn-cta nav-cta">Get Protected</a>
   </div>
+
 </nav>
 
 <!-- Mobile Nav Overlay -->
