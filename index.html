@@ -1844,15 +1844,17 @@ window.addEventListener('scroll', () => {
 
 // ===== MOBILE NAV =====
 function toggleMobileNav() {
-  const hamburger = document.getElementById('hamburger');
+  const hamburger = document.getElementById('mobileMenuBtn'); // Updated target ID
   const mobileNav = document.getElementById('mobileNav');
-  hamburger.classList.toggle('open');
-  mobileNav.classList.toggle('open');
-  document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+  if (hamburger) hamburger.classList.toggle('open');
+  if (mobileNav) mobileNav.classList.toggle('open');
+  document.body.style.overflow = mobileNav && mobileNav.classList.contains('open') ? 'hidden' : '';
 }
+
 function closeMobileNav() {
-  document.getElementById('hamburger').classList.remove('open');
-  document.getElementById('mobileNav').classList.remove('open');
+  const hamburger = document.getElementById('mobileMenuBtn'); // Updated target ID
+  if (hamburger) hamburger.classList.remove('open');
+  if (document.getElementById('mobileNav')) document.getElementById('mobileNav').classList.remove('open');
   document.body.style.overflow = '';
 }
 
