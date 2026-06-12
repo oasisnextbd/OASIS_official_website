@@ -1209,15 +1209,17 @@
   </style>
 </head>
 <body>
-
 <!-- ===== NAVIGATION ===== -->
-<nav id="navbar">
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease; width: 100%;">
   
-  <a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none; padding-top: 5px;">
+  <!-- Empty placeholder spacer to force the logo into the exact mathematical center on mobile -->
+  <div class="nav-spacer" style="width: 30px; display: none;"></div>
+
+  <a href="#hero" class="nav-logo" style="display: flex; align-items: center; text-decoration: none;">
     <img id="site-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 130px; width: auto; object-fit: contain;">
   </a>
 
-  <ul class="nav-links" id="navLinks" style="display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0 auto;">
+  <ul class="nav-links" id="navLinks" style="display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0;">
     <li><a href="#products">Products</a></li>
     <li><a href="#technology">Technology</a></li>
     <li><a href="#rd">R&amp;D</a></li>
@@ -1225,12 +1227,16 @@
     <li><a href="#contact">Contact</a></li>
   </ul>
 
-  <div style="display: flex; align-items: center;">
+  <div class="nav-cta-wrapper" style="display: flex; align-items: center;">
     <a href="#contact" class="btn-cta nav-cta">Get Protected</a>
   </div>
-
+  <!-- THE MISSING THREE-LINE HAMBURGER BUTTON -->
+  <div class="hamburger" id="mobileMenuBtn" style="display: none; flex-direction: column; gap: 6px; cursor: pointer; width: 30px; z-index: 1001;" onclick="document.getElementById('navLinks').classList.toggle('active')">
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
+    <span style="background-color: var(--text-primary, #ffffff); height: 3px; width: 100%; border-radius: 2px; transition: 0.3s;"></span>
+  </div>
 </nav>
-
 <!-- Mobile Nav Overlay -->
 <div class="mobile-nav-overlay" id="mobileNav">
   <a href="#products" onclick="closeMobileNav()">Products</a>
