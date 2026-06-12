@@ -1664,7 +1664,7 @@
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
             </div>
-            <span>contact@oasis-iot.com</span>
+            <span>oasisnextbd@gmail.com</span>
           </div>
           <div class="contact-detail">
             <div class="contact-detail-icon">
@@ -1684,7 +1684,9 @@
 
 <!-- ===== FOOTER ===== -->
 <footer>
-  <span class="footer-logo">OASIS</span>
+  <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+    <img id="footer-logo" src="darkmode_logo.png" alt="OASIS Logo" style="height: 100px; width: auto; object-fit: contain;">
+  </div>
   <div class="footer-links">
     <a href="#">Privacy Policy</a>
     <a href="#">Terms of Service</a>
@@ -1876,20 +1878,30 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 <script>
   const toggleBtn = document.getElementById('themeToggle');
   const logoImg = document.getElementById('site-logo');
+  const footerImg = document.getElementById('footer-logo'); // Added reference
+
+  // Preload both images in browser memory so there is zero delay or flashing
+  const darkLogo = new Image();
+  darkLogo.src = 'darkmode_logo.png';
   
+  const lightLogo = new Image();
+  lightLogo.src = 'oasis final.png';
+
   toggleBtn.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     
     if (currentTheme === 'light') {
-      // Switch to Dark/Night Mode
+      // Switch back to Dark/Night Mode
       document.documentElement.removeAttribute('data-theme');
       toggleBtn.innerHTML = '☀️ Day Mode';
-      if (logoImg) logoImg.src = 'darkmode_logo.png';
+      if (logoImg) logoImg.src = darkLogo.src;
+      if (footerImg) footerImg.src = darkLogo.src; // Swaps footer to dark logo
     } else {
       // Switch to Light/Day Mode
       document.documentElement.setAttribute('data-theme', 'light');
       toggleBtn.innerHTML = '🌙 Night Mode';
-      if (logoImg) logoImg.src = 'oasis final.png';
+      if (logoImg) logoImg.src = lightLogo.src;
+      if (footerImg) footerImg.src = lightLogo.src; // Swaps footer to light logo
     }
   });
 </script>
