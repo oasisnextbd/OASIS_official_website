@@ -3,7 +3,6 @@
 <head>
 <script>
 window.contextInfo = {"files":[],"materials":[],"crafts":[]};
-// 处理锚点链接跳转（srcDoc iframe 中锚点链接默认行为不正确）
 document.addEventListener('click', function(e) {
   var anchor = e.target.closest('a');
   if (anchor) {
@@ -21,7 +20,7 @@ document.addEventListener('click', function(e) {
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VENGuard — Next-Gen Cybersecurity Platform by OASIS Technology</title>
+  <title>VENGuard — Smart Gas Detection & Automated Safety Systems by OASIS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -582,15 +581,15 @@ function HeroSection() {
 
         {/* Main Heading */}
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-onest font-extrabold tracking-tight leading-none text-center">
-          <span className="text-white">Next-Gen</span>
+          <span className="text-white">Smart Gas Detection</span>
           <br />
-          <span className="text-gradient-oasis">Cybersecurity</span>
+          <span className="text-gradient-oasis">& Automated</span>
           <br />
-          <span className="text-white">Platform</span>
+          <span className="text-white">Safety System</span>
         </h1>
 
         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mt-6 font-inter text-center leading-relaxed">
-          VENGuard leverages OASIS artificial intelligence to predict, detect, and neutralize threats before they breach your perimeter.
+          VENGuard redefines safety by combining advanced environmental sensing, high-speed circuit automation, and instant line isolation to eliminate threats before a disaster can even begin.
         </p>
 
         {/* CTA Buttons */}
@@ -599,14 +598,14 @@ function HeroSection() {
             onClick={() => scrollTo('cta')}
             className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-8 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)]"
           >
-            Start Free Trial
+            Get Protected
           </button>
           <button
             onClick={() => scrollTo('features')}
             className="border border-white/10 hover:border-oasis-500/50 text-white px-8 py-3.5 rounded-lg transition-all duration-300 flex items-center gap-2 justify-center"
           >
             <Play size={16} />
-            Watch Demo
+          See How It Works
           </button>
         </div>
 
@@ -627,23 +626,23 @@ function FeaturesSection() {
   const features = [
     {
       icon: <Shield size={24} color="#00ff88" />,
-      title: 'AI Threat Detection',
-      desc: 'Real-time behavioral analysis powered by proprietary OASIS neural networks that identify zero-day exploits before signature databases update.',
+      title: 'Total Hazard Mitigation',
+desc: 'Dual-action protection doesn't just stop the leak — it actively purges the room to bring your facility back to a safe state.',
     },
     {
       icon: <Lock size={24} color="#00ff88" />,
-      title: 'Zero-Trust Architecture',
-      desc: 'Continuous verification at every access layer. Never trust, always verify — with micro-segmentation down to individual workload level.',
+      title: 'Ultra-Low Power Consumption',
+desc: 'The entire system runs efficiently on low power or off-grid solar arrays, using energy only for transient state switches.',
     },
     {
       icon: <Globe size={24} color="#00ff88" />,
-      title: 'Global Threat Intelligence',
-      desc: 'Aggregated threat feeds from 50M+ endpoints worldwide, processed through OASIS distributed learning nodes.',
+     title: 'Industrial-Grade Durability',
+desc: 'Engineered with rugged, NACE-compliant structural metal bodies and self-lubricating engineering polymers built for millions of faultless cycles.',
     },
     {
       icon: <FileCheck size={24} color="#00ff88" />,
-      title: 'Compliance Automation',
-      desc: 'Automated GDPR, SOC 2, HIPAA, and ISO 27001 compliance mapping with real-time drift detection and remediation workflows.',
+      title: 'Predictive Awareness',
+desc: 'Powered by OASIS asset-monitoring principles, minor anomalies are flagged long before they ever become critical threats.',
     },
   ];
 
@@ -695,26 +694,26 @@ function HowItWorksSection() {
     {
       num: '01',
       icon: <Search size={20} color="#00ff88" />,
-      title: 'Continuous Scanning',
-      desc: 'OASIS agents perform deep-packet inspection and behavioral monitoring across your entire attack surface 24/7.',
+      title: '24/7 Intelligent Monitoring',
+desc: 'The VENGuard unit continuously samples the surrounding air or pipeline environment for microscopic anomalies — detecting flammable leaks, toxic gas accumulation, or sudden pressure variations with absolute precision.',
     },
     {
       num: '02',
       icon: <Cpu size={20} color="#00ff88" />,
-      title: 'AI Analysis',
-      desc: 'Proprietary neural networks correlate threat signals in milliseconds, reducing false positives by 99.7%.',
+      title: 'High-Speed System Alerts',
+desc: 'The millisecond a gas concentration crosses a safe threshold, the smart processing core pushes instant alerts to your dashboard and triggers two critical hardware layers at once — isolation and ventilation.',
     },
     {
       num: '03',
       icon: <Zap size={20} color="#00ff88" />,
-      title: 'Auto-Response',
-      desc: 'Intelligent SOAR playbooks execute containment, isolation, and remediation without human intervention.',
+     title: 'Instant Line Isolation',
+desc: 'A high-speed cut-off solenoid valve snaps completely shut in milliseconds, starving the threat of fuel. It is a fail-safe — staying sealed and safe even during a total power outage.',
     },
     {
       num: '04',
       icon: <BarChart3 size={20} color="#00ff88" />,
-      title: 'Insight Reporting',
-      desc: 'Executive-ready compliance reports and forensic timelines delivered to your dashboard in real time.',
+      title: 'Active Relay Ventilation',
+desc: 'A heavy-duty smart relay powers up high-capacity exhaust fans, purging residual gas from the room and pulling the local concentration safely back below explosive thresholds.',
     },
   ];
 
