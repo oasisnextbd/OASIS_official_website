@@ -289,6 +289,7 @@ function Navbar() {
   const navLinks = [
     { label: 'Home', id: 'home' },
     { label: 'Why VENGuard', id: 'features' },
+    { label: 'Product', id: 'product' },
     { label: 'How It Works', id: 'how-it-works' },
     { label: 'At a Glance', id: 'stats' },
     { label: 'Live Dashboard', id: 'dashboard' },
@@ -693,6 +694,91 @@ function FeaturesSection() {
   );
 }
 
+// PRODUCT SHOWCASE (color variants)
+function ProductShowcaseSection() {
+  const [sectionRef, isVisible] = useInView();
+  const variants = [
+    { id: 'white', name: 'Arctic White', swatch: '#F5F5F5', img: 'products/venguard-white.png' },
+    { id: 'grey',  name: 'Slate Grey',   swatch: '#6B7280', img: 'products/venguard-grey.png'  },
+    { id: 'black', name: 'Obsidian Black',swatch: '#1A1A1A', img: 'products/venguard-black.png' },
+    { id: 'green', name: 'OASIS Green',  swatch: '#00FF88', img: 'products/venguard-green.png' },
+  ];
+  const [active, setActive] = useState(0);
+  const current = variants[active];
+
+  return (
+    <section id="product" className="py-24 px-4 relative" style={{background:'#0F0F0F'}}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(0,255,136,0.05)_0%,transparent_60%)] pointer-events-none" />
+      <div ref={sectionRef} className="max-w-6xl mx-auto relative z-10">
+        <div className="text-center mb-12">
+          <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">The Product</div>
+          <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
+            Meet <span className="text-gradient-oasis">VENGuard&trade;</span>
+          </h2>
+          <p className="text-base mt-4 max-w-2xl mx-auto" style={{color:'#888888'}}>
+            One smart detector, your choice of finish. Tap a color to see the variant.
+          </p>
+        </div>
+
+        {/* Stage */}
+        <div
+          className="relative rounded-3xl overflow-hidden mx-auto max-w-3xl brand-card border border-white/10"
+          style={isVisible ? { animation:'fade-in-up 0.6s ease-out both', boxShadow:'0 0 60px rgba(0,255,136,0.08)' } : { opacity: 0 }}
+        >
+          {/* Floating label: top */}
+          <div className="absolute top-6 left-6 z-20 hidden sm:flex items-center gap-2 px-4 py-2 rounded-full"
+               style={{background:'rgba(26,26,26,0.85)', border:'1px solid rgba(255,255,255,0.1)', backdropFilter:'blur(6px)'}}>
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{background:'#00FF88'}}></span>
+            <span className="font-mono text-xs" style={{color:'#F5F5F5'}}>Status: Active</span>
+          </div>
+          {/* Floating label: bottom-right */}
+          <div className="absolute bottom-6 right-6 z-20 hidden sm:flex items-center gap-2 px-4 py-2 rounded-full"
+               style={{background:'rgba(26,26,26,0.85)', border:'1px solid rgba(0,255,136,0.3)', backdropFilter:'blur(6px)'}}>
+            <Zap size={14} color="#00FF88" />
+            <span className="font-mono text-xs" style={{color:'#00FF88'}}>{current.name}</span>
+          </div>
+
+          {/* Product images (cross-fade) */}
+          <div className="relative w-full" style={{aspectRatio:'1 / 1', maxHeight:'560px'}}>
+            {variants.map((v, i) => (
+              <img
+                key={v.id}
+                src={v.img}
+                alt={'VENGuard gas detector — ' + v.name}
+                className="absolute inset-0 w-full h-full object-contain transition-opacity duration-500"
+                style={{ opacity: i === active ? 1 : 0 }}
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Color switcher */}
+        <div className="flex flex-col items-center mt-8">
+          <div className="flex items-center gap-4">
+            {variants.map((v, i) => (
+              <button
+                key={v.id}
+                onClick={() => setActive(i)}
+                aria-label={v.name}
+                title={v.name}
+                className="w-11 h-11 rounded-full transition-all duration-300 flex items-center justify-center"
+                style={{
+                  background: v.swatch,
+                  border: i === active ? '2px solid #00FF88' : '2px solid rgba(255,255,255,0.15)',
+                  boxShadow: i === active ? '0 0 18px rgba(0,255,136,0.5)' : 'none',
+                  transform: i === active ? 'scale(1.12)' : 'scale(1)',
+                }}
+              />
+            ))}
+          </div>
+          <div className="mt-4 font-onest font-semibold" style={{color:'#F5F5F5'}}>{current.name}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // HOW IT WORKS
 function HowItWorksSection() {
   const [sectionRef, isVisible] = useInView();
@@ -732,7 +818,7 @@ function HowItWorksSection() {
         <div className="text-center mb-16">
           <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">How It Works</div>
           <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
-            Detect, Isolate & Purge
+            Detect, Isolate &amp; Purge
             <br />
             in <span className="text-gradient-oasis">Four Steps</span>
           </h2>
@@ -1094,6 +1180,7 @@ function App() {
       <Navbar />
       <HeroSection />
       <FeaturesSection />
+      <ProductShowcaseSection />
       <HowItWorksSection />
       <StatsSection />
       <LiveDashboardSection />
@@ -1107,5 +1194,5 @@ function App() {
 const root = createRoot(document.getElementById('root'));
 root.render(React.createElement(App));
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11e5e8d09c71ed4',t:'MTc4MjQ5OTUyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
