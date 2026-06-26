@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<script>
+window.contextInfo = {"files":[],"materials":[],"crafts":[]};
+// 处理锚点链接跳转（srcDoc iframe 中锚点链接默认行为不正确）
+document.addEventListener('click', function(e) {
+  var anchor = e.target.closest('a');
+  if (anchor) {
+    var href = anchor.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      var targetId = href.slice(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+});
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VENGuard — Next-Gen Cybersecurity Platform by OASIS Technology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            oasis: {
+              50: '#e6fff4',
+              100: '#b3ffe0',
+              200: '#80ffcc',
+              300: '#4dffb8',
+              400: '#1affa3',
+              500: '#00ff88',
+              600: '#00cc6a',
+              700: '#00994f',
+              800: '#006635',
+              900: '#00331a',
+              950: '#001a0d',
+            }
+          },
+          fontFamily: {
+            onest: ['Onest', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          keyframes: {
+            float: {
+              '0%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-20px)' },
+              '100%': { transform: 'translateY(0px)' },
+            },
+            'pulse-glow': {
+              '0%, 100%': { boxShadow: '0 0 5px rgba(0,255,136,0.2)' },
+              '50%': { boxShadow: '0 0 25px rgba(0,255,136,0.6), 0 0 50px rgba(0,255,136,0.2)' },
+            },
+            scan: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100vh)' },
+            },
+            'fade-in-up': {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            'slide-in-left': {
+              '0%': { opacity: '0', transform: 'translateX(-30px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            'matrix-rain': {
+              '0%': { backgroundPosition: '0% 0%' },
+              '100%': { backgroundPosition: '0% 100%' },
+            },
+          },
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+            scan: 'scan 8s linear infinite',
+            'fade-in-up': 'fade-in-up 0.6s ease-out both',
+            'slide-in-left': 'slide-in-left 0.6s ease-out both',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-border: rgba(255,255,255,0.05);
+      --color-card: rgba(12,12,22,1);
+      --color-primary-ring: rgba(0,255,136,0.3);
+    }
+    .cyber-grid {
+      background-image:
+        linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .cyber-grid-dense {
+      background-image:
+        linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .glow-border {
+      position: relative;
+    }
+    .glow-border::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0,255,136,0.4), transparent 40%, transparent 60%, rgba(0,255,136,0.2));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .text-gradient-oasis {
+      background: linear-gradient(135deg, #00ff88 0%, #00cc6a 40%, #00e07a 60%, #00994f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .scanline-overlay {
+      position: relative;
+    }
+    .scanline-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+      border-radius: inherit;
+    }
+    .noise-bg {
+      position: relative;
+    }
+    .noise-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.015;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 5;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
+    .glass {
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-strong {
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #050508;
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+    .card-transition {
+      transition: all 300ms ease-out;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, createElement: h, Fragment } = React;
+const { createRoot } = ReactDOM;
+
+// Inline lucide icons as simple SVG components
+const Shield = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.06 1.06 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'}));
+
+const Menu = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('line', {x1:4,y1:12,x2:20,y2:12}), React.createElement('line', {x1:4,y1:6,x2:20,y2:6}), React.createElement('line', {x1:4,y1:18,x2:20,y2:18}));
+
+const X = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M18 6 6 18'}), React.createElement('path', {d:'M6 6l12 12'}));
+
+const Play = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('polygon', {points:'6 4 20 12 6 20'}));
+
+const AlertTriangle = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'}), React.createElement('line', {x1:12,y1:9,x2:12,y2:13}), React.createElement('line', {x1:12,y1:17,x2:'12.01',y2:17}));
+
+const Search = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('circle', {cx:11,cy:11,r:8}), React.createElement('path', {d:'m21 21-4.3-4.3'}));
+
+const Cpu = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('rect', {x:4,y:4,width:16,height:16,rx:2}), React.createElement('rect', {x:9,y:9,width:6,height:6}), React.createElement('line', {x1:9,y1:1,x2:9,y2:4}), React.createElement('line', {x1:15,y1:1,x2:15,y2:4}), React.createElement('line', {x1:9,y1:20,x2:9,y2:23}), React.createElement('line', {x1:15,y1:20,x2:15,y2:23}), React.createElement('line', {x1:20,y1:9,x2:23,y2:9}), React.createElement('line', {x1:20,y1:14,x2:23,y2:14}), React.createElement('line', {x1:1,y1:9,x2:4,y2:9}), React.createElement('line', {x1:1,y1:14,x2:4,y2:14}));
+
+const Zap = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('polygon', {points:'13 2 3 14 12 14 11 22 21 10 12 10 13 2'}));
+
+const BarChart3 = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M3 3v18h18'}), React.createElement('path', {d:'M18 9v4'}), React.createElement('path', {d:'M13 7v6'}), React.createElement('path', {d:'M8 13v2'}));
+
+const ShieldCheck = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.06 1.06 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'}), React.createElement('path', {d:'m9 12 2 2 4-4'}));
+
+const Building2 = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M6 22V2h12v20'}), React.createElement('path', {d:'M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2'}), React.createElement('path', {d:'M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2'}), React.createElement('line', {x1:10,y1:6,x2:10,y2:6}), React.createElement('line', {x1:14,y1:6,x2:14,y2:6}), React.createElement('line', {x1:10,y1:10,x2:10,y2:10}), React.createElement('line', {x1:14,y1:10,x2:14,y2:10}), React.createElement('line', {x1:10,y1:14,x2:10,y2:14}), React.createElement('line', {x1:14,y1:14,x2:14,y2:14}));
+
+const Clock = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('circle', {cx:12,cy:12,r:10}), React.createElement('polyline', {points:'12 6 12 12 16 14'}));
+
+const Activity = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M22 12h-4l-3 9L9 3l-3 9H2'}));
+
+const Star = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:props.fill||'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('polygon', {points:'12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'}));
+
+const Lock = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('rect', {width:18,height:11,x:3,y:11,rx:2}), React.createElement('path', {d:'M7 11V7a5 5 0 0 1 10 0v4'}));
+
+const Globe = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('circle', {cx:12,cy:12,r:10}), React.createElement('path', {d:'M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'}), React.createElement('line', {x1:2,y1:12,x2:22,y2:12}));
+
+const FileCheck = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z'}), React.createElement('polyline', {points:'14 2 14 8 20 8'}), React.createElement('path', {d:'m9 15 2 2 4-4'}));
+
+const ArrowRight = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M5 12h14'}), React.createElement('path', {d:'m12 5 7 7-7 7'}));
+
+const Calendar = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('rect', {width:18,height:18,x:3,y:4,rx:2,ry:2}), React.createElement('line', {x1:16,y1:2,x2:16,y2:6}), React.createElement('line', {x1:8,y1:2,x2:8,y2:6}), React.createElement('line', {x1:3,y1:10,x2:21,y2:10}));
+
+const Twitter = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z'}));
+
+const Linkedin = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z'}), React.createElement('rect', {width:4,height:12,x:2,y:9}), React.createElement('circle', {cx:4,cy:4,r:2}));
+
+const Github = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4'}), React.createElement('path', {d:'M9 18c-4.51 2-5-2-7-2'}));
+
+const Youtube = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17'}), React.createElement('polygon', {points:'10 8.5 16 12 10 15.5'}));
+
+const ChevronRight = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'m9 18 6-6-6-6'}));
+
+const MessageCircle = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M7.9 20A9 9 0 1 0 4 16.1L2 22Z'}));
+
+const BrainCircuit = (props) => React.createElement('svg', { xmlns:'http://www.w3.org/2000/svg', width:props.size||24, height:props.size||24, viewBox:'0 0 24 24', fill:'none', stroke:props.color||'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', className:props.className }, React.createElement('path', {d:'M12 4.5a2.5 2.5 0 0 0-4.96-.35 2.5 2.5 0 0 0-2.38 3.52 2.5 2.5 0 0 0 .91 4.43 2.5 2.5 0 0 0 3.38 2.88 2.5 2.5 0 0 0 4.1 2.06 2.5 2.5 0 0 0 4.05-2.43 2.5 2.5 0 0 0 1.27-3.05 2.5 2.5 0 0 0-1.1-4.35A2.5 2.5 0 0 0 12 4.5Z'}), React.createElement('path', {d:'M12 8v4.5l2 1.5'}), React.createElement('path', {d:'M17 9h.01'}), React.createElement('path', {d:'M7 9h.01'}));
+
+// Custom hook: useInView
+function useInView(options = {}) {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1, ...options });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, isVisible];
+}
+
+// NAVBAR
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileOpen(false);
+  };
+
+  const navLinks = [
+    { label: 'Home', id: 'home' },
+    { label: 'Features', id: 'features' },
+    { label: 'How It Works', id: 'how-it-works' },
+    { label: 'Stats', id: 'stats' },
+    { label: 'Testimonials', id: 'testimonials' },
+  ];
+
+  return (
+    <>
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled ? 'rgba(10,10,15,0.8)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('home')}>
+              <Shield size={22} color="#00ff88" />
+              <span className="font-onest font-bold text-xl">
+                <span className="text-white">VEN</span><span className="text-oasis-500">Guard</span>
+              </span>
+            </div>
+            {/* Desktop Nav */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navLinks.map(link => (
+                <button
+                  key={link.id}
+                  onClick={() => scrollTo(link.id)}
+                  className="text-gray-400 hover:text-oasis-400 transition-colors text-sm font-inter font-medium"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+            {/* Desktop CTA */}
+            <div className="hidden lg:flex items-center gap-4">
+              <button
+                onClick={() => scrollTo('cta')}
+                className="bg-gradient-to-r from-oasis-500 to-oasis-600 hover:from-oasis-400 hover:to-oasis-500 text-black font-semibold rounded-full px-5 py-2 text-sm transition-all duration-300"
+              >
+                Get Started
+              </button>
+            </div>
+            {/* Mobile Hamburger */}
+            <button
+              className="lg:hidden text-gray-400 hover:text-white transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 glass-strong flex flex-col pt-20 px-6 pb-8">
+          <div className="flex flex-col gap-6 flex-1">
+            {navLinks.map(link => (
+              <button
+                key={link.id}
+                onClick={() => scrollTo(link.id)}
+                className="text-gray-300 hover:text-oasis-400 transition-colors text-xl font-inter font-medium text-left"
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => { scrollTo('cta'); setMobileOpen(false); }}
+            className="w-full bg-gradient-to-r from-oasis-500 to-oasis-600 text-black font-semibold rounded-lg py-3 text-base transition-all duration-300"
+          >
+            Get Started
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+// CANVAS BACKGROUND
+function CanvasBackground({ mousePos }) {
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const nodesRef = useRef([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Init nodes
+    const count = 90;
+    nodesRef.current = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 1.5 + Math.random() * 1.5,
+    }));
+
+    const draw = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const nodes = nodesRef.current;
+      const mp = mousePos.current;
+
+      nodes.forEach(n => {
+        // Mouse attraction
+        if (mp) {
+          const dx = mp.x - n.x;
+          const dy = mp.y - n.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 200) {
+            n.vx += dx * 0.00008;
+            n.vy += dy * 0.00008;
+          }
+        }
+        // Speed limit
+        const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (speed > 1.2) { n.vx *= 0.95; n.vy *= 0.95; }
+
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        n.x = Math.max(0, Math.min(canvas.width, n.x));
+        n.y = Math.max(0, Math.min(canvas.height, n.y));
+
+        // Draw node
+        let alpha = 0.4;
+        if (mp) {
+          const dx = mp.x - n.x;
+          const dy = mp.y - n.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 200) alpha = 0.8;
+        }
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,255,136,${alpha})`;
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(0,255,136,${0.08 * (1 - dist / 150)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    animRef.current = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+      style={{ pointerEvents: 'none' }}
+    />
+  );
+}
+
+// LIVE DASHBOARD
+function LiveDashboard() {
+  const [responseTime, setResponseTime] = useState(47);
+  const [endpoints, setEndpoints] = useState(12847);
+  const [alertTime, setAlertTime] = useState(2);
+  const [bars, setBars] = useState(() => Array.from({ length: 40 }, () => 20 + Math.random() * 80));
+
+  useEffect(() => {
+    const t1 = setInterval(() => setResponseTime(v => Math.max(30, Math.min(60, v + (Math.random() - 0.5) * 6))), 2000);
+    const t2 = setInterval(() => setEndpoints(v => v + Math.floor((Math.random() - 0.5) * 100)), 3000);
+    const t3 = setInterval(() => setAlertTime(v => v + 1), 1000);
+    const t4 = setInterval(() => setBars(Array.from({ length: 40 }, () => 20 + Math.random() * 80)), 800);
+    return () => { clearInterval(t1); clearInterval(t2); clearInterval(t3); clearInterval(t4); };
+  }, []);
+
+  const formatTime = (s) => {
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
+
+  return (
+    <div className="glass-strong rounded-2xl p-6 md:p-8 glow-border scanline-overlay mt-16 w-full max-w-5xl mx-auto">
+      {/* Top bar */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <span className="font-mono text-xs text-oasis-400 tracking-widest uppercase">VENGuard Security Operations Center</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-oasis-500 animate-pulse"></span>
+            <span className="font-mono text-xs text-gray-500">12 ONLINE</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
+            <span className="font-mono text-xs text-gray-500">2 DEGRADED</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-gray-600"></span>
+            <span className="font-mono text-xs text-gray-500">0 OFFLINE</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        {[
+          { label: 'Response Time', value: `${Math.round(responseTime)}ms` },
+          { label: 'Endpoints', value: endpoints.toLocaleString() },
+          { label: 'Threats Blocked', value: '2.4M' },
+          { label: 'Uptime SLA', value: '99.99%' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white/[0.02] rounded-xl p-4 border border-white/5">
+            <div className="font-mono text-xs text-gray-500 uppercase tracking-wider mb-2">{stat.label}</div>
+            <div className="font-onest text-2xl font-bold text-white">{stat.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Alert Row */}
+      <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-3 flex items-center gap-3 mt-4">
+        <AlertTriangle size={16} className="text-red-400 flex-shrink-0 animate-pulse" />
+        <span className="font-mono text-xs text-red-300 flex-1">CRITICAL: Unusual traffic pattern detected — AI auto-response engaged</span>
+        <span className="font-mono text-xs text-gray-600 flex-shrink-0">{formatTime(alertTime)}</span>
+      </div>
+
+      {/* Bar Chart */}
+      <div className="mt-4 h-32 flex items-end gap-1">
+        {bars.map((h, i) => (
+          <div
+            key={i}
+            className="bg-oasis-500/30 hover:bg-oasis-500/60 transition-colors rounded-t-sm flex-1"
+            style={{ height: `${h}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// HERO SECTION
+function HeroSection() {
+  const mousePosRef = useRef(null);
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }, []);
+
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
+  return (
+    <section
+      id="home"
+      className="min-h-screen relative overflow-hidden bg-[#050508]"
+      onMouseMove={handleMouseMove}
+    >
+      <CanvasBackground mousePos={mousePosRef} />
+      {/* Radial glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,rgba(0,255,136,0.06)_0%,transparent_60%)] pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pt-16">
+        {/* OASIS Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-oasis-500/20 bg-oasis-500/5 text-oasis-400 text-sm font-mono mb-8">
+          <span className="w-2 h-2 rounded-full bg-oasis-500 animate-pulse-glow"></span>
+          POWERED BY OASIS TECHNOLOGY
+        </div>
+
+        {/* Main Heading */}
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-onest font-extrabold tracking-tight leading-none text-center">
+          <span className="text-white">Next-Gen</span>
+          <br />
+          <span className="text-gradient-oasis">Cybersecurity</span>
+          <br />
+          <span className="text-white">Platform</span>
+        </h1>
+
+        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mt-6 font-inter text-center leading-relaxed">
+          VENGuard leverages OASIS artificial intelligence to predict, detect, and neutralize threats before they breach your perimeter.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 mt-10">
+          <button
+            onClick={() => scrollTo('cta')}
+            className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-8 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)]"
+          >
+            Start Free Trial
+          </button>
+          <button
+            onClick={() => scrollTo('features')}
+            className="border border-white/10 hover:border-oasis-500/50 text-white px-8 py-3.5 rounded-lg transition-all duration-300 flex items-center gap-2 justify-center"
+          >
+            <Play size={16} />
+            Watch Demo
+          </button>
+        </div>
+
+        {/* Live Dashboard */}
+        <LiveDashboard />
+
+        {/* Bottom padding */}
+        <div className="h-16" />
+      </div>
+    </section>
+  );
+}
+
+// FEATURES SECTION
+function FeaturesSection() {
+  const [sectionRef, isVisible] = useInView();
+
+  const features = [
+    {
+      icon: <Shield size={24} color="#00ff88" />,
+      title: 'AI Threat Detection',
+      desc: 'Real-time behavioral analysis powered by proprietary OASIS neural networks that identify zero-day exploits before signature databases update.',
+    },
+    {
+      icon: <Lock size={24} color="#00ff88" />,
+      title: 'Zero-Trust Architecture',
+      desc: 'Continuous verification at every access layer. Never trust, always verify — with micro-segmentation down to individual workload level.',
+    },
+    {
+      icon: <Globe size={24} color="#00ff88" />,
+      title: 'Global Threat Intelligence',
+      desc: 'Aggregated threat feeds from 50M+ endpoints worldwide, processed through OASIS distributed learning nodes.',
+    },
+    {
+      icon: <FileCheck size={24} color="#00ff88" />,
+      title: 'Compliance Automation',
+      desc: 'Automated GDPR, SOC 2, HIPAA, and ISO 27001 compliance mapping with real-time drift detection and remediation workflows.',
+    },
+  ];
+
+  return (
+    <section id="features" className="py-24 px-4 relative bg-[#080810] cyber-grid noise-bg">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">Core Capabilities</div>
+          <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
+            Enterprise-Grade Security,
+            <br />
+            <span className="text-gradient-oasis">Powered by Intelligence.</span>
+          </h2>
+        </div>
+
+        {/* Grid */}
+        <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((f, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden rounded-2xl p-6 bg-[#0c0c16] border border-white/5 hover:border-oasis-500/20 transition-all duration-500 group cursor-default card-transition"
+              style={isVisible ? {
+                animation: 'fade-in-up 0.6s ease-out both',
+                animationDelay: `${i * 0.1}s`,
+              } : { opacity: 0 }}
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ background: 'radial-gradient(circle at 50% 0%, rgba(0,255,136,0.05) 0%, transparent 70%)' }}
+              />
+              <div className="w-12 h-12 rounded-xl bg-oasis-500/10 flex items-center justify-center mb-5 group-hover:bg-oasis-500/20 transition-colors relative z-10">
+                {f.icon}
+              </div>
+              <h3 className="font-onest text-lg font-semibold text-white mb-3 relative z-10">{f.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed font-inter relative z-10">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// HOW IT WORKS
+function HowItWorksSection() {
+  const [sectionRef, isVisible] = useInView();
+
+  const steps = [
+    {
+      num: '01',
+      icon: <Search size={20} color="#00ff88" />,
+      title: 'Continuous Scanning',
+      desc: 'OASIS agents perform deep-packet inspection and behavioral monitoring across your entire attack surface 24/7.',
+    },
+    {
+      num: '02',
+      icon: <Cpu size={20} color="#00ff88" />,
+      title: 'AI Analysis',
+      desc: 'Proprietary neural networks correlate threat signals in milliseconds, reducing false positives by 99.7%.',
+    },
+    {
+      num: '03',
+      icon: <Zap size={20} color="#00ff88" />,
+      title: 'Auto-Response',
+      desc: 'Intelligent SOAR playbooks execute containment, isolation, and remediation without human intervention.',
+    },
+    {
+      num: '04',
+      icon: <BarChart3 size={20} color="#00ff88" />,
+      title: 'Insight Reporting',
+      desc: 'Executive-ready compliance reports and forensic timelines delivered to your dashboard in real time.',
+    },
+  ];
+
+  return (
+    <section id="how-it-works" className="py-24 px-4 bg-[#050508] relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(0,255,136,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">How It Works</div>
+          <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
+            Autonomous Defense
+            <br />
+            in <span className="text-gradient-oasis">Four Steps</span>
+          </h2>
+        </div>
+
+        {/* Steps Grid */}
+        <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {steps.map((step, i) => (
+            <div
+              key={i}
+              className="relative rounded-2xl p-6 pt-16 border border-white/5 bg-[#0a0a12] hover:border-oasis-500/20 transition-all duration-300 group card-transition"
+              style={isVisible ? {
+                animation: 'fade-in-up 0.6s ease-out both',
+                animationDelay: `${i * 0.12}s`,
+              } : { opacity: 0 }}
+            >
+              <span className="font-onest font-extrabold text-8xl text-white/[0.03] group-hover:text-white/[0.06] transition-all duration-300 absolute top-4 right-4 select-none leading-none">
+                {step.num}
+              </span>
+              <div className="w-10 h-10 rounded-lg bg-oasis-500/10 flex items-center justify-center mb-4 group-hover:bg-oasis-500/20 transition-colors relative z-10">
+                {step.icon}
+              </div>
+              <h3 className="font-onest text-lg font-semibold text-white mb-3 relative z-10">{step.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed font-inter relative z-10">{step.desc}</p>
+              {i < 3 && (
+                <div className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 items-center justify-center w-8 h-8 rounded-full bg-[#0a0a12] border border-white/5">
+                  <ArrowRight size={14} color="#00ff88" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// STATS SECTION
+function StatsSection() {
+  const [sectionRef, isVisible] = useInView();
+
+  const stats = [
+    { icon: <ShieldCheck size={24} color="#00ff88" />, value: '2.4M+', label: 'Threats Blocked Daily' },
+    { icon: <Building2 size={24} color="#00ff88" />, value: '500+', label: 'Enterprise Clients' },
+    { icon: <Clock size={24} color="#00ff88" />, value: '99.99%', label: 'Uptime SLA' },
+    { icon: <Activity size={24} color="#00ff88" />, value: '12ms', label: 'Avg. Response' },
+  ];
+
+  return (
+    <section id="stats" className="py-16 px-4 bg-[#080810] border-y border-white/5">
+      <div ref={sectionRef} className="flex flex-wrap justify-center gap-8 md:gap-16 max-w-6xl mx-auto">
+        {stats.map((stat, i) => (
+          <div
+            key={i}
+            className="flex flex-col items-center"
+            style={isVisible ? {
+              animation: 'fade-in-up 0.6s ease-out both',
+              animationDelay: `${i * 0.1}s`,
+            } : { opacity: 0 }}
+          >
+            <div className="w-12 h-12 rounded-xl bg-oasis-500/10 flex items-center justify-center mb-3">
+              {stat.icon}
+            </div>
+            <div className="font-onest text-3xl md:text-4xl font-bold text-white text-center">{stat.value}</div>
+            <div className="text-gray-500 text-sm font-inter text-center mt-1">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// TESTIMONIALS
+function TestimonialsSection() {
+  const [sectionRef, isVisible] = useInView();
+
+  const testimonials = [
+    {
+      quote: "VENGuard's OASIS detection engine caught an APT that three other platforms missed. The zero-trust micro-segmentation alone reduced our attack surface by 80%. Absolutely critical for any modern security stack.",
+      name: 'Sarah Chen',
+      role: 'CISO, Meridian Financial',
+      initials: 'SC',
+    },
+    {
+      quote: "We process 8 billion events daily. VENGuard's AI correlation engine keeps our false positive rate under 0.3% while catching everything that matters. The ROI was evident within the first quarter.",
+      name: 'Marcus Webb',
+      role: 'VP Security, TensorScale AI',
+      initials: 'MW',
+    },
+    {
+      quote: "Achieved HIPAA and SOC 2 compliance in half the projected timeline. The automated evidence collection and drift detection are game-changers for regulated industries. Highly recommend.",
+      name: 'Dr. Elena Voss',
+      role: 'Head of InfraSec, NovaHealth',
+      initials: 'EV',
+    },
+  ];
+
+  return (
+    <section id="testimonials" className="py-24 px-4 bg-[#050508] cyber-grid noise-bg">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">Trusted by Security Leaders</div>
+          <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
+            What Our <span className="text-gradient-oasis">Clients Say</span>
+          </h2>
+        </div>
+
+        {/* Grid */}
+        <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-6 bg-[#0c0c16] border border-white/5 hover:border-oasis-500/10 transition-all duration-300 card-transition flex flex-col"
+              style={isVisible ? {
+                animation: 'fade-in-up 0.6s ease-out both',
+                animationDelay: `${i * 0.12}s`,
+              } : { opacity: 0 }}
+            >
+              {/* Stars */}
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, j) => (
+                  <Star key={j} size={16} fill="#00ff88" color="#00ff88" />
+                ))}
+              </div>
+              {/* Quote */}
+              <p className="text-gray-300 text-sm leading-relaxed font-inter italic mt-4 flex-1">
+                "{t.quote}"
+              </p>
+              {/* Author */}
+              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-white/5">
+                <div className="w-10 h-10 rounded-full bg-oasis-500/20 flex items-center justify-center text-oasis-400 font-onest font-bold text-sm flex-shrink-0">
+                  {t.initials}
+                </div>
+                <div>
+                  <div className="font-onest font-semibold text-white text-sm">{t.name}</div>
+                  <div className="text-gray-500 text-xs font-inter">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// CTA SECTION
+function CTASection() {
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
+  return (
+    <section id="cta" className="py-24 px-4 relative overflow-hidden bg-[#080810]">
+      <div className="absolute inset-0 cyber-grid-dense pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-oasis-500/5 via-transparent to-oasis-700/10 pointer-events-none" />
+
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
+        <h2 className="text-4xl md:text-5xl font-onest font-bold text-white mb-6">
+          Ready to Fortify Your
+          <br />
+          <span className="text-gradient-oasis">Digital Infrastructure?</span>
+        </h2>
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+          Join 500+ enterprises that trust VENGuard's OASIS-powered platform to secure their most critical assets. Start your free 30-day trial today.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => alert('Starting your free trial — redirecting to signup...')}
+            className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-10 py-4 rounded-lg text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,136,0.3)] hover:scale-105 flex items-center gap-2 justify-center"
+          >
+            <Shield size={20} />
+            Start Free Trial
+          </button>
+          <button
+            onClick={() => alert('Scheduling a demo — our team will be in touch shortly.')}
+            className="border border-white/10 hover:border-white/20 text-white px-10 py-4 rounded-lg text-lg transition-all duration-300 flex items-center gap-2 justify-center"
+          >
+            <Calendar size={20} />
+            Schedule Demo
+          </button>
+        </div>
+        <p className="mt-8 text-gray-600 text-xs font-mono">
+          🔒 SOC 2 Type II Certified • GDPR Compliant • 256-bit AES Encryption
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// FOOTER
+function Footer() {
+  const linkGroups = [
+    {
+      title: 'Product',
+      links: ['Platform Overview', 'AI Detection', 'Zero Trust', 'Compliance', 'Integrations'],
+    },
+    {
+      title: 'Company',
+      links: ['About Us', 'Careers', 'Press Kit', 'Partners', 'Contact'],
+    },
+    {
+      title: 'Resources',
+      links: ['Documentation', 'API Reference', 'Blog', 'Webinars', 'Whitepapers'],
+    },
+    {
+      title: 'Legal',
+      links: ['Privacy Policy', 'Terms of Service', 'SLA', 'DPA', 'Cookie Policy'],
+    },
+    {
+      title: 'Support',
+      links: ['Help Center', 'Status Page', 'Community', 'Training', 'Enterprise FAQ'],
+    },
+  ];
+
+  const socialIcons = [
+    { icon: <Twitter size={14} />, label: 'Twitter' },
+    { icon: <Linkedin size={14} />, label: 'LinkedIn' },
+    { icon: <Github size={14} />, label: 'GitHub' },
+    { icon: <Youtube size={14} />, label: 'YouTube' },
+  ];
+
+  return (
+    <footer className="py-16 px-4 bg-[#030305] border-t border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+          {/* Brand Column */}
+          <div className="col-span-2 md:col-span-1 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield size={20} color="#00ff88" />
+              <span className="font-onest font-bold text-lg">
+                <span className="text-white">VEN</span><span className="text-oasis-500">Guard</span>
+              </span>
+            </div>
+            <p className="text-gray-500 text-sm leading-relaxed font-inter">
+              Next-generation cybersecurity platform powered by OASIS artificial intelligence. Protecting enterprises worldwide.
+            </p>
+            <div className="flex gap-3 mt-4">
+              {socialIcons.map((s, i) => (
+                <button
+                  key={i}
+                  aria-label={s.label}
+                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center hover:border-oasis-500/30 hover:bg-oasis-500/10 transition-all text-gray-400 hover:text-oasis-400"
+                >
+                  {s.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Link Groups */}
+          {linkGroups.map((group, i) => (
+            <div key={i}>
+              <div className="font-onest font-semibold text-white text-xs tracking-wider uppercase mb-4">
+                {group.title}
+              </div>
+              <ul>
+                {group.links.map((link, j) => (
+                  <li key={j}>
+                    <a
+                      href="#"
+                      onClick={e => e.preventDefault()}
+                      className="text-gray-500 hover:text-oasis-400 text-sm transition-colors block mb-2.5 font-inter"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="text-gray-600 text-xs font-mono">
+            © 2026 VENGuard by OASIS Technologies, Inc. All rights reserved.
+          </span>
+          <span className="text-gray-600 text-xs font-mono">
+            VENGuard™ and OASIS™ are registered trademarks.
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// MAIN APP
+function App() {
+  return (
+    <div className="min-h-screen bg-[#050508]">
+      <Navbar />
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <StatsSection />
+      <TestimonialsSection />
+      <CTASection />
+      <Footer />
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+</script>
+</body>
+</html>
