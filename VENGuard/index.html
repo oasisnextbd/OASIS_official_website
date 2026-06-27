@@ -311,7 +311,7 @@ function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('home')}>
-              <Shield size={22} color="#00ff88" />
+              <Shield size={22} color="#38BDF8" />
               <span className="font-onest font-bold text-xl">
                 <span className="text-white">VEN</span><span className="text-oasis-500">Guard</span>
               </span>
@@ -364,7 +364,7 @@ function Navbar() {
           </div>
           <button
             onClick={() => { scrollTo('cta'); setMobileOpen(false); }}
-            className="w-full bg-gradient-to-r from-oasis-500 to-oasis-600 text-black font-semibold rounded-lg py-3 text-base transition-all duration-300"
+            className="w-full bg-gradient-to-r from-[#0066FF] to-[#00A3FF] text-white font-semibold rounded-lg py-3 text-base transition-all duration-300"
           >
             Get Protected
           </button>
@@ -441,7 +441,7 @@ function CanvasBackground({ mousePos }) {
         }
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,136,${alpha})`;
+        ctx.fillStyle = `rgba(34,211,238,${alpha})`;
         ctx.fill();
       });
 
@@ -455,7 +455,7 @@ function CanvasBackground({ mousePos }) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(0,255,136,${0.08 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(34,211,238,${0.08 * (1 - dist / 150)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -604,7 +604,7 @@ function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-4 mt-10">
           <button
             onClick={() => scrollTo('cta')}
-            className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-8 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)]"
+            className="bg-[#0066FF] hover:bg-[#007BFF] text-white font-semibold px-8 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,102,255,0.35)]"
           >
             Get Protected
           </button>
@@ -1045,7 +1045,7 @@ function CTASection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => { window.location.href = '../#contact'; }}
-            className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-10 py-4 rounded-lg text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,136,0.3)] hover:scale-105 flex items-center gap-2 justify-center"
+           className="bg-[#0066FF] hover:bg-[#007BFF] text-white font-semibold px-10 py-4 rounded-lg text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,102,255,0.35)] hover:scale-105 flex items-center gap-2 justify-center"
           >
             <Shield size={20} />
             Get Protected
@@ -1115,7 +1115,7 @@ function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1 lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <Shield size={20} color="#00ff88" />
+              <Shield size={20} color="#38BDF8" />
               <span className="font-onest font-bold text-lg">
                 <span className="text-white">VEN</span><span className="text-oasis-500">Guard</span>
               </span>
