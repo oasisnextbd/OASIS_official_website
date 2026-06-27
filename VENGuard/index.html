@@ -176,7 +176,7 @@ document.addEventListener('click', function(e) {
     }
      body {
        font-family: 'Inter', sans-serif;
-       background-color: #0F0F0F;
+       background-color: #121212;
        color: #F5F5F5;
        overflow-x: hidden;
      }
@@ -573,7 +573,7 @@ function HeroSection() {
   return (
     <section
       id="home"
-      className="min-h-screen relative overflow-hidden bg-[#0F0F0F]"
+      className="min-h-screen relative overflow-hidden bg-[#121212]"
       onMouseMove={handleMouseMove}
     >
       <CanvasBackground mousePos={mousePosRef} />
@@ -707,7 +707,7 @@ function ProductShowcaseSection() {
   const current = variants[active];
 
   return (
-    <section id="product" className="py-24 px-4 relative" style={{background:'#0F0F0F'}}>
+    <section id="product" className="py-24 px-4 relative" style={{background:'#121212'}}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(0,255,136,0.05)_0%,transparent_60%)] pointer-events-none" />
       <div ref={sectionRef} className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-12">
@@ -811,7 +811,7 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-4 bg-[#0F0F0F] relative">
+    <section id="how-it-works" className="py-24 px-4 bg-[#121212] relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(0,255,136,0.03)_0%,transparent_70%)] pointer-events-none" />
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
@@ -896,7 +896,7 @@ function LiveDashboardSection() {
   const [sectionRef, isVisible] = useInView();
   const url = 'https://vanguard-dashboard-jslmyzmwphbsg9mxiank6x.streamlit.app/';
   return (
-    <section id="dashboard" className="py-24 px-4 bg-[#0F0F0F] relative">
+    <section id="dashboard" className="py-24 px-4 bg-[#121212] relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,255,136,0.04)_0%,transparent_60%)] pointer-events-none" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-12">
@@ -925,7 +925,7 @@ function LiveDashboardSection() {
             src={url + '?embed=true'}
             title="VENGuard Live Gas & Fire Monitoring Dashboard"
             className="w-full"
-            style={{ height: '620px', border: 'none', background:'#0F0F0F' }}
+            style={{ height: '620px', border: 'none', background:'#121212' }}
             loading="lazy"
           />
         </div>
@@ -975,7 +975,7 @@ function TestimonialsSection() {
   ];
 
   return (
-    <section id="testimonials" className="py-24 px-4 bg-[#0F0F0F] cyber-grid noise-bg">
+    <section id="testimonials" className="py-24 px-4 bg-[#121212] cyber-grid noise-bg">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -1176,7 +1176,7 @@ function Footer() {
 // MAIN APP
 function App() {
   return (
-    <div className="min-h-screen bg-[#0F0F0F]">
+    <div className="min-h-screen bg-[#121212]">
       <Navbar />
       <HeroSection />
       <FeaturesSection />
