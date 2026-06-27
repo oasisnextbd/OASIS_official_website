@@ -1176,17 +1176,100 @@ function Footer() {
 // MAIN APP
 function App() {
   return (
-    <div className="min-h-screen bg-[#121212]">
-      <Navbar />
-      <HeroSection />
-      <FeaturesSection />
-      <ProductShowcaseSection />
-      <HowItWorksSection />
-      <StatsSection />
-      <LiveDashboardSection />
-      <TestimonialsSection />
-      <CTASection />
-      <Footer />
+    <div className="min-h-screen bg-[#121212] text-white font-sans antialiased relative overflow-hidden">
+      
+      {/* BACKGROUND GRID & DECORATIVE GRADIENT (OASIS BLUE GLOW) */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+      {/* NAVBAR */}
+      <nav className="relative z-10 max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
+          {/* Logo updated to OASIS Vibrant Blue */}
+          <svg className="w-6 h-6 text-[#0066FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span className="text-white">VEN<span className="text-gray-300 font-normal">Guard</span></span>
+        </div>
+        <button className="text-gray-400 hover:text-white md:hidden">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="relative z-10 max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
+        {/* Top Tagline Pill - Changed from green to Slate & Soft Blue */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-700 bg-slate-900/50 text-xs font-medium tracking-wider text-slate-300 uppercase mb-8">
+          <span className="w-2 h-2 rounded-full bg-[#0066FF] animate-pulse"></span>
+          Powered by OASIS Technology
+        </div>
+
+        {/* Main Heading - & Automated highlighted in OASIS Blue */}
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.15]">
+          Smart Gas Detection <br />
+          <span className="text-[#0066FF]">& Automated</span> Safety Systems
+        </h1>
+
+        <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          VENGuard™ redefines safety by combining advanced environmental sensing, high-speed circuit automation, and instant line isolation to eliminate threats before a disaster can even begin.
+        </p>
+
+        {/* Action Buttons - Changed primary to solid blue */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+          <button className="w-full sm:w-auto px-8 py-3.5 bg-[#0066FF] hover:bg-[#0052cc] text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 active:scale-[0.98]">
+            Get Protected
+          </button>
+          <button className="w-full sm:w-auto px-8 py-3.5 bg-transparent hover:bg-white/5 text-gray-300 hover:text-white font-semibold rounded-xl border border-slate-850 transition-all duration-200 flex items-center justify-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            See How It Works
+          </button>
+        </div>
+
+        {/* DASHBOARD PREVIEW BOARDER PANEL */}
+        <div className="border border-slate-850 bg-[#161616]/90 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl text-left">
+          
+          {/* Subheader Tracker Line - Changed green header text to Slate Blue */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800/60 pb-5">
+            <div className="text-xs font-bold tracking-widest text-slate-400 uppercase">
+              VENGuard™ Gas Safety Monitoring
+            </div>
+            
+            {/* Soft System Status Indicators (Clean Blue/Cyan theme) */}
+            <div className="flex flex-wrap items-center gap-5 text-xs text-gray-400 font-medium">
+              <span className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> SENSORS ACTIVE
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> VALVE ARMED
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> VENT READY
+              </span>
+            </div>
+          </div>
+
+          {/* Grid Layout Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-[#1C1C1C] border border-slate-800/40 rounded-xl p-5">
+              <div className="text-[10px] font-bold tracking-wider text-gray-500 uppercase mb-1">Gas Level (LEL)</div>
+              <div className="text-2xl font-black text-white">13%</div>
+            </div>
+            <div className="bg-[#1C1C1C] border border-slate-800/40 rounded-xl p-5">
+              <div className="text-[10px] font-bold tracking-wider text-gray-500 uppercase mb-1">Air Quality</div>
+              <div className="text-2xl font-black text-white">SAFE</div>
+            </div>
+            <div className="bg-[#1C1C1C] border border-slate-800/40 rounded-xl p-5">
+              <div className="text-[10px] font-bold tracking-wider text-gray-500 uppercase mb-1">Cut-Off Time</div>
+              <div className="text-2xl font-black text-white">&lt;1s</div>
+            </div>
+            <div className="bg-[#1C1C1C] border border-slate-800/40 rounded-xl p-5">
+              <div className="text-[10px] font-bold tracking-wider text-gray-500 uppercase mb-1">System Status</div>
+              <div className="text-2xl font-black text-white tracking-wide">ARMED</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
     </div>
   );
 }
