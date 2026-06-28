@@ -894,18 +894,19 @@ function StatsSection() {
 // LIVE STREAMLIT DASHBOARD
 function LiveDashboardSection() {
   const [sectionRef, isVisible] = useInView();
-  const url = 'https://vanguard-dashboard-jslmyzmwphbsg9mxiank6x.streamlit.app/';
+  const url = 'VENGuard_Dashboard.html';
+
   return (
-    <section id="dashboard" className="py-24 px-4 bg-[#121212] relative">
+    <section id="dashboard" className="py-24 px-4 bg-[#0F0F0F] relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,255,136,0.04)_0%,transparent_60%)] pointer-events-none" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <div className="font-mono text-oasis-400 text-xs tracking-[0.2em] uppercase mb-4">Live System</div>
           <h2 className="text-4xl md:text-5xl font-onest font-bold text-white">
-            Real-Time <span className="text-gradient-oasis">Gas &amp; Fire Monitor</span>
+            Integrated <span className="text-gradient-oasis">VENGuard Dashboard</span>
           </h2>
           <p className="text-base mt-4 max-w-2xl mx-auto" style={{color:'#888888'}}>
-            The OASIS monitoring app streams live sensor data, leak status, and emergency events from every VENGuard&trade; unit in the field.
+            Monitor protected locations, inspect live readings, and control emergency response directly from the integrated VENGuard dashboard.
           </p>
         </div>
 
@@ -917,33 +918,19 @@ function LiveDashboardSection() {
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{background:'#1A1A1A'}}>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full animate-pulse" style={{background:'#00FF88'}}></span>
-              <span className="font-mono text-xs tracking-wider uppercase" style={{color:'#888888'}}>VENGuard&trade; Live Dashboard</span>
+              <span className="font-mono text-xs tracking-wider uppercase" style={{color:'#888888'}}>VENGuard Dashboard</span>
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-wider" style={{color:'#00CC6A'}}>Streaming</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider" style={{color:'#00CC6A'}}>Integrated</span>
           </div>
+
           <iframe
-            src={url + '?embed=true'}
-            title="VENGuard Live Gas & Fire Monitoring Dashboard"
+            src={url}
+            title="VENGuard Integrated Dashboard"
             className="w-full"
-            style={{ height: '620px', border: 'none', background:'#121212' }}
+            style={{ height: '900px', border: 'none', background:'#0F0F0F' }}
             loading="lazy"
           />
         </div>
-
-        <div className="flex justify-center mt-8">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-oasis-500 hover:bg-oasis-400 text-black font-semibold px-8 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)] flex items-center gap-2"
-          >
-            <Activity size={18} />
-            Open Full Dashboard
-          </a>
-        </div>
-        <p className="text-center text-xs mt-4" style={{color:'#888888'}}>
-          If the embedded view doesn't load, use the button above to open the live dashboard in a new tab.
-        </p>
       </div>
     </section>
   );
