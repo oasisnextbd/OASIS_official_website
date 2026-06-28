@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VENGuard — Combined Safety Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            fire: {
+              50: '#fff4ef',
+              100: '#ffe4d7',
+              200: '#ffc5a9',
+              300: '#ff9f77',
+              400: '#ff7a49',
+              500: '#ff5b22',
+              600: '#e34813',
+              700: '#bc360b',
+              800: '#8e2908',
+              900: '#631d05'
+            }
+          },
+          fontFamily: {
+            onest: ['Onest', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          keyframes: {
+            'fade-in-up': {
+              '0%': { opacity: '0', transform: 'translateY(22px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseGlow: {
+              '0%,100%': { boxShadow: '0 0 0 rgba(255,91,34,0)' },
+              '50%': { boxShadow: '0 0 28px rgba(255,91,34,.38)' },
+            },
+            softPulse: {
+              '0%,100%': { opacity: .7 },
+              '50%': { opacity: 1 },
+            },
+            blinkWarn: {
+              '0%,100%': { opacity: 1 },
+              '50%': { opacity: .45 },
+            }
+          },
+          animation: {
+            'fade-in-up': 'fade-in-up .65s ease-out both',
+            pulseGlow: 'pulseGlow 2.4s ease-in-out infinite',
+            softPulse: 'softPulse 2s ease-in-out infinite',
+            blinkWarn: 'blinkWarn 1.2s ease-in-out infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: Inter, sans-serif; background: #0f0f12; color: #f5f5f5; overflow-x: hidden; }
+    .glass-dark { background: rgba(18,18,24,0.76); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.08); }
+    .glass-light { background: rgba(255,255,255,.93); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.52); }
+    .grid-bg { background-image: linear-gradient(rgba(255,91,34,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,91,34,.03) 1px, transparent 1px); background-size: 42px 42px; }
+    .glow-border { position: relative; }
+    .glow-border::after { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(255,91,34,.48), transparent 35%, transparent 65%, rgba(255,91,34,.14)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+    .text-fire { background: linear-gradient(135deg, #ff5b22 0%, #ff8d57 55%, #ffbc76 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .noise::before { content: ''; position: absolute; inset: 0; opacity: .02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+    const { createRoot } = ReactDOM;
+
+    const Flame = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>;
+    const Shield = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.06 1.06 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>;
+    const Bell = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>;
+    const Thermometer = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>;
+    const Zap = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+    const Wind = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.6 16.6A2 2 0 1 0 19 13H2"/><path d="M9.6 12.6A2 2 0 1 1 11 9H2"/></svg>;
+    const Activity = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>;
+    const Power = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" x2="12" y1="2" y2="12"/></svg>;
+    const Wifi = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h.01"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M5 13a10 10 0 0 1 14 0"/><path d="M1.5 9.5a15 15 0 0 1 21 0"/></svg>;
+    const Lock = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+    const ArrowRight = ({size=18, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+    const Message = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>;
+    const Fan = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 4c1.8 0 3 1.3 3 3 0 1.2-.5 1.9-1.4 2.8L12 12"/><path d="M20 12c0 1.8-1.3 3-3 3-1.2 0-1.9-.5-2.8-1.4L12 12"/><path d="M12 20c-1.8 0-3-1.3-3-3 0-1.2.5-1.9 1.4-2.8L12 12"/><path d="M4 12c0-1.8 1.3-3 3-3 1.2 0 1.9.5 2.8 1.4L12 12"/></svg>;
+    const CheckCircle = ({size=20, color='currentColor'}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
+
+    function CanvasBackground({ mousePos }) {
+      const canvasRef = useRef(null);
+      const animRef = useRef(null);
+      const nodesRef = useRef([]);
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
+        resize();
+        window.addEventListener('resize', resize);
+        nodesRef.current = Array.from({ length: 60 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35, r: 1.2 + Math.random() * 1.6 }));
+        const draw = () => {
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          const nodes = nodesRef.current;
+          const mp = mousePos.current;
+          nodes.forEach(n => {
+            if (mp) {
+              const dx = mp.x - n.x, dy = mp.y - n.y; const dist = Math.sqrt(dx*dx+dy*dy);
+              if (dist < 220) { n.vx += dx * 0.00005; n.vy += dy * 0.00005; }
+            }
+            const speed = Math.sqrt(n.vx*n.vx+n.vy*n.vy);
+            if (speed > 1.0) { n.vx *= 0.96; n.vy *= 0.96; }
+            n.x += n.vx; n.y += n.vy;
+            if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+            if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+            n.x = Math.max(0, Math.min(canvas.width, n.x));
+            n.y = Math.max(0, Math.min(canvas.height, n.y));
+            let alpha = 0.24;
+            if (mp) {
+              const dx = mp.x - n.x, dy = mp.y - n.y; const dist = Math.sqrt(dx*dx+dy*dy);
+              if (dist < 200) alpha = 0.65;
+            }
+            ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fillStyle = `rgba(255,91,34,${alpha})`; ctx.fill();
+          });
+          for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) {
+            const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y; const dist = Math.sqrt(dx*dx+dy*dy);
+            if (dist < 140) { ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y); ctx.strokeStyle = `rgba(255,91,34,${0.06 * (1 - dist / 140)})`; ctx.lineWidth = 0.5; ctx.stroke(); }
+          }
+          animRef.current = requestAnimationFrame(draw);
+        };
+        animRef.current = requestAnimationFrame(draw);
+        return () => { cancelAnimationFrame(animRef.current); window.removeEventListener('resize', resize); };
+      }, []);
+      return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{pointerEvents:'none'}} />;
+    }
+
+    function Navbar() {
+      return (
+        <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0f0f12]/80 backdrop-blur-xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2 font-onest font-bold text-xl"><Flame size={18} color="#ff5b22" /><span className="text-white">VEN</span><span className="text-fire">Guard</span></div>
+            <div className="hidden md:flex items-center gap-6 text-sm text-gray-300">
+              <a href="#overview" className="hover:text-white">Overview</a>
+              <a href="#fleet" className="hover:text-white">Locations</a>
+              <a href="#controls" className="hover:text-white">Controls</a>
+              <a href="#workflow" className="hover:text-white">Workflow</a>
+              <a href="#insights" className="hover:text-white">Insights</a>
+            </div>
+            <button className="rounded-full bg-fire-500 hover:bg-fire-400 text-white px-5 py-2 text-sm font-semibold">Protect My Property</button>
+          </div>
+        </nav>
+      );
+    }
+
+    function ProductHardware({ product }) {
+      const map = { grey:'VenGuard_Gray.png', skin:'VenGuard_Skin.png', maroon:'VenGuard_Maroon.png', blue:'VenGuard_Blue.png' };
+      return <div className="relative flex items-center justify-center min-h-[340px] md:min-h-[430px]"><div className="absolute w-80 h-32 rounded-full bg-fire-500/15 blur-3xl"></div><img src={map[product]} alt="VENGuard product" className="relative w-full max-w-[470px] object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,.5)]" /></div>;
+    }
+
+    function HeroAndFleet() {
+      const mousePosRef = useRef(null);
+      const [product, setProduct] = useState('grey');
+      const [detectorOnline, setDetectorOnline] = useState(true);
+      const [manualDrill, setManualDrill] = useState(false);
+      const [highestGasReading, setHighestGasReading] = useState(66);
+      const [highestSmokeReading, setHighestSmokeReading] = useState(12.1);
+      const [gasThreshold, setGasThreshold] = useState(100);
+      const [smokeThreshold, setSmokeThreshold] = useState(18);
+      const [batteryPercent, setBatteryPercent] = useState(86);
+      const [ventSeconds, setVentSeconds] = useState(0);
+      const [gasType, setGasType] = useState('LPG');
+      const [temperature, setTemperature] = useState(29.1);
+      const [humidity, setHumidity] = useState(64);
+      const [notificationCount, setNotificationCount] = useState(18);
+      const [sensorConfidence, setSensorConfidence] = useState(98);
+      const [responseMode] = useState('Automatic');
+      const [connectivity, setConnectivity] = useState('Strong');
+
+      const gasExceeded = detectorOnline && highestGasReading >= gasThreshold;
+      const smokeExceeded = detectorOnline && highestSmokeReading >= smokeThreshold;
+      const fireAlert = detectorOnline && (manualDrill || gasExceeded || smokeExceeded);
+      const allReadingsNormal = detectorOnline && !fireAlert;
+
+      useEffect(() => {
+        if (!detectorOnline) return;
+        const interval = setInterval(() => {
+          setHighestGasReading(prev => {
+            const target = manualDrill ? gasThreshold + 18 + Math.random() * 35 : 52 + Math.random() * 24;
+            return Math.round(prev * 0.68 + target * 0.32);
+          });
+          setHighestSmokeReading(prev => {
+            const target = manualDrill ? smokeThreshold + 4 + Math.random() * 8 : 8 + Math.random() * 6;
+            return parseFloat((prev * 0.72 + target * 0.28).toFixed(1));
+          });
+          setBatteryPercent(prev => prev <= 15 ? 86 : parseFloat((prev - 0.02).toFixed(2)));
+          setTemperature(v => +(v + (Math.random() - 0.5) * 0.18).toFixed(1));
+          setHumidity(v => Math.max(48, Math.min(76, Math.round(v + (Math.random() - 0.5) * 2))));
+          setSensorConfidence(v => Math.max(94, Math.min(99, Math.round(v + (Math.random() - 0.5) * 1))));
+        }, 1300);
+        return () => clearInterval(interval);
+      }, [detectorOnline, manualDrill, gasThreshold, smokeThreshold]);
+
+      useEffect(() => {
+        let interval; if (fireAlert) interval = setInterval(() => setVentSeconds(s => s + 1), 1000); else setVentSeconds(0); return () => clearInterval(interval);
+      }, [fireAlert]);
+
+      useEffect(() => { setConnectivity(detectorOnline ? 'Strong' : 'Disconnected'); }, [detectorOnline]);
+
+      const toggleMasterPower = () => { const next = !detectorOnline; setDetectorOnline(next); if (!next) setManualDrill(false); };
+      const resetSafeState = () => { setManualDrill(false); setHighestGasReading(66); setHighestSmokeReading(12.1); };
+      const handleMouseMove = useCallback((e) => { const rect = e.currentTarget.getBoundingClientRect(); mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }; }, []);
+      const formatDuration = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+
+      const statusMessage = !detectorOnline ? '⚫ Detector offline — telemetry paused | Devices Online: 0/6' : allReadingsNormal ? `✅ All readings normal — Highest Gas: ${highestGasReading} PPM | Highest Smoke: ${highestSmokeReading.toFixed(1)}% | No active alerts` : `🚨 ALERT: Threshold exceeded — Highest Gas: ${highestGasReading} PPM | Highest Smoke: ${highestSmokeReading.toFixed(1)}% | Fire alert active`;
+      const airState = fireAlert ? 'CRITICAL' : detectorOnline ? 'SAFE' : 'OFFLINE';
+      const airColor = airState === 'SAFE' ? 'text-emerald-400' : airState === 'CRITICAL' ? 'text-red-400' : 'text-gray-400';
+
+      const metrics = [
+        { label:'Highest Gas Reading', value:`${highestGasReading} PPM`, sub:`Threshold ${gasThreshold} PPM`, tone:gasExceeded ? 'danger' : 'safe', icon:<Activity size={16} /> },
+        { label:'Highest Smoke Reading', value:`${highestSmokeReading.toFixed(1)}%`, sub:`Threshold ${smokeThreshold}%`, tone:smokeExceeded ? 'danger' : 'safe', icon:<Thermometer size={16} /> },
+        { label:'Fire Alert', value:fireAlert ? 'ACTIVE' : 'CLEAR', sub:fireAlert ? 'Isolation sequence running' : 'No active alerts', tone:fireAlert ? 'danger' : 'safe', icon:<Flame size={16} /> },
+        { label:'Devices Online', value:detectorOnline ? '6/6' : '0/6', sub:detectorOnline ? 'Telemetry connected' : 'Detector offline', tone:detectorOnline ? 'safe' : 'muted', icon:<Shield size={16} /> },
+      ];
+
+      const locationDevices = [
+        { location:'Main Kitchen', deviceId:'VG-KTN-01', gas:highestGasReading, smoke:highestSmokeReading, status:fireAlert ? 'CRITICAL' : 'NORMAL', online:detectorOnline, critical:fireAlert },
+        { location:'Boiler Room', deviceId:'VG-BLR-02', gas:detectorOnline ? Math.max(28, highestGasReading - 22) : 0, smoke:detectorOnline ? Math.max(4.2, highestSmokeReading - 5.6) : 0, status:detectorOnline ? 'NORMAL' : 'OFFLINE', online:detectorOnline, critical:false },
+        { location:'Cylinder Storage', deviceId:'VG-CYL-03', gas:detectorOnline ? Math.max(34, highestGasReading - 16) : 0, smoke:detectorOnline ? Math.max(5.8, highestSmokeReading - 4.1) : 0, status:detectorOnline ? 'NORMAL' : 'OFFLINE', online:detectorOnline, critical:false },
+        { location:'Restaurant Line', deviceId:'VG-RST-04', gas:detectorOnline ? Math.max(41, highestGasReading - 9) : 0, smoke:detectorOnline ? Math.max(7.4, highestSmokeReading - 2.8) : 0, status:detectorOnline ? 'NORMAL' : 'OFFLINE', online:detectorOnline, critical:false },
+        { location:'Industrial Bay', deviceId:'VG-IND-05', gas:detectorOnline ? Math.max(24, highestGasReading - 31) : 0, smoke:detectorOnline ? Math.max(3.9, highestSmokeReading - 6.2) : 0, status:detectorOnline ? 'NORMAL' : 'OFFLINE', online:detectorOnline, critical:false },
+        { location:'Ventilation Shaft', deviceId:'VG-VNT-06', gas:detectorOnline ? Math.max(18, highestGasReading - 38) : 0, smoke:detectorOnline ? Math.max(2.6, highestSmokeReading - 7.4) : 0, status:fireAlert ? 'PURGING' : detectorOnline ? 'STANDBY' : 'OFFLINE', online:detectorOnline, critical:fireAlert },
+      ];
+
+      const variants = [
+        { id:'grey', name:'Slate Grey', swatch:'#5b6067' },
+        { id:'skin', name:'Sand Beige', swatch:'#d0a28b' },
+        { id:'maroon', name:'Deep Maroon', swatch:'#6d2a42' },
+        { id:'blue', name:'Steel Blue', swatch:'#5d83b1' },
+      ];
+
+      return (
+        <section id="overview" className="relative min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 bg-[#0f0f12] grid-bg overflow-hidden noise" onMouseMove={handleMouseMove}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,91,34,.09),transparent_40%)]"></div>
+          <CanvasBackground mousePos={mousePosRef} />
+          <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-4 space-y-6 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-fire-500/20 bg-fire-500/10 text-fire-400 text-xs font-mono animate-pulseGlow"><span className="w-2 h-2 rounded-full bg-fire-500"></span> BUILT FOR REAL KITCHEN GAS EMERGENCIES</div>
+              <h1 className="text-5xl md:text-6xl font-onest font-extrabold leading-tight">One dashboard for <span className="text-fire">detection, response, and inspection</span></h1>
+              <p className="text-gray-400 text-lg max-w-md leading-relaxed">VENGuard protects homes with smart gas detection, local buzzing alert, remote notifications, wireless ventilation control, and one-way remote shutoff that keeps human safety judgment in the loop.</p>
+              <div className={`rounded-2xl px-5 py-4 border shadow-2xl font-onest font-bold text-sm ${fireAlert ? 'bg-red-600/90 border-red-300/40 text-white animate-pulse' : detectorOnline ? 'bg-emerald-600/90 border-emerald-300/30 text-white' : 'bg-gray-700/80 border-gray-500/30 text-gray-200'}`}>{statusMessage}</div>
+              <div className="grid grid-cols-2 gap-4">
+                {metrics.map((m, i) => <div key={i} className={`glass-dark rounded-3xl p-5 glow-border ${m.tone==='danger' ? 'border-red-400/30' : ''}`}><div className="flex items-start justify-between gap-4"><div><div className="text-gray-500 text-[10px] font-mono uppercase tracking-widest">{m.label}</div><div className={`text-2xl font-extrabold font-onest mt-1 ${m.tone==='danger' ? 'text-red-400' : m.tone==='muted' ? 'text-gray-500' : 'text-white'}`}>{m.value}</div></div><div className={`w-9 h-9 rounded-full flex items-center justify-center ${m.tone==='danger' ? 'bg-red-500/15 text-red-400' : 'bg-fire-500/10 text-fire-300'}`}>{m.icon}</div></div><div className="text-gray-500 text-xs mt-4">{m.sub}</div></div>)}
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 animate-fade-in-up" style={{animationDelay:'.12s'}}>
+              <ProductHardware product={product} />
+              <div className="mt-4 text-center text-sm text-gray-400">Smart detector as the main brain • active buzzer • ESP-NOW relay • solenoid isolation</div>
+              <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">{variants.map(v => <button key={v.id} onClick={() => setProduct(v.id)} className="w-11 h-11 rounded-full border-2 transition-all" style={{background:v.swatch, border: product===v.id ? '2px solid #ff5b22' : '2px solid rgba(255,255,255,.18)', transform: product===v.id ? 'scale(1.12)' : 'scale(1)'}} aria-label={v.name} title={v.name}></button>)}</div>
+              <div className="text-center mt-4 text-white font-onest font-semibold">{variants.find(v => v.id===product)?.name}</div>
+            </div>
+
+            <div className="lg:col-span-4 flex flex-col gap-6 animate-fade-in-up" style={{animationDelay:'.24s'}}>
+              <div className="glass-light rounded-[2rem] p-6 text-gray-900 shadow-2xl">
+                <div className="flex items-center justify-between mb-4"><div><h3 className="font-onest font-bold text-xl">Kitchen Zone</h3><p className="text-xs text-gray-500 mt-1">Protected area overview</p></div><Thermometer size={18} color="#ff5b22" /></div>
+                <div className="space-y-3">
+                  {[
+                    { label:'Smart Detector', active:detectorOnline, desc:detectorOnline ? 'Online' : 'Offline', icon:<Activity size={15} color={detectorOnline ? '#ff5b22' : '#9ca3af'} /> },
+                    { label:'Active Buzzer', active:fireAlert, desc:fireAlert ? 'Alerting locally' : 'Standby', icon:<Bell size={15} color={fireAlert ? '#ff5b22' : '#9ca3af'} /> },
+                    { label:'Vent Relay', active:fireAlert, desc:fireAlert ? 'Fan running' : 'Ready', icon:<Fan size={15} color={fireAlert ? '#ff5b22' : '#9ca3af'} /> },
+                  ].map(item => <div key={item.label} className="flex items-center justify-between p-3 rounded-2xl bg-black/[0.03]"><div className="flex items-center gap-3"><div className={`w-9 h-9 rounded-xl flex items-center justify-center ${item.active ? 'bg-fire-500/10' : 'bg-gray-100'}`}>{item.icon}</div><div><div className="font-onest font-semibold text-sm">{item.label}</div><div className="text-xs text-gray-500">{item.desc}</div></div></div><span className={`w-3 h-3 rounded-full ${item.active ? 'bg-emerald-500' : 'bg-gray-400'}`}></span></div>)}
+                </div>
+              </div>
+
+              <div className="glass-light rounded-[2rem] p-6 text-gray-900 shadow-2xl">
+                <div className="text-left"><h3 className="font-onest font-bold text-xl">Response Runtime</h3><p className="text-xs text-gray-500 mt-1">Ventilation + isolation sequence</p></div>
+                <div className="my-6 flex items-center justify-center"><div className="w-44 h-44 rounded-full border-[14px] border-gray-100 relative flex items-center justify-center" style={{boxShadow:'inset 0 0 0 10px rgba(255,91,34,.08)'}}><div className="absolute inset-2 rounded-full border-[10px] border-fire-500/20"></div><div className="text-center z-10"><div className="text-3xl font-onest font-extrabold">{formatDuration(ventSeconds)}</div><div className="text-[10px] uppercase tracking-[.22em] text-gray-500 mt-1">Active Runtime</div></div></div></div>
+                <div className="grid grid-cols-2 gap-3"><button onClick={() => setManualDrill(v => !v)} className="rounded-full bg-fire-500 hover:bg-fire-400 text-white py-3 text-xs font-onest font-bold uppercase tracking-[.18em]">{manualDrill ? 'Stop Drill' : 'Test Alert'}</button><button onClick={resetSafeState} className="rounded-full bg-gray-100 hover:bg-gray-200 py-3 text-xs font-onest font-bold uppercase tracking-[.18em]">Reset</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto mt-8 grid md:grid-cols-4 gap-4 animate-fade-in-up" style={{animationDelay:'.32s'}}>
+            {[['Connectivity', connectivity], ['Response Mode', responseMode], ['Notifications Sent', notificationCount.toString()], ['Sensor Confidence', sensorConfidence + '%']].map(([k,v], i) => <div key={i} className="glass-dark rounded-2xl p-4 glow-border"><div className="text-xs uppercase tracking-[.18em] text-gray-500 mb-2">{k}</div><div className="text-white font-onest font-bold text-2xl">{v}</div></div>)}
+          </div>
+
+          <div id="fleet" className="max-w-7xl mx-auto mt-10 glass-dark rounded-[2.5rem] p-6 md:p-8 border border-white/10 shadow-2xl animate-fade-in-up" style={{animationDelay:'.36s'}}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"><div><div className="font-mono text-fire-300 text-[10px] tracking-[0.22em] uppercase mb-2">Protected Locations</div><h2 className="text-2xl md:text-3xl font-onest font-extrabold text-white">Device Status Overview</h2><p className="text-gray-400 text-sm mt-2">Live VENGuard units across kitchens, storage, ventilation, and industrial areas.</p></div><button onClick={toggleMasterPower} className={`rounded-full px-5 py-3 border flex items-center gap-2 text-xs font-bold font-mono tracking-wide transition-all ${detectorOnline ? 'bg-white/5 text-white border-white/15 hover:border-fire-400/50' : 'bg-fire-500/10 text-fire-200 border-fire-500/30'}`}><span className={`w-2 h-2 rounded-full ${detectorOnline ? fireAlert ? 'bg-red-500 animate-ping' : 'bg-emerald-400 animate-pulse' : 'bg-gray-500'}`}></span> Detector Network {detectorOnline ? 'ON' : 'OFF'}</button></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {locationDevices.map(device => <div key={device.deviceId} className={`rounded-3xl p-5 border transition-all ${device.critical ? 'bg-red-500/10 border-red-400/40 shadow-[0_0_30px_rgba(220,38,38,0.18)] animate-pulse' : device.online ? 'bg-white/[0.035] border-white/10 hover:border-fire-400/25' : 'bg-white/[0.02] border-white/5 opacity-70'}`}><div className="flex items-start justify-between gap-3"><div><div className="font-onest font-bold text-white text-base">{device.location}</div><div className="font-mono text-[10px] text-gray-500 mt-1">{device.deviceId}</div></div><span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${device.critical ? 'bg-red-500 text-white' : device.online ? 'bg-emerald-500/15 text-emerald-300' : 'bg-gray-500/15 text-gray-400'}`}>{device.status}</span></div><div className="grid grid-cols-2 gap-3 mt-5"><div className="rounded-2xl bg-black/25 border border-white/5 p-3"><div className="text-gray-500 text-[10px] font-mono uppercase tracking-wider">Gas</div><div className={`font-onest text-xl font-extrabold mt-1 ${device.critical ? 'text-red-300' : 'text-white'}`}>{Math.round(device.gas)} PPM</div></div><div className="rounded-2xl bg-black/25 border border-white/5 p-3"><div className="text-gray-500 text-[10px] font-mono uppercase tracking-wider">Smoke</div><div className={`font-onest text-xl font-extrabold mt-1 ${device.critical ? 'text-red-300' : 'text-white'}`}>{device.smoke.toFixed(1)}%</div></div></div><div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5"><div className="text-xs text-gray-400 font-medium">{device.online ? 'Telemetry linked' : 'No signal'}</div><span className={`w-3 h-3 rounded-full ${device.critical ? 'bg-red-500 animate-ping' : device.online ? 'bg-emerald-400' : 'bg-gray-500'}`}></span></div></div>)}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function EmergencyAndWorkflow() {
+      const [valveClosed, setValveClosed] = useState(true);
+      const [ventOn, setVentOn] = useState(true);
+      const [alertAcknowledged, setAlertAcknowledged] = useState(false);
+      const [ownerAway, setOwnerAway] = useState(true);
+      const [contactsNotified, setContactsNotified] = useState(3);
+      const cards = [['Smart Detector','Online','Main brain active'],['Buzzer','Ready','Local audible alert'],['Relay Module','Connected','ESP-NOW linked'],['Solenoid Valve','Armed','Ready to isolate'],['Notification Sync','Delivered','Dashboard + message route'],['Dashboard State','Live','Remote awareness active']];
+      const timeline = ['02:14 AM — Gas concentration rose above safe threshold','02:14 AM — Smart detector triggered local buzzer','02:14 AM — Owner and related party notified remotely','02:14 AM — Relay activated over ESP-NOW for ventilation','02:14 AM — Solenoid valve isolated fuel source','02:21 AM — Alert acknowledged from remote dashboard'];
+      return (
+        <>
+          <section id="controls" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#121217]">
+            <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-5"><div className="mb-8"><div className="font-mono text-fire-400 text-xs tracking-[.2em] uppercase mb-3">Emergency Response</div><h2 className="text-4xl md:text-5xl font-onest font-bold text-white">Remote control where it matters. <span className="text-fire">Manual recovery where it matters more.</span></h2><p className="text-gray-400 mt-4 max-w-xl">The dashboard handles alert acknowledgment, ventilation control, emergency shutoff, and contact escalation — while still preventing unsafe remote gas restoration.</p></div><div className="grid sm:grid-cols-2 gap-4"><div className="glass-dark rounded-3xl p-5 glow-border"><div className="text-xs text-gray-500 uppercase tracking-[.18em] mb-3">Valve Policy</div><div className="text-2xl font-onest font-bold text-white">Remote Close Only</div><div className="text-xs text-fire-400 mt-2">Reopen remains disabled online</div></div><div className="glass-dark rounded-3xl p-5 glow-border"><div className="text-xs text-gray-500 uppercase tracking-[.18em] mb-3">Owner Status</div><div className="text-2xl font-onest font-bold text-white">{ownerAway ? 'Away' : 'At Home'}</div><button onClick={() => setOwnerAway(v => !v)} className="text-xs text-fire-400 mt-2">Toggle demo</button></div></div></div>
+              <div className="lg:col-span-7 grid md:grid-cols-2 gap-6">
+                <div className="glass-light rounded-[2rem] p-6 text-gray-900 shadow-2xl"><div className="flex items-center justify-between mb-6"><div><h3 className="font-onest font-bold text-xl">Emergency Actions</h3><p className="text-xs text-gray-500 mt-1">Fast actions for remote response</p></div><Flame size={18} color="#ff5b22" /></div><div className="space-y-3"><button onClick={() => setVentOn(true)} className="w-full flex items-center justify-between rounded-2xl bg-fire-500 hover:bg-fire-400 text-white px-4 py-4 font-onest font-semibold"><span className="flex items-center gap-3"><Wind size={16} color="#fff" /> Start Active Ventilation</span><ArrowRight size={16} color="#fff" /></button><button onClick={() => setValveClosed(true)} className="w-full flex items-center justify-between rounded-2xl bg-[#19191f] hover:bg-[#202029] text-white px-4 py-4 font-onest font-semibold border border-white/8"><span className="flex items-center gap-3"><Shield size={16} color="#ff5b22" /> Emergency Gas Shutoff</span><ArrowRight size={16} color="#ff5b22" /></button><button onClick={() => setAlertAcknowledged(true)} className="w-full flex items-center justify-between rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-4 font-onest font-semibold"><span className="flex items-center gap-3"><Bell size={16} color="#ff5b22" /> Acknowledge Alert</span><ArrowRight size={16} color="#ff5b22" /></button><button onClick={() => setContactsNotified(c => c + 1)} className="w-full flex items-center justify-between rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-4 font-onest font-semibold"><span className="flex items-center gap-3"><Message size={16} color="#ff5b22" /> Notify Additional Contact</span><ArrowRight size={16} color="#ff5b22" /></button></div><div className="mt-5 grid grid-cols-4 gap-3 text-center text-xs"><div className="rounded-2xl bg-black/[0.03] p-3"><div className="text-gray-500 uppercase tracking-[.15em] mb-1">Vent</div><div className={`font-onest font-bold ${ventOn ? 'text-emerald-600' : 'text-gray-500'}`}>{ventOn ? 'ON' : 'OFF'}</div></div><div className="rounded-2xl bg-black/[0.03] p-3"><div className="text-gray-500 uppercase tracking-[.15em] mb-1">Valve</div><div className={`font-onest font-bold ${valveClosed ? 'text-red-600' : 'text-emerald-600'}`}>{valveClosed ? 'CLOSED' : 'OPEN'}</div></div><div className="rounded-2xl bg-black/[0.03] p-3"><div className="text-gray-500 uppercase tracking-[.15em] mb-1">Alert</div><div className={`font-onest font-bold ${alertAcknowledged ? 'text-emerald-600' : 'text-amber-600'}`}>{alertAcknowledged ? 'SEEN' : 'PENDING'}</div></div><div className="rounded-2xl bg-black/[0.03] p-3"><div className="text-gray-500 uppercase tracking-[.15em] mb-1">Contacts</div><div className="font-onest font-bold text-fire-600">{contactsNotified}</div></div></div></div>
+                <div className="glass-dark rounded-[2rem] p-6 glow-border"><div className="flex items-center gap-3 mb-4"><Lock size={18} color="#ff5b22" /><h3 className="font-onest font-bold text-xl text-white">Manual Restore Lock</h3></div><p className="text-gray-400 text-sm leading-relaxed">Remote reopening is intentionally blocked. VENGuard only allows manual restoration after physical inspection of the kitchen, source line, regulator, and affected area.</p><div className="mt-5 rounded-3xl bg-fire-500/10 border border-fire-500/20 p-5"><div className="text-fire-300 font-onest font-semibold mb-2">Safety Rule</div><div className="text-white text-sm leading-relaxed">The dashboard may isolate gas supply remotely, but no one can restore supply from the web. This protects households from restarting gas flow before the leak source is verified safe.</div></div><div className="mt-5 space-y-3 text-sm"><div className="flex items-center justify-between border-b border-white/5 pb-3"><span className="text-gray-400">Remote shutoff</span><span className="text-emerald-400 font-onest font-semibold">Enabled</span></div><div className="flex items-center justify-between border-b border-white/5 pb-3"><span className="text-gray-400">Remote reopen</span><span className="text-red-400 font-onest font-semibold">Disabled</span></div><div className="flex items-center justify-between border-b border-white/5 pb-3"><span className="text-gray-400">Human inspection</span><span className="text-fire-400 font-onest font-semibold">Required</span></div><div className="flex items-center justify-between"><span className="text-gray-400">Reset after event</span><span className="text-white font-onest font-semibold">On-site only</span></div></div></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="workflow" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#0f0f12] grid-bg">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-14"><div className="font-mono text-fire-400 text-xs tracking-[.2em] uppercase mb-3">Live Safety Intelligence</div><h2 className="text-4xl md:text-5xl font-onest font-bold text-white">Monitor, inspect, and understand the <span className="text-fire">full response chain</span></h2></div>
+              <div className="grid lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-7 glass-dark rounded-[2rem] p-6 glow-border"><div className="flex items-center justify-between gap-4 flex-wrap mb-6"><div><div className="font-mono text-fire-400 text-xs tracking-[.18em] uppercase">Integrated Monitor</div><div className="text-white font-onest text-2xl font-bold mt-2">Real-Time Gas, Alert, and Response Activity</div></div><div className="text-xs text-gray-400 font-mono uppercase tracking-[.18em]">No external dashboard required</div></div><div className="grid md:grid-cols-[1.15fr_.85fr] gap-6"><div className="rounded-3xl bg-white/[0.03] border border-white/5 p-5"><div className="h-44 flex items-end gap-1.5">{Array.from({length:36}, (_,i) => <div key={i} className="flex-1 rounded-t-sm bg-fire-500/65 hover:bg-fire-400 transition-colors" style={{height:`${18 + ((i*7)%70)}%`}}></div>)}</div><div className="mt-4 text-xs text-gray-400 font-mono">LEL trend • alert spikes • ventilation state • shutoff response</div></div><div className="rounded-3xl bg-white/[0.03] border border-white/5 p-5 space-y-4">{[['Air Safety','Safe / Warning / Critical'],['Local Alarm','Buzzer-driven response'],['Remote Alert','Message + live dashboard'],['Valve Logic','Close remotely, open manually']].map(([k,v]) => <div key={k} className="flex items-center justify-between border-b border-white/5 pb-3"><span className="text-gray-400 text-sm">{k}</span><span className="text-white font-onest font-semibold text-right ml-3">{v}</span></div>)}<div className="rounded-2xl bg-fire-500/10 border border-fire-500/20 p-4 text-sm text-fire-100">VENGuard is designed to react even when the owner is sleeping, away, or unable to check a message in time.</div></div></div></div>
+                <div className="lg:col-span-5 space-y-6"><div className="glass-dark rounded-[2rem] p-6 glow-border"><div className="font-onest text-xl font-bold text-white mb-5">Device Health</div><div className="grid sm:grid-cols-2 gap-3">{cards.map(([title, value, sub], i) => <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/5 p-4"><div className="text-xs uppercase tracking-[.18em] text-gray-500 mb-2">{title}</div><div className="text-lg font-onest font-bold text-white">{value}</div><div className="text-xs text-fire-400 mt-1">{sub}</div></div>)}</div></div><div className="glass-dark rounded-[2rem] p-6 glow-border"><div className="font-onest text-xl font-bold text-white mb-5">Incident Timeline</div><div className="space-y-4">{timeline.map((item, i) => <div key={i} className="flex gap-3 items-start"><div className="w-3 h-3 rounded-full bg-fire-500 mt-1.5 animate-softPulse"></div><div className="text-sm text-gray-300 leading-relaxed">{item}</div></div>)}</div></div></div>
+              </div>
+              <div className="mt-16 grid md:grid-cols-4 gap-6">{[['01','Detect','The main detector continuously checks LPG and natural gas presence in the protected space.'],['02','Alert','VENGuard triggers a local buzzer and notifies the owner and related party remotely.'],['03','Ventilate','The relay receives wireless instruction over ESP-NOW and starts active ventilation.'],['04','Isolate','The solenoid valve shuts off supply before lower explosive limit conditions escalate.']].map(([n,title,desc], i) => <div key={i} className="glass-dark rounded-3xl p-6 glow-border"><div className="text-5xl font-onest font-extrabold text-white/10 mb-3">{n}</div><div className="font-onest text-xl font-bold text-white mb-2">{title}</div><p className="text-sm text-gray-400 leading-relaxed">{desc}</p></div>)}</div>
+            </div>
+          </section>
+        </>
+      );
+    }
+
+    function InsightsSection() {
+      const [inspectionReady, setInspectionReady] = useState(false);
+      const checklist = ['Leak source identified','Kitchen windows/ventilation checked','Cylinder/regulator/line visually inspected','Area odor level returned to safe range','Qualified person confirms recovery'];
+      return (
+        <section id="insights" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#121217]">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8"><div className="lg:col-span-5"><div className="font-mono text-fire-400 text-xs tracking-[.2em] uppercase mb-3">Operational Insights</div><h2 className="text-4xl md:text-5xl font-onest font-bold text-white">Go beyond alerts with <span className="text-fire">inspection, accountability, and readiness</span></h2><p className="text-gray-400 mt-4 max-w-xl">A strong VENGuard dashboard should not only show emergencies. It should also guide recovery, keep a clear operator record, and make users think before restoring fuel flow.</p></div><div className="lg:col-span-7 grid md:grid-cols-2 gap-6"><div className="glass-light rounded-[2rem] p-6 text-gray-900 shadow-2xl"><div className="flex items-center justify-between mb-5"><div><h3 className="font-onest font-bold text-xl">Post-Incident Checklist</h3><p className="text-xs text-gray-500 mt-1">Manual restore should follow these checks</p></div><CheckCircle size={18} color="#ff5b22" /></div><div className="space-y-3">{checklist.map((item, i) => <label key={i} className="flex items-start gap-3 rounded-2xl bg-black/[0.03] p-3 cursor-pointer"><input type="checkbox" className="mt-1 accent-[#ff5b22]" onChange={() => {}} /><span className="text-sm text-gray-800">{item}</span></label>)}</div><button onClick={() => setInspectionReady(v => !v)} className="mt-5 w-full rounded-full bg-fire-500 hover:bg-fire-400 text-white py-3 text-sm font-onest font-semibold">{inspectionReady ? 'Inspection Ready Marked' : 'Mark Inspection Readiness'}</button></div><div className="glass-dark rounded-[2rem] p-6 glow-border"><div className="font-onest font-bold text-xl text-white mb-5">Dashboard Modules Recommended</div><div className="space-y-4 text-sm text-gray-300"><div className="rounded-2xl bg-white/[0.03] border border-white/5 p-4"><div className="text-fire-400 font-onest font-semibold mb-1">1. Multi-user notification routing</div><div>Owner, family member, building manager, and emergency contact escalation.</div></div><div className="rounded-2xl bg-white/[0.03] border border-white/5 p-4"><div className="text-fire-400 font-onest font-semibold mb-1">2. Maintenance reminders</div><div>Sensor calibration reminders, relay health check, and valve inspection schedule.</div></div><div className="rounded-2xl bg-white/[0.03] border border-white/5 p-4"><div className="text-fire-400 font-onest font-semibold mb-1">3. Installation profile</div><div>Kitchen type, gas source, exhaust capacity, detector location, and service notes.</div></div><div className="rounded-2xl bg-white/[0.03] border border-white/5 p-4"><div className="text-fire-400 font-onest font-semibold mb-1">4. Event audit history</div><div>Every alert, acknowledgment, shutoff, ventilation start, and inspection action logged.</div></div></div></div></div></div>
+        </section>
+      );
+    }
+
+    function App() {
+      return <div className="min-h-screen bg-[#0f0f12]"><Navbar /><HeroAndFleet /><EmergencyAndWorkflow /><InsightsSection /></div>;
+    }
+
+    createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
