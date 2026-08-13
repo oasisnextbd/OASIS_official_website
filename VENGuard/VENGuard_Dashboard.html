@@ -883,10 +883,10 @@ function HeroSection() {
             <div>
               <div className="font-mono text-emerald-300 text-[11px] tracking-[0.22em] uppercase mb-4">Customer Safety Dashboard</div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-onest font-extrabold tracking-tight leading-[1.08] text-white">VenGuard Live<br />Gas Safety System</h1>
-              <div className="flex flex-wrap gap-3 mt-8">
-                <button onClick={() => setValveOn(!valveOn)} className={`rounded-full px-5 py-3 border text-xs font-bold font-onest uppercase tracking-wider transition-colors ${valveOn ? 'bg-emerald-500/15 border-emerald-400/35 text-emerald-200' : 'bg-white/5 border-white/15 text-gray-300'}`}>Valve {valveOn ? 'On' : 'Off'}</button>
-                <button onClick={() => setManualDrill(!manualDrill)} disabled={!detectorOnline} className={`rounded-full px-5 py-3 border text-xs font-bold font-onest uppercase tracking-wider transition-colors disabled:opacity-50 ${manualDrill ? 'bg-red-600 border-red-400/50 text-white' : 'bg-red-500/12 border-red-400/35 text-red-100 hover:bg-red-500/20'}`}>{manualDrill ? 'Clear Fire Alert' : 'Emergency Fire Alert'}</button>
-                <div className={`rounded-full px-5 py-3 border text-xs font-bold font-onest uppercase tracking-wider ${fireAlert ? 'bg-red-500/12 border-red-400/35 text-red-100' : 'bg-white/5 border-white/15 text-gray-300'}`}>Relay {fireAlert ? 'Active' : 'Inactive'}</div>
+              <div className="flex flex-col items-start gap-4 mt-8">
+                <button onClick={() => setValveOn(!valveOn)} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors ${valveOn ? 'bg-emerald-500/15 border-emerald-400/35 text-emerald-200' : 'bg-white/5 border-white/15 text-gray-300'}`}>Valve {valveOn ? 'On' : 'Off'}</button>
+                <button onClick={() => setManualDrill(!manualDrill)} disabled={!detectorOnline} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors disabled:opacity-50 ${manualDrill ? 'bg-red-600 border-red-400/50 text-white' : 'bg-red-500/12 border-red-400/35 text-red-100 hover:bg-red-500/20'}`}>{manualDrill ? 'Clear Fire Alert' : 'Emergency Fire Alert'}</button>
+                <div className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider ${fireAlert ? 'bg-red-500/12 border-red-400/35 text-red-100' : 'bg-white/5 border-white/15 text-gray-300'}`}>Relay {fireAlert ? 'Active' : 'Inactive'}</div>
               </div>
             </div>
 
