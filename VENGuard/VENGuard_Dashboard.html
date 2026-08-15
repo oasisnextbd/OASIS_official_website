@@ -182,6 +182,20 @@ document.addEventListener('click', function(e) {
     }
     /* Reversed palette for the customer day-mode view. */
     .day-mode { filter: invert(1) hue-rotate(180deg); }
+
+    /* Visual emergency alarm for an affected location card. */
+    @keyframes emergency-beep-card {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(239, 68, 68, 0), 0 12px 34px rgba(153, 27, 27, 0.28); }
+      50% { transform: scale(1.025); box-shadow: 0 0 0 8px rgba(248, 113, 113, 0.18), 0 18px 44px rgba(220, 38, 38, 0.52); }
+    }
+    .emergency-beep-card {
+      background: #dc2626 !important;
+      border-color: #fca5a5 !important;
+      animation: emergency-beep-card 0.82s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .emergency-beep-card { animation: none; }
+    }
     
     /* Elegant Custom Scrollbar */
     ::-webkit-scrollbar {
@@ -202,12 +216,32 @@ document.addEventListener('click', function(e) {
 <body class="bg-[#111115] text-[#eceae6] font-inter overflow-x-hidden">
 <div id="root"></div>
 
+<!-- Firebase Realtime Database: live telemetry listener -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback, createElement: h, Fragment } = React;
 const { createRoot } = ReactDOM;
+
+// Firebase web configuration for the VenGuard project. The security of this
+// connection comes from Realtime Database rules and authentication, not from
+// hiding these browser-facing values.
+const firebaseConfig = {
+  apiKey: "AIzaSyCvA5ErSmZ878Yv2xRVPC70tIbiiUG0Eho",
+  authDomain: "venguard-detector-new.firebaseapp.com",
+  databaseURL: "https://venguard-detector-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "venguard-detector-new",
+  storageBucket: "venguard-detector-new.firebasestorage.app",
+  messagingSenderId: "171340212752",
+  appId: "1:171340212752:web:b7e48e36ccbb1ee27c3895"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const telemetryDatabase = firebase.database();
+const DEVICE_ID = 'VG-KTN-01';
 
 // Inline SVG Icons
 const Flame = (props) => (
@@ -723,42 +757,48 @@ function HeroSection() {
   const [manualDrill, setManualDrill] = useState(false);
   const [batteryPercent, setBatteryPercent] = useState(86);
   const [valveOn, setValveOn] = useState(true);
+  const [gasStatus, setGasStatus] = useState('NORMAL');
+  const [relayState, setRelayState] = useState('INACTIVE');
+  const [lastUpdate, setLastUpdate] = useState(null);
 
-  const gasExceeded = detectorOnline && highestGasReading >= gasThreshold;
-  const smokeExceeded = detectorOnline && highestSmokeReading >= smokeThreshold;
-  const fireAlert = detectorOnline && (manualDrill || gasExceeded || smokeExceeded);
+  const gasExceeded = detectorOnline && gasStatus === 'DANGER';
+  const smokeExceeded = false; // The connected detector currently reports MQ-5 gas telemetry only.
+  const fireAlert = detectorOnline && (manualDrill || gasExceeded);
   const allReadingsNormal = detectorOnline && !fireAlert;
 
   const statusMessage = !detectorOnline
     ? `⚫ Detector offline — telemetry paused | Devices Online: 0/6`
     : allReadingsNormal
-      ? `✅ All readings normal — Highest Gas: ${highestGasReading} PPM | Highest Smoke: ${highestSmokeReading.toFixed(1)}% | No active alerts`
-      : `🚨 ALERT: Threshold exceeded — Highest Gas: ${highestGasReading} PPM | Highest Smoke: ${highestSmokeReading.toFixed(1)}% | Fire alert active`;
+      ? `✅ All readings normal — Live telemetry received from ${DEVICE_ID}`
+      : `🚨 ALERT: Gas danger reported by ${DEVICE_ID} — Fire alert active`;
 
-  // Simulated live telemetry. Replace this useEffect later with your actual API / WebSocket data.
+  // Live Firebase telemetry from the ESP32. This replaces the demo timer.
   useEffect(() => {
-    if (!detectorOnline) return;
+    const telemetryRef = telemetryDatabase.ref(`devices/${DEVICE_ID}/telemetry`);
 
-    const interval = setInterval(() => {
-      setHighestGasReading(prev => {
-        const target = manualDrill
-          ? gasThreshold + 18 + Math.random() * 35
-          : 52 + Math.random() * 24;
-        return Math.round(prev * 0.68 + target * 0.32);
-      });
+    const onTelemetry = (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        setDetectorOnline(false);
+        return;
+      }
 
-      setHighestSmokeReading(prev => {
-        const target = manualDrill
-          ? smokeThreshold + 4 + Math.random() * 8
-          : 8 + Math.random() * 6;
-        return parseFloat((prev * 0.72 + target * 0.28).toFixed(1));
-      });
+      setDetectorOnline(true);
+      setHighestGasReading(Number(data.gasRaw || 0));
+      setGasStatus(data.gasStatus === 'DANGER' ? 'DANGER' : 'NORMAL');
+      setValveOn(data.valveState === 'ON');
+      setRelayState(data.relayState === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE');
+      setLastUpdate(data.updatedAt || Date.now());
+    };
 
-      setBatteryPercent(prev => prev <= 15 ? 86 : parseFloat((prev - 0.02).toFixed(2)));
-    }, 1300);
+    const onError = (error) => {
+      console.error('Firebase telemetry connection failed:', error);
+      setDetectorOnline(false);
+    };
 
-    return () => clearInterval(interval);
-  }, [detectorOnline, manualDrill, gasThreshold, smokeThreshold]);
+    telemetryRef.on('value', onTelemetry, onError);
+    return () => telemetryRef.off('value', onTelemetry);
+  }, []);
 
   const handleMouseMove = useCallback((e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -823,12 +863,12 @@ function HeroSection() {
   ];
 
   const locationDevices = [
-    { location: 'Main Kitchen', deviceId: 'VG-KTN-01', status: fireAlert ? 'DANGER' : 'NORMAL', critical: fireAlert },
+    { location: 'Main Kitchen', deviceId: 'VG-KTN-01', status: gasExceeded ? 'DANGER' : 'NORMAL', critical: gasExceeded },
     { location: 'Boiler Room', deviceId: 'VG-BLR-02', status: 'NORMAL', critical: false },
     { location: 'Cylinder Storage', deviceId: 'VG-CYL-03', status: 'NORMAL', critical: false },
     { location: 'Restaurant Line', deviceId: 'VG-RST-04', status: 'NORMAL', critical: false },
     { location: 'Industrial Bay', deviceId: 'VG-IND-05', status: 'NORMAL', critical: false },
-    { location: 'Ventilation Shaft', deviceId: 'VG-VNT-06', status: fireAlert ? 'DANGER' : 'NORMAL', critical: fireAlert },
+    { location: 'Ventilation Shaft', deviceId: 'VG-VNT-06', status: relayState === 'ACTIVE' ? 'DANGER' : 'NORMAL', critical: relayState === 'ACTIVE' },
   ];
 
   const devicesOnline = detectorOnline ? locationDevices.length : 0;
@@ -886,7 +926,7 @@ function HeroSection() {
               <div className="flex flex-col items-start gap-4 mt-8">
                 <button onClick={() => setValveOn(!valveOn)} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors ${valveOn ? 'bg-emerald-500/15 border-emerald-400/35 text-emerald-200' : 'bg-white/5 border-white/15 text-gray-300'}`}>Valve {valveOn ? 'On' : 'Off'}</button>
                 <button onClick={() => setManualDrill(!manualDrill)} disabled={!detectorOnline} className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-colors disabled:opacity-50 ${manualDrill ? 'bg-red-600 border-red-400/50 text-white' : 'bg-red-500/12 border-red-400/35 text-red-100 hover:bg-red-500/20'}`}>{manualDrill ? 'Clear Fire Alert' : 'Emergency Fire Alert'}</button>
-                <div className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider ${fireAlert ? 'bg-red-500/12 border-red-400/35 text-red-100' : 'bg-white/5 border-white/15 text-gray-300'}`}>Relay {fireAlert ? 'Active' : 'Inactive'}</div>
+                <div className={`min-w-[230px] rounded-xl px-7 py-4 border text-sm font-bold font-onest uppercase tracking-wider transition-all duration-300 ${relayState === 'ACTIVE' ? 'bg-white border-white text-black shadow-[0_0_26px_rgba(255,255,255,0.30)]' : 'bg-white/5 border-white/15 text-gray-300'}`}>Relay {relayState === 'ACTIVE' ? 'On' : 'Inactive'}</div>
               </div>
             </div>
 
@@ -923,7 +963,7 @@ function HeroSection() {
               {locationDevices.map((device) => (
                 <div
                   key={device.deviceId}
-                  className={`rounded-3xl p-5 border transition-all duration-300 ${device.critical ? 'bg-gradient-to-br from-red-950/90 to-red-900/45 border-red-400/50 shadow-[0_12px_34px_rgba(185,28,28,0.22)]' : 'bg-gradient-to-br from-emerald-950/85 to-emerald-900/35 border-emerald-400/35 shadow-[0_12px_34px_rgba(6,78,59,0.18)] hover:border-emerald-300/55'}`}
+                  className={`rounded-3xl p-5 border transition-all duration-300 ${device.critical ? 'emergency-beep-card' : 'bg-gradient-to-br from-emerald-950/85 to-emerald-900/35 border-emerald-400/35 shadow-[0_12px_34px_rgba(6,78,59,0.18)] hover:border-emerald-300/55'}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -932,10 +972,10 @@ function HeroSection() {
                     </div>
                     <span className={`w-3 h-3 mt-1 rounded-full ${device.critical ? 'bg-red-400 shadow-[0_0_12px_rgba(248,113,113,0.9)]' : 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]'}`}></span>
                   </div>
-                  <div className={`mt-7 text-2xl font-extrabold font-onest tracking-wide ${device.critical ? 'text-red-200' : 'text-emerald-200'}`}>
+                  <div className={`mt-7 text-2xl font-extrabold font-onest tracking-wide ${device.critical ? 'text-white' : 'text-emerald-200'}`}>
                     {device.status}
                   </div>
-                  <div className={`mt-2 text-xs font-medium ${device.critical ? 'text-red-100/70' : 'text-emerald-100/65'}`}>
+                  <div className={`mt-2 text-xs font-medium ${device.critical ? 'text-white/85' : 'text-emerald-100/65'}`}>
                     {device.critical ? 'Attention required' : 'Safety readings are within range'}
                   </div>
                 </div>
