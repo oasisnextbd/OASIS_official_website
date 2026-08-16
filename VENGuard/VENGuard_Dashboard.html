@@ -230,7 +230,7 @@ const { createRoot } = ReactDOM;
 // connection comes from Realtime Database rules and authentication, not from
 // hiding these browser-facing values.
 const firebaseConfig = {
-  apiKey: "AIzaSyCvA5ErSmZ878Yv2xRVPC70tIbiiUG0Eho",
+  apiKey: "AIzaSyCvA5ErSmZ878Yv2xRVPC70tIbi1UG0Eho",
   authDomain: "venguard-detector-new.firebaseapp.com",
   databaseURL: "https://venguard-detector-new-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "venguard-detector-new",
@@ -748,7 +748,9 @@ function HeroSection() {
   const mousePosRef = useRef(null);
 
   // VenGuard live dashboard states — aligned with your Streamlit dashboard metrics
-  const [detectorOnline, setDetectorOnline] = useState(true);
+  const [detectorOnline, setDetectorOnline] = useState(false);
+  const [lastHeartbeatAt, setLastHeartbeatAt] = useState(0);
+  const [hasReceivedHeartbeat, setHasReceivedHeartbeat] = useState(false);
   const [glowColor, setGlowColor] = useState('electric-blue');
   const [highestGasReading, setHighestGasReading] = useState(66);      // PPM
   const [highestSmokeReading, setHighestSmokeReading] = useState(12.1); // %
@@ -767,7 +769,7 @@ function HeroSection() {
   const allReadingsNormal = detectorOnline && !fireAlert;
 
   const statusMessage = !detectorOnline
-    ? `⚫ Detector offline — telemetry paused | Devices Online: 0/6`
+    ? 'Detector disconnected. Please check your connection.'
     : allReadingsNormal
       ? `✅ All readings normal — Live telemetry received from ${DEVICE_ID}`
       : `🚨 ALERT: Gas danger reported by ${DEVICE_ID} — Fire alert active`;
@@ -784,6 +786,8 @@ function HeroSection() {
       }
 
       setDetectorOnline(true);
+      setLastHeartbeatAt(Date.now());
+      setHasReceivedHeartbeat(true);
       setHighestGasReading(Number(data.gasRaw || 0));
       setGasStatus(data.gasStatus === 'DANGER' ? 'DANGER' : 'NORMAL');
       setValveOn(data.valveState === 'ON');
@@ -799,6 +803,17 @@ function HeroSection() {
     telemetryRef.on('value', onTelemetry, onError);
     return () => telemetryRef.off('value', onTelemetry);
   }, []);
+
+  // The ESP32 publishes a five-second heartbeat. Four missed heartbeats mark
+  // the detector as disconnected without needing any change in the firmware.
+  useEffect(() => {
+    const heartbeatWatchdog = setInterval(() => {
+      if (hasReceivedHeartbeat && Date.now() - lastHeartbeatAt > 20000) {
+        setDetectorOnline(false);
+      }
+    }, 2000);
+    return () => clearInterval(heartbeatWatchdog);
+  }, [hasReceivedHeartbeat, lastHeartbeatAt]);
 
   const handleMouseMove = useCallback((e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -863,12 +878,12 @@ function HeroSection() {
   ];
 
   const locationDevices = [
-    { location: 'Main Kitchen', deviceId: 'VG-KTN-01', status: gasExceeded ? 'DANGER' : 'NORMAL', critical: gasExceeded },
-    { location: 'Boiler Room', deviceId: 'VG-BLR-02', status: 'NORMAL', critical: false },
-    { location: 'Cylinder Storage', deviceId: 'VG-CYL-03', status: 'NORMAL', critical: false },
-    { location: 'Restaurant Line', deviceId: 'VG-RST-04', status: 'NORMAL', critical: false },
-    { location: 'Industrial Bay', deviceId: 'VG-IND-05', status: 'NORMAL', critical: false },
-    { location: 'Ventilation Shaft', deviceId: 'VG-VNT-06', status: relayState === 'ACTIVE' ? 'DANGER' : 'NORMAL', critical: relayState === 'ACTIVE' },
+    { location: 'Main Kitchen', deviceId: 'VG-KTN-01', status: !detectorOnline ? 'DISCONNECTED' : gasExceeded ? 'DANGER' : 'NORMAL', critical: detectorOnline && gasExceeded, disconnected: !detectorOnline },
+    { location: 'Boiler Room', deviceId: 'VG-BLR-02', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Cylinder Storage', deviceId: 'VG-CYL-03', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Restaurant Line', deviceId: 'VG-RST-04', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Industrial Bay', deviceId: 'VG-IND-05', status: !detectorOnline ? 'DISCONNECTED' : 'NORMAL', critical: false, disconnected: !detectorOnline },
+    { location: 'Ventilation Shaft', deviceId: 'VG-VNT-06', status: !detectorOnline ? 'DISCONNECTED' : relayState === 'ACTIVE' ? 'DANGER' : 'NORMAL', critical: detectorOnline && relayState === 'ACTIVE', disconnected: !detectorOnline },
   ];
 
   const devicesOnline = detectorOnline ? locationDevices.length : 0;
@@ -950,20 +965,19 @@ function HeroSection() {
                 <p className="text-gray-400 text-sm mt-2">Live VenGuard units across your protected locations.</p>
               </div>
 
-              <button
-                onClick={toggleMasterPower}
-                className={`rounded-full px-5 py-3 border flex items-center gap-2 text-xs font-bold font-mono tracking-wide transition-all duration-300 ${detectorOnline ? 'bg-white/5 text-white border-white/15 hover:border-red-400/50' : 'bg-red-500/10 text-red-200 border-red-500/30'}`}
+              <div
+                className={`rounded-full px-5 py-3 border flex items-center gap-2 text-xs font-bold font-mono tracking-wide ${detectorOnline ? 'bg-white/5 text-white border-white/15' : 'bg-red-500/15 text-red-100 border-red-400/40'}`}
               >
-                <span className={`w-2 h-2 rounded-full ${detectorOnline ? fireAlert ? 'bg-red-500 animate-ping' : 'bg-emerald-400 animate-pulse' : 'bg-gray-500'}`}></span>
-                Detector Network {detectorOnline ? 'ON' : 'OFF'}
-              </button>
+                <span className={`w-2 h-2 rounded-full ${detectorOnline ? fireAlert ? 'bg-red-500 animate-ping' : 'bg-emerald-400 animate-pulse' : 'bg-red-300'}`}></span>
+                Detector Network {detectorOnline ? 'ONLINE' : 'DISCONNECTED'}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {locationDevices.map((device) => (
                 <div
                   key={device.deviceId}
-                  className={`rounded-3xl p-5 border transition-all duration-300 ${device.critical ? 'emergency-beep-card' : 'bg-gradient-to-br from-emerald-950/85 to-emerald-900/35 border-emerald-400/35 shadow-[0_12px_34px_rgba(6,78,59,0.18)] hover:border-emerald-300/55'}`}
+                  className={`rounded-3xl p-5 border transition-all duration-300 ${device.critical ? 'emergency-beep-card' : device.disconnected ? 'bg-white/[0.04] border-white/10 opacity-75' : 'bg-gradient-to-br from-emerald-950/85 to-emerald-900/35 border-emerald-400/35 shadow-[0_12px_34px_rgba(6,78,59,0.18)] hover:border-emerald-300/55'}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -975,8 +989,8 @@ function HeroSection() {
                   <div className={`mt-7 text-2xl font-extrabold font-onest tracking-wide ${device.critical ? 'text-white' : 'text-emerald-200'}`}>
                     {device.status}
                   </div>
-                  <div className={`mt-2 text-xs font-medium ${device.critical ? 'text-white/85' : 'text-emerald-100/65'}`}>
-                    {device.critical ? 'Attention required' : 'Safety readings are within range'}
+                  <div className={`mt-2 text-xs font-medium ${device.critical ? 'text-white/85' : device.disconnected ? 'text-gray-400' : 'text-emerald-100/65'}`}>
+                    {device.critical ? 'Attention required' : device.disconnected ? 'Waiting for live telemetry' : 'Safety readings are within range'}
                   </div>
                 </div>
               ))}
