@@ -1,0 +1,679 @@
+<title>VenGuard Connected</title>
+<meta name="theme-color" content="#0B2A4A">
+<meta name="description" content="VenGuard Connected: see your VenGuard, close the gas from your phone and get alerts.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-first single column with a bottom tab bar; on wide screens the tabs move to a top bar
+   and kitchens sit in a two-column grid. Brand from the VenGuard Brand Guidelines.
+   Here red / amber / green ARE the safety states (gas detected, attention, safe) and are used for nothing else. */
+:root {
+  --navy: #0B2A4A;
+  --teal: #12B5A6;
+  --teal-ink: #0A7F76;
+  --bg: #EAF2F6;
+  --card: #FFFFFF;
+  --card-2: #F4F8FA;
+  --ink: #0A1622;
+  --muted: #5B6B7A;
+  --line: #D5E2EA;
+  --on-navy: #FFFFFF;
+  --safe: #138A4B;     --safe-bg: #E3F4EA;
+  --warn: #9A5B00;     --warn-bg: #FFF1D6;
+  --danger: #B42318;   --danger-bg: #FDE7E5;
+  --off: #5B6B7A;      --off-bg: #E9EEF2;
+  --font: "Noto Sans Bengali", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-en: "Inter", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --navy: #DCE8F2; --bg: #06162A; --card: #0D2340; --card-2: #112A4B; --ink: #E8F0F5; --muted: #9DB0C0; --line: #1E3A5C; --on-navy: #06162A;
+    --teal-ink: #4FD6C8; --safe: #5ED39A; --safe-bg: #0F3A2A; --warn: #F2B65A; --warn-bg: #3A2A0E; --danger: #FF8A80; --danger-bg: #44171A; --off: #9DB0C0; --off-bg: #1A3150;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --navy: #DCE8F2; --bg: #06162A; --card: #0D2340; --card-2: #112A4B; --ink: #E8F0F5; --muted: #9DB0C0; --line: #1E3A5C; --on-navy: #06162A;
+  --teal-ink: #4FD6C8; --safe: #5ED39A; --safe-bg: #0F3A2A; --warn: #F2B65A; --warn-bg: #3A2A0E; --danger: #FF8A80; --danger-bg: #44171A; --off: #9DB0C0; --off-bg: #1A3150;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font); }
+html[lang="en"] body { font-family: var(--font-en); line-height: 1.5; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 8px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--card); border-bottom: 1px solid var(--line); }
+.top .in { max-width: 1040px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+.logo { display: flex; align-items: center; gap: 8px; font: 800 1.15rem/1 var(--font-en); color: var(--navy); letter-spacing: -.01em; }
+.logo svg { width: 26px; height: 26px; color: var(--navy); }
+.logo small { font: 600 .72rem/1 var(--font-en); color: var(--teal-ink); border: 1px solid currentColor; padding: 2px 6px; border-radius: 999px; }
+.tabs-top { display: none; margin-left: 24px; gap: 4px; }
+.tabs-top button { all: unset; cursor: pointer; padding: 8px 12px; border-radius: 10px; font-weight: 600; color: var(--muted); }
+.tabs-top button[aria-current="page"] { background: var(--card-2); color: var(--navy); }
+.lang { margin-left: auto; display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; font-size: .88rem; }
+.lang button { all: unset; cursor: pointer; padding: 5px 10px; }
+.lang button[aria-pressed="true"] { background: var(--navy); color: var(--on-navy); }
+
+main { max-width: 1040px; margin: 0 auto; padding-block: 16px 112px; padding-inline: 16px; }
+h1 { font-size: 1.5rem; line-height: 1.3; margin: 4px 0 4px; color: var(--navy); text-wrap: balance; }
+h2 { font-size: 1.1rem; margin: 0 0 10px; color: var(--navy); }
+.lead { color: var(--muted); margin: 0 0 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.stack { display: grid; gap: 14px; }
+.grid { display: grid; gap: 14px; }
+@media (min-width: 760px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+
+/* bottom tabs */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--card); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tabs button { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 2px; padding: 9px 4px 10px; font-size: .78rem; font-weight: 600; color: var(--muted); position: relative; }
+.tabs button svg { width: 24px; height: 24px; }
+.tabs button[aria-current="page"] { color: var(--teal-ink); }
+.tabs .badge { position: absolute; top: 4px; left: calc(50% + 6px); min-width: 18px; height: 18px; border-radius: 9px; background: var(--danger); color: #fff; font-size: .7rem; display: grid; place-items: center; padding: 0 5px; }
+@media (min-width: 760px) { .tabs { display: none; } .tabs-top { display: flex; } main { padding-bottom: 48px; } }
+
+/* status */
+.state { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 6px 12px 6px 8px; border-radius: 999px; font-size: .95rem; }
+.state svg { width: 20px; height: 20px; flex: none; }
+.st-safe { color: var(--safe); background: var(--safe-bg); }
+.st-warn { color: var(--warn); background: var(--warn-bg); }
+.st-danger { color: var(--danger); background: var(--danger-bg); }
+.st-off { color: var(--off); background: var(--off-bg); }
+
+.kitchen { display: grid; gap: 12px; text-decoration: none; color: inherit; cursor: pointer; text-align: left; width: 100%; font: inherit; }
+.kitchen:hover { border-color: var(--teal-ink); }
+.kitchen.alarm { border: 2px solid var(--danger); }
+.krow { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.kname { font-weight: 700; font-size: 1.1rem; color: var(--navy); }
+.ksub { color: var(--muted); font-size: .9rem; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.fact { background: var(--card-2); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.fact .l { font-size: .75rem; color: var(--muted); }
+.fact .v { font-weight: 700; color: var(--navy); overflow-wrap: anywhere; }
+
+/* device page */
+.back { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--teal-ink); font-weight: 600; margin-bottom: 6px; }
+.hero-state { display: grid; gap: 14px; }
+.big-state { display: flex; align-items: center; gap: 14px; }
+.big-state .ring { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.big-state .ring svg { width: 34px; height: 34px; }
+.big-state h1 { margin: 0; }
+.gauge { display: grid; gap: 6px; }
+.gauge .bar { position: relative; height: 14px; background: var(--card-2); border-radius: 7px; overflow: hidden; }
+.gauge .fill { position: absolute; inset: 0 auto 0 0; background: var(--teal-ink); border-radius: 0 7px 7px 0; transition: width .6s; }
+.gauge .fill.hot { background: var(--danger); }
+.gauge .mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+.gauge .scale { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); }
+
+.close-btn { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; border-radius: 16px; background: var(--navy); color: var(--on-navy); font-weight: 700; font-size: 1.1rem; position: relative; overflow: hidden; text-align: center; padding: 10px 16px; }
+.close-btn svg { width: 24px; height: 24px; flex: none; }
+.close-btn[disabled] { opacity: .55; cursor: not-allowed; }
+.close-btn .hold { position: absolute; inset: 0 auto 0 0; width: 0; background: rgba(18,181,166,.45); }
+.note { font-size: .9rem; color: var(--muted); }
+.note strong { color: var(--ink); }
+.cmd { border-radius: 14px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.cmd svg { width: 22px; height: 22px; flex: none; margin-top: 2px; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } .gauge .fill { transition: none; } }
+
+.timeline { list-style: none; margin: 0; padding: 0; }
+.timeline li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.timeline li:last-child { border-bottom: 0; }
+.timeline svg { width: 22px; height: 22px; }
+.timeline time { color: var(--muted); font-size: .82rem; white-space: nowrap; }
+
+/* building */
+.units { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.unit { all: unset; box-sizing: border-box; cursor: pointer; border-radius: 14px; padding: 12px; background: var(--card); border: 1px solid var(--line); display: grid; gap: 6px; }
+.unit:hover { border-color: var(--teal-ink); }
+.unit strong { color: var(--navy); }
+.unit.alarm { border: 2px solid var(--danger); }
+.unit .state { font-size: .8rem; padding: 3px 9px 3px 6px; }
+.unit .state svg { width: 16px; height: 16px; }
+.summary { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* forms */
+.btn { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px 20px; border-radius: 999px; font-weight: 700; background: var(--teal-ink); color: #fff; text-align: center; }
+:root[data-theme="dark"] .btn { color: #06162A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #06162A; } }
+.btn.ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--line); }
+.btn.block { width: 100%; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+label.f { display: grid; gap: 6px; font-weight: 600; color: var(--navy); }
+label.f input { font-weight: 400; color: var(--ink); min-height: 50px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--card); width: 100%; }
+label.f .hint { font-weight: 400; color: var(--muted); font-size: .85rem; }
+.err { color: var(--danger); font-weight: 600; font-size: .9rem; }
+.contact { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.contact:last-child { border-bottom: 0; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
+.toggle input { width: 22px; height: 22px; accent-color: var(--teal-ink); }
+.plan { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+.pill { display: inline-block; font-size: .8rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; background: var(--card-2); color: var(--navy); }
+
+/* sheet (confirm) */
+.scrim { position: fixed; inset: 0; background: rgba(4,14,28,.5); z-index: 30; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; background: var(--card); border-radius: 22px 22px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; max-width: 560px; margin: 0 auto; box-shadow: 0 -10px 30px rgba(4,14,28,.25); }
+.sheet h2 { font-size: 1.25rem; margin: 0; }
+.alarm-banner { background: var(--danger); color: #fff; border-radius: 16px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+.alarm-banner svg { width: 26px; height: 26px; flex: none; }
+.alarm-banner strong { display: block; font-size: 1.05rem; }
+.demo { border: 1.5px dashed var(--teal-ink); border-radius: 14px; padding: 10px 14px; font-size: .9rem; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.demo .btn { min-height: 38px; padding: 6px 14px; font-size: .88rem; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(88px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--card); padding: 10px 16px; border-radius: 999px; z-index: 40; font-size: .92rem; max-width: calc(100% - 32px); text-align: center; }
+.signin { max-width: 420px; margin: 24px auto 0; }
+.signin .logo { font-size: 1.5rem; margin-bottom: 8px; }
+</style>
+
+<header class="top"><div class="in">
+  <div class="logo"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3 5 7v8c0 7 4.7 11.6 11 14 6.3-2.4 11-7 11-14V7L16 3Z"/><path d="M9.5 16.5c2.2-2.6 4.3-2.6 6.5 0s4.3 2.6 6.5 0" stroke="#12B5A6"/></svg>VenGuard <small>Connected</small></div>
+  <nav class="tabs-top" id="tabsTop" aria-label="Main" hidden></nav>
+  <div class="lang" role="group" aria-label="Language"><button data-lang="bn" lang="bn">বাংলা</button><button data-lang="en" lang="en">EN</button></div>
+</div></header>
+<main id="main"></main>
+<nav class="tabs" id="tabs" aria-label="Main" hidden></nav>
+<div id="overlay"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  /* =====================================================================
+     Strings (Bangla first). Founders: have a native proofreader check these.
+     ===================================================================== */
+  var STR = {
+    bn: {
+      home: "হোম", alerts: "সতর্কতা", family: "পরিবার", account: "অ্যাকাউন্ট",
+      signinTitle: "আপনার VenGuard দেখুন", signinLead: "মোবাইল নম্বর দিয়ে ঢুকুন। আমরা একটি কোড SMS করব।",
+      phone: "মোবাইল নম্বর", phoneHint: "যেমন: ০১৭১২৩৪৫৬৭৮", sendCode: "কোড পাঠান", code: "৬ সংখ্যার কোড", verify: "ঢুকুন",
+      badPhone: "সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন।", badCode: "কোডটি মেলেনি। আবার চেষ্টা করুন।", codeSent: "{phone} নম্বরে কোড পাঠানো হয়েছে।",
+      demoCode: "ডেমো: যেকোনো নম্বর, কোড ১২৩৪৫৬",
+      myKitchens: "আমার রান্নাঘর", hello: "আসসালামু আলাইকুম, {name}",
+      safe: "নিরাপদ · গ্যাস চালু", closedSafe: "গ্যাস বন্ধ আছে", leak: "গ্যাস লিক! ভালভ বন্ধ হয়েছে", leakOpen: "গ্যাস পাওয়া গেছে",
+      offline: "সংযোগ নেই", lowBatt: "ব্যাটারি কম", attention: "দেখা দরকার",
+      gas: "গ্যাস", valve: "ভালভ", battery: "ব্যাটারি", lastSeen: "শেষ খবর",
+      vOpen: "খোলা", vClosed: "বন্ধ", vUnknown: "জানা নেই",
+      gasLevel: "বাতাসে গ্যাসের মাত্রা", gasScale: "সীমা {n}% LEL — এর ওপরে ৭ সেকেন্ড থাকলে ভালভ নিজেই বন্ধ হয়",
+      closeNow: "এখনই গ্যাস বন্ধ করুন", holdToClose: "বন্ধ করতে চেপে ধরে রাখুন",
+      closeSheetTitle: "{name}-এর গ্যাস বন্ধ করবেন?",
+      closeSheetBody: "ভালভ বন্ধ হলে চুলা নিভে যাবে। গ্যাস আবার চালু করতে কাউকে চুলার কাছে গিয়ে লিভার তুলতে হবে — অ্যাপ থেকে চালু করা যায় না।",
+      confirmClose: "হ্যাঁ, গ্যাস বন্ধ করুন", cancel: "থাক",
+      sending: "অনুরোধ পাঠানো হচ্ছে…", waiting: "VenGuard-এর উত্তরের অপেক্ষা…", waitingNote: "যন্ত্র নিশ্চিত না করা পর্যন্ত আমরা “বন্ধ” দেখাব না।",
+      confirmed: "বন্ধ নিশ্চিত হয়েছে · {time}", confirmedNote: "ভালভ নিজে জানিয়েছে যে গ্যাস বন্ধ।",
+      noAnswer: "এখনো উত্তর আসেনি", noAnswerNote: "যন্ত্রটি হয়তো অফলাইনে আছে। অনুরোধটি ৩০ মিনিট অপেক্ষায় থাকবে; এর মধ্যে সংযোগ পেলেই ভালভ বন্ধ হবে। গ্যাস লিক হলে VenGuard ইন্টারনেট ছাড়াই নিজে থেকে বন্ধ করে।",
+      alreadyClosed: "ভালভ বন্ধ আছে", reopenHow: "গ্যাস আবার চালু করতে: জানালা খুলুন, গ্যাসের গন্ধ নেই নিশ্চিত হোন, তারপর ভালভের লিভার “ক্লিক” না হওয়া পর্যন্ত তুলুন। নিরাপত্তার জন্য অ্যাপ থেকে চালু করা যায় না।",
+      offlineNote: "এই VenGuard {ago} থেকে ইন্টারনেটে নেই। সুরক্ষা তবুও চালু আছে — গ্যাস লিক হলে এটি নিজেই ভালভ বন্ধ করবে। ওয়াই-ফাই বা বিদ্যুৎ ঠিক আছে কিনা দেখুন।",
+      closeOffline: "অফলাইনে থাকলেও অনুরোধ পাঠান",
+      history: "সাম্প্রতিক ঘটনা", seeAll: "সব দেখুন",
+      ev_leak: "গ্যাস পাওয়া গেছে, ভালভ নিজেই বন্ধ করেছে", ev_remote_close: "{who} অ্যাপ থেকে গ্যাস বন্ধ করেছেন", ev_reset: "চুলার কাছে লিভার তুলে গ্যাস চালু করা হয়েছে",
+      ev_test: "পরীক্ষা বোতাম চাপা হয়েছে", ev_batt: "ব্যাটারি কম ({n}%)", ev_offline: "ইন্টারনেট সংযোগ চলে গেছে", ev_online: "আবার সংযুক্ত",
+      alarmBanner: "{name}: গ্যাস পাওয়া গেছে", alarmBannerBody: "ভালভ নিজেই গ্যাস বন্ধ করেছে। কেউ বাসায় থাকলে জানালা খুলতে বলুন, সুইচ বা আগুন জ্বালাবেন না। দরকার হলে ১০২ / ৯৯৯।",
+      building: "ভবন", units: "ইউনিট", allUnits: "সব ইউনিট", needsAttention: "দেখা দরকার", unitsSafe: "{n}টি নিরাপদ",
+      alertsTitle: "সতর্কতা", alertsLead: "গত ৩০ দিনের সব ঘটনা।", noAlerts: "কোনো সতর্কতা নেই। সব ঠিক আছে।",
+      familyTitle: "যাঁরা সতর্কবার্তা পাবেন", familyLead: "গ্যাস পাওয়া গেলে, ভালভ বন্ধ হলে বা যন্ত্র অফলাইন হলে এঁরা SMS পাবেন। কানেক্টেড প্ল্যানে ৩ জন পর্যন্ত।",
+      addPerson: "যোগ করুন", name: "নাম", sms: "SMS", remove: "সরান", saved: "সংরক্ষিত হয়েছে", max3: "৩ জন পর্যন্ত যোগ করা যায়।",
+      pushTitle: "এই ফোনে নোটিফিকেশন", pushOn: "চালু", pushOff: "চালু করুন",
+      accountTitle: "অ্যাকাউন্ট", plan: "কানেক্টেড প্ল্যান", activeUntil: "{date} পর্যন্ত চালু", expired: "মেয়াদ শেষ", renew: "নবায়ন করুন · ৳৫৫০ / বছর",
+      renewNote: "bKash, Nagad বা কার্ডে দিন। মেয়াদ শেষ হলেও মূল সুরক্ষা আগের মতোই কাজ করবে — শুধু রিমোট বন্ধ ও SMS বন্ধ থাকবে।",
+      planOff: "কানেক্টেড প্ল্যান চালু নেই", planOffNote: "রিমোট বন্ধ ও SMS সতর্কতার জন্য প্ল্যান চালু করুন। মূল সুরক্ষা প্ল্যান ছাড়াই কাজ করে।",
+      addDevice: "নতুন VenGuard যোগ করুন", addDeviceNote: "ভালভের গায়ে QR স্টিকারে ডিভাইস আইডি ও কোড আছে।", deviceId: "ডিভাইস আইডি", claimCode: "স্টিকারের কোড", add: "যোগ করুন",
+      signout: "বের হন", help: "সাহায্য দরকার? WhatsApp-এ লিখুন",
+      demoBar: "ডেমো: উদাহরণ তথ্য। আসল যন্ত্র যুক্ত হলে এখানে আপনার রান্নাঘর দেখাবে।", simulateLeak: "লিক অনুকরণ করুন", simulateReset: "লিভার রিসেট অনুকরণ", toggleOffline: "অফলাইন অনুকরণ",
+      justNow: "এইমাত্র", minAgo: "{n} মিনিট আগে", hrAgo: "{n} ঘণ্টা আগে", dayAgo: "{n} দিন আগে",
+      you: "আপনি", planInactiveClose: "রিমোট বন্ধ কানেক্টেড প্ল্যানের অংশ।"
+    },
+    en: {
+      home: "Home", alerts: "Alerts", family: "Family", account: "Account",
+      signinTitle: "See your VenGuard", signinLead: "Sign in with your mobile number. We'll text you a code.",
+      phone: "Mobile number", phoneHint: "For example: 01712345678", sendCode: "Send code", code: "6-digit code", verify: "Sign in",
+      badPhone: "Enter a valid Bangladesh mobile number.", badCode: "That code didn't match. Try again.", codeSent: "Code sent to {phone}.",
+      demoCode: "Demo: any number, code 123456",
+      myKitchens: "My kitchens", hello: "Hello, {name}",
+      safe: "Safe · gas on", closedSafe: "Gas is off", leak: "Gas leak! Valve closed", leakOpen: "Gas detected",
+      offline: "Not connected", lowBatt: "Battery low", attention: "Needs attention",
+      gas: "Gas", valve: "Valve", battery: "Battery", lastSeen: "Last update",
+      vOpen: "Open", vClosed: "Closed", vUnknown: "Unknown",
+      gasLevel: "Gas in the air", gasScale: "Limit {n}% LEL — above it for 7 seconds, the valve closes by itself",
+      closeNow: "Close the gas now", holdToClose: "Press and hold to close",
+      closeSheetTitle: "Close the gas at {name}?",
+      closeSheetBody: "The stove will go out when the valve closes. To turn gas back on, someone must lift the lever at the stove. The app can't turn it back on.",
+      confirmClose: "Yes, close the gas", cancel: "Cancel",
+      sending: "Sending request…", waiting: "Waiting for your VenGuard…", waitingNote: "We only show “closed” once the valve confirms it.",
+      confirmed: "Closed and confirmed · {time}", confirmedNote: "The valve reported that the gas is off.",
+      noAnswer: "No answer yet", noAnswerNote: "The device may be offline. The request stays queued for 30 minutes; if the device reconnects in that time, the valve closes. If gas leaks, VenGuard closes by itself without the internet.",
+      alreadyClosed: "The valve is closed", reopenHow: "To turn gas back on: open the windows, make sure there's no gas smell, then lift the valve lever until it clicks. For safety, the app can't turn gas on.",
+      offlineNote: "This VenGuard has been off the internet since {ago}. It still protects the kitchen and will close the valve by itself if it senses gas. Check the Wi-Fi and power.",
+      closeOffline: "Send the request anyway",
+      history: "Recent events", seeAll: "See all",
+      ev_leak: "Gas detected, valve closed by itself", ev_remote_close: "{who} closed the gas from the app", ev_reset: "Gas turned back on with the lever at the stove",
+      ev_test: "Test button pressed", ev_batt: "Battery low ({n}%)", ev_offline: "Lost internet connection", ev_online: "Back online",
+      alarmBanner: "{name}: gas detected", alarmBannerBody: "The valve shut the gas off by itself. If someone is home, ask them to open the windows and not use switches or flames. If needed, call 102 / 999.",
+      building: "Building", units: "Units", allUnits: "All units", needsAttention: "Needs attention", unitsSafe: "{n} safe",
+      alertsTitle: "Alerts", alertsLead: "Everything from the last 30 days.", noAlerts: "No alerts. Everything is fine.",
+      familyTitle: "Who gets alerts", familyLead: "These people get an SMS when gas is detected, the valve closes or a device goes offline. Up to 3 people on the Connected plan.",
+      addPerson: "Add", name: "Name", sms: "SMS", remove: "Remove", saved: "Saved", max3: "You can add up to 3 people.",
+      pushTitle: "Notifications on this phone", pushOn: "On", pushOff: "Turn on",
+      accountTitle: "Account", plan: "Connected plan", activeUntil: "Active until {date}", expired: "Expired", renew: "Renew · BDT 550 / year",
+      renewNote: "Pay by bKash, Nagad or card. If the plan ends, core safety keeps working as before; only remote close and SMS stop.",
+      planOff: "Connected plan is off", planOffNote: "Turn on the plan for remote close and SMS alerts. Core safety works without it.",
+      addDevice: "Add a VenGuard", addDeviceNote: "The device ID and code are on the QR sticker on the valve.", deviceId: "Device ID", claimCode: "Sticker code", add: "Add",
+      signout: "Sign out", help: "Need help? Message us on WhatsApp",
+      demoBar: "Demo with example data. Once a real device is added, your kitchens appear here.", simulateLeak: "Simulate a leak", simulateReset: "Simulate lever reset", toggleOffline: "Simulate offline",
+      justNow: "just now", minAgo: "{n} min ago", hrAgo: "{n} h ago", dayAgo: "{n} days ago",
+      you: "You", planInactiveClose: "Remote close is part of the Connected plan."
+    }
+  };
+  var LEL_LIMIT = 20;
+  var CFG = window.VG_APP_CONFIG || {}; // { firebase: {...}, whatsapp: "8801..." } — see backend/connected/README.md
+
+  /* ===================== helpers ===================== */
+  var S = { lang: "bn", user: null, sites: [], devices: {}, events: [], view: "home", device: null, site: null, cmd: null, signin: { step: "phone" } };
+  try { S.lang = localStorage.getItem("vg_lang") === "en" ? "en" : "bn"; } catch (e) {}
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var BN = "০১২৩৪৫৬৭৮৯";
+  function digits(s) { s = String(s); return S.lang === "bn" ? s.replace(/[0-9]/g, function (d) { return BN[d]; }) : s; }
+  function t(k, v) { var s = (STR[S.lang][k] || STR.en[k] || k); if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+  function ago(ts) {
+    var m = Math.round((Date.now() - ts) / 6e4);
+    if (m < 1) return t("justNow"); if (m < 60) return digits(t("minAgo", { n: m }));
+    var h = Math.round(m / 60); if (h < 48) return digits(t("hrAgo", { n: h })); return digits(t("dayAgo", { n: Math.round(h / 24) }));
+  }
+  function clock(ts) { return digits(new Date(ts).toLocaleTimeString(S.lang === "bn" ? "bn-BD" : "en-GB", { hour: "2-digit", minute: "2-digit", hour12: false }).replace(/[০-৯]/g, function (d) { return BN.indexOf(d); })); }
+  function date(ts) { var d = new Date(ts); return digits(d.getDate() + " " + d.toLocaleDateString(S.lang === "bn" ? "bn-BD" : "en-GB", { month: "long" }) + " " + d.getFullYear()); }
+  function toast(m) { var x = $("#toast"); x.textContent = m; x.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { x.hidden = true; }, 2800); }
+  function normPhone(v) { var d = String(v || "").replace(/[০-৯]/g, function (c) { return BN.indexOf(c); }).replace(/[^\d]/g, "").replace(/^880/, "0").replace(/^88(?=01)/, ""); return /^01[3-9]\d{8}$/.test(d) ? d : ""; }
+
+  var I = {
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>',
+    valve: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14h5M17 14h5"/><rect x="7" y="10" width="10" height="8" rx="1.5"/><path d="M12 10V6M8.5 4h7"/></svg>',
+    off: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M10 5.1A15 15 0 0 1 22 8.8M5 12.5a10 10 0 0 1 3.5-2M12 10a10 10 0 0 1 7 2.5M8.5 16.4a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/><path d="M3 3l18 18"/></svg>',
+    batt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2M6 10v4"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>',
+    bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2Z"/><path d="M10 21h4"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3 6"/></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    back: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+    spin: '<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    hand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V5.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.5 15.5a1.6 1.6 0 0 1 2.4-2l3.1 2.5"/></svg>',
+    building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>'
+  };
+
+  /* Device state → one of four safety states, with icon + words (never colour alone). */
+  function status(d) {
+    if (!d.online) return { cls: "st-off", icon: I.off, text: t("offline"), rank: 2 };
+    if (d.alarm && d.valve === "closed") return { cls: "st-danger", icon: I.alert, text: t("leak"), rank: 0 };
+    if (d.alarm) return { cls: "st-danger", icon: I.alert, text: t("leakOpen"), rank: 0 };
+    if (Math.min(d.detBatt, d.valveBatt) < 20) return { cls: "st-warn", icon: I.batt, text: t("lowBatt"), rank: 1 };
+    if (d.valve === "closed") return { cls: "st-warn", icon: I.valve, text: t("closedSafe"), rank: 1 };
+    return { cls: "st-safe", icon: I.shield, text: t("safe"), rank: 3 };
+  }
+  function chip(d) { var s = status(d); return '<span class="state ' + s.cls + '">' + s.icon + esc(s.text) + "</span>"; }
+
+  /* =====================================================================
+     Data source. Demo simulator when no backend is configured;
+     Firebase (backend/connected) when VG_APP_CONFIG.firebase is set.
+     ===================================================================== */
+  var DS = CFG.firebase ? FirebaseSource(CFG.firebase) : DemoSource();
+
+  function DemoSource() {
+    var now = Date.now(), listeners = [];
+    var sites = [
+      { id: "s-home", name: { bn: "বাসা · মিরপুর ১১", en: "Home · Mirpur 11" }, type: "home", plan: { active: true, until: now + 214 * 864e5 }, contacts: [{ name: "Rahim (husband)", phone: "01711000111", sms: true }, { name: "Ammu", phone: "01811000222", sms: true }] },
+      { id: "s-mother", name: { bn: "আম্মুর বাসা · ধানমন্ডি", en: "Mother's flat · Dhanmondi" }, type: "home", plan: { active: true, until: now + 214 * 864e5 }, contacts: [] },
+      { id: "s-tower", name: { bn: "রোজ ভিউ টাওয়ার · উত্তরা", en: "Rose View Tower · Uttara" }, type: "building", plan: { active: true, until: now + 300 * 864e5 }, contacts: [{ name: "Caretaker Jamal", phone: "01911000333", sms: true }] }
+    ];
+    var devices = {
+      "VG-H1": dev("VG-H1", "s-home", { bn: "রান্নাঘর", en: "Kitchen" }, { gas: 3, detBatt: 86, valveBatt: 78 }),
+      "VG-M1": dev("VG-M1", "s-mother", { bn: "রান্নাঘর", en: "Kitchen" }, { gas: 2, detBatt: 14, valveBatt: 61 })
+    };
+    var flats = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"];
+    flats.forEach(function (f, i) {
+      var o = { gas: 1 + (i % 4), detBatt: 40 + (i * 7) % 55, valveBatt: 50 + (i * 11) % 45 };
+      if (f === "5A") o.online = false, o.lastSeen = now - 5 * 36e5;
+      if (f === "2B") o.valve = "closed";
+      devices["VG-T" + f] = dev("VG-T" + f, "s-tower", { bn: "ফ্ল্যাট " + f.replace(/\d/g, function (d) { return BN[d]; }), en: "Flat " + f }, o);
+    });
+    var events = [
+      ev("VG-H1", "reset", now - 26 * 36e5), ev("VG-H1", "leak", now - 26.2 * 36e5), ev("VG-M1", "batt", now - 3 * 36e5, { n: 14 }),
+      ev("VG-T5A", "offline", now - 5 * 36e5), ev("VG-T2B", "remote_close", now - 2 * 36e5, { who: "Caretaker Jamal" }), ev("VG-H1", "test", now - 6 * 864e5)
+    ];
+    function dev(id, site, label, o) { return { id: id, site: site, label: label, gas: o.gas, valve: o.valve || "open", online: o.online !== false, alarm: false, detBatt: o.detBatt, valveBatt: o.valveBatt, lastSeen: o.lastSeen || now - 40e3 }; }
+    function ev(d, type, at, data) { return { device: d, type: type, at: at, data: data || {} }; }
+    function emit() { listeners.forEach(function (f) { f({ sites: sites, devices: devices, events: events.slice().sort(function (a, b) { return b.at - a.at; }) }); }); }
+    // gentle live readings
+    setInterval(function () {
+      Object.keys(devices).forEach(function (k) { var d = devices[k]; if (!d.online) return; d.lastSeen = Date.now(); if (!d.alarm) d.gas = Math.max(0, Math.min(8, d.gas + (Math.random() - .5) * 1.5)); });
+      emit();
+    }, 4000);
+    return {
+      demo: true,
+      sendCode: function (phone) { return Promise.resolve(phone); },
+      verify: function (code) { return code.replace(/[০-৯]/g, function (c) { return BN.indexOf(c); }) === "123456" ? Promise.resolve({ name: "Fatema", phone: "01712345678" }) : Promise.reject(new Error(t("badCode"))); },
+      subscribe: function (f) { listeners.push(f); emit(); },
+      requestClose: function (id) {
+        var d = devices[id], cid = "c" + Date.now();
+        // Simulates the round trip: server queues → device picks it up on its next report → valve closes → device confirms.
+        setTimeout(function () {
+          if (!d.online) return; // stays queued until the device reconnects
+          d.valve = "closed"; events.push(ev(id, "remote_close", Date.now(), { who: t("you") }));
+          DS._ack(cid); emit();
+        }, 2500 + Math.random() * 2500);
+        return Promise.resolve(cid);
+      },
+      saveContacts: function (siteId, list) { sites.filter(function (s) { return s.id === siteId; })[0].contacts = list; emit(); return Promise.resolve(); },
+      claimDevice: function () { return Promise.reject(new Error(S.lang === "bn" ? "ডেমোতে নতুন যন্ত্র যোগ করা যায় না।" : "Adding devices is off in the demo.")); },
+      renew: function () { return Promise.reject(new Error(S.lang === "bn" ? "ডেমোতে পেমেন্ট বন্ধ।" : "Payments are off in the demo.")); },
+      signOut: function () { return Promise.resolve(); },
+      simulateLeak: function (id) { var d = devices[id]; d.gas = 34; d.alarm = true; emit(); setTimeout(function () { d.valve = "closed"; events.push(ev(id, "leak", Date.now())); emit(); }, 1200); setTimeout(function () { d.gas = 9; emit(); }, 9000); },
+      simulateReset: function (id) { var d = devices[id]; d.alarm = false; d.valve = "open"; d.gas = 2; events.push(ev(id, "reset", Date.now())); emit(); },
+      toggleOffline: function (id) { var d = devices[id]; d.online = !d.online; d.lastSeen = Date.now(); events.push(ev(id, d.online ? "online" : "offline", Date.now())); emit(); },
+      _ack: function () {}
+    };
+  }
+
+  /* Live backend. Loads the Firebase SDK only when configured (see backend/connected). */
+  function FirebaseSource(conf) {
+    var ready = new Promise(function (res, rej) {
+      var v = "10.12.2", base = "https://www.gstatic.com/firebasejs/" + v + "/";
+      var libs = ["firebase-app-compat.js", "firebase-auth-compat.js", "firebase-firestore-compat.js", "firebase-functions-compat.js"];
+      (function next(i) {
+        if (i === libs.length) { firebase.initializeApp(conf); res(); return; }
+        var s = document.createElement("script"); s.src = base + libs[i]; s.onload = function () { next(i + 1); }; s.onerror = rej; document.head.appendChild(s);
+      })(0);
+    });
+    var confirmation = null, unsub = [];
+    function fn(name) { return firebase.app().functions("asia-south1").httpsCallable(name); }
+    return {
+      demo: false,
+      sendCode: function (phone) {
+        return ready.then(function () {
+          if (!window._vgCaptcha) window._vgCaptcha = new firebase.auth.RecaptchaVerifier("captcha", { size: "invisible" });
+          return firebase.auth().signInWithPhoneNumber("+88" + phone, window._vgCaptcha);
+        }).then(function (c) { confirmation = c; return phone; });
+      },
+      verify: function (code) { return confirmation.confirm(code).then(function (r) { return { name: r.user.displayName || "", phone: r.user.phoneNumber }; }); },
+      subscribe: function (f) {
+        ready.then(function () {
+          var uid = firebase.auth().currentUser.uid, db = firebase.firestore(), data = { sites: [], devices: {}, events: [] };
+          var push = function () { f({ sites: data.sites, devices: data.devices, events: data.events }); };
+          unsub.push(db.collection("devices").where("memberUids", "array-contains", uid).onSnapshot(function (dq) {
+            data.devices = {};
+            dq.docs.forEach(function (d) { var x = d.data(), st = x.state || {}; data.devices[d.id] = { id: d.id, site: x.siteId, label: { bn: x.label, en: x.label }, gas: st.gasLEL || 0, valve: st.valve || "unknown", online: !!x.online, alarm: !!st.alarm, detBatt: st.detectorBattery || 0, valveBatt: st.valveBattery || 0, lastSeen: x.lastSeen ? x.lastSeen.toMillis() : 0 }; });
+            push();
+          }));
+          unsub.push(db.collection("sites").where("memberUids", "array-contains", uid).onSnapshot(function (q) {
+            data.sites = q.docs.map(function (d) { var x = d.data(); return { id: d.id, name: { bn: x.name, en: x.name }, type: x.type, plan: { active: !!(x.plan && x.plan.expiresAt && x.plan.expiresAt.toMillis() > Date.now()), until: x.plan && x.plan.expiresAt ? x.plan.expiresAt.toMillis() : 0 }, contacts: x.contacts || [] }; });
+            data.sites.forEach(function (s) {
+              unsub.push(db.collection("sites").doc(s.id).collection("events").orderBy("at", "desc").limit(50).onSnapshot(function (eq) {
+                data.events = data.events.filter(function (e) { return e.site !== s.id; }).concat(eq.docs.map(function (d) { var x = d.data(); return { site: s.id, device: x.deviceId, type: x.type, at: x.at.toMillis(), data: x.data || {} }; }))
+                  .sort(function (a, b) { return b.at - a.at; });
+                push();
+              }));
+            });
+            push();
+          }));
+        });
+      },
+      requestClose: function (id) { return fn("requestClose")({ deviceId: id }).then(function (r) { watchCommand(id, r.data.commandId); return r.data.commandId; }); },
+      saveContacts: function (siteId, list) { return fn("saveContacts")({ siteId: siteId, contacts: list }); },
+      claimDevice: function (deviceId, code, siteName) { return fn("claimDevice")({ deviceId: deviceId, claimCode: code, siteName: siteName }); },
+      renew: function (siteId) { return fn("startRenewal")({ siteId: siteId }).then(function (r) { location.href = r.data.paymentUrl; }); },
+      signOut: function () { unsub.forEach(function (u) { u(); }); return firebase.auth().signOut(); },
+      restore: function (cb) { ready.then(function () { var off = firebase.auth().onAuthStateChanged(function (u) { off(); if (u) cb({ name: u.displayName || "", phone: (u.phoneNumber || "").replace(/^\+88/, "") }); }); }); }
+    };
+    function watchCommand(deviceId, cid) {
+      var u = firebase.firestore().collection("devices").doc(deviceId).collection("commands").doc(cid).onSnapshot(function (d) {
+        var x = d.data(); if (x && x.status === "done") { DS._ack(cid); u(); }
+      });
+    }
+  }
+  DS._ack = function (cid) { if (S.cmd && S.cmd.id === cid) { S.cmd.state = "done"; S.cmd.at = Date.now(); clearTimeout(S.cmd.timer); render(); } };
+
+  /* ===================== rendering ===================== */
+  function setLang(l) {
+    S.lang = l; document.documentElement.lang = l;
+    try { localStorage.setItem("vg_lang", l); } catch (e) {}
+    document.querySelectorAll("[data-lang]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === l); });
+    renderTabs(); render();
+  }
+  function renderTabs() {
+    var on = !!S.user;
+    $("#tabs").hidden = !on; $("#tabsTop").hidden = !on;
+    if (!on) return;
+    var alarms = Object.keys(S.devices).filter(function (k) { return S.devices[k].alarm; }).length;
+    var items = [["home", I.home], ["alerts", I.bell], ["family", I.users], ["account", I.user]];
+    var cur = S.view === "device" || S.view === "building" ? "home" : S.view;
+    $("#tabs").innerHTML = items.map(function (it) { return '<button data-go="' + it[0] + '"' + (cur === it[0] ? ' aria-current="page"' : "") + ">" + it[1] + "<span>" + t(it[0]) + "</span>" + (it[0] === "alerts" && alarms ? '<span class="badge num">' + digits(alarms) + "</span>" : "") + "</button>"; }).join("");
+    $("#tabsTop").innerHTML = items.map(function (it) { return '<button data-go="' + it[0] + '"' + (cur === it[0] ? ' aria-current="page"' : "") + ">" + t(it[0]) + "</button>"; }).join("");
+  }
+  function render() {
+    renderTabs();
+    var m = $("#main");
+    if (!S.user) { m.innerHTML = viewSignIn(); return; }
+    var demo = DS.demo ? '<div class="demo"><span>' + esc(t("demoBar")) + "</span></div>" : "";
+    var html = ({ home: viewHome, device: viewDevice, building: viewBuilding, alerts: viewAlerts, family: viewFamily, account: viewAccount }[S.view] || viewHome)();
+    m.innerHTML = '<div class="stack">' + demo + html + "</div>";
+  }
+
+  function viewSignIn() {
+    var s = S.signin;
+    return '<div class="signin card stack"><div class="logo">' + $(".logo svg").outerHTML + "VenGuard</div><h1>" + esc(t("signinTitle")) + '</h1><p class="lead">' + esc(t("signinLead")) + "</p>" +
+      (s.step === "phone"
+        ? '<form id="fPhone" class="stack" novalidate><label class="f" for="inPhone">' + esc(t("phone")) + '<span class="hint">' + esc(t("phoneHint")) + '</span><input id="inPhone" type="tel" inputmode="tel" autocomplete="tel" value="' + esc(s.phone || "") + '"></label>' + (s.err ? '<p class="err">' + esc(s.err) + "</p>" : "") + '<button class="btn block" type="submit">' + esc(t("sendCode")) + "</button></form>"
+        : '<form id="fCode" class="stack" novalidate><p class="note">' + esc(t("codeSent", { phone: digits(s.phone) })) + '</p><label class="f" for="inCode">' + esc(t("code")) + '<input id="inCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label>' + (s.err ? '<p class="err">' + esc(s.err) + "</p>" : "") + '<button class="btn block" type="submit">' + esc(t("verify")) + "</button></form>") +
+      (DS.demo ? '<p class="note">' + esc(t("demoCode")) + "</p>" : "") + '<div id="captcha"></div></div>';
+  }
+
+  function sitesOf(type) { return S.sites.filter(function (s) { return !type || s.type === type; }); }
+  function devicesOf(siteId) { return Object.keys(S.devices).map(function (k) { return S.devices[k]; }).filter(function (d) { return d.site === siteId; }); }
+  function L(o) { return o ? (o[S.lang] || o.en) : ""; }
+
+  function alarmBanners() {
+    return Object.keys(S.devices).map(function (k) { return S.devices[k]; }).filter(function (d) { return d.alarm; }).map(function (d) {
+      var site = S.sites.filter(function (s) { return s.id === d.site; })[0];
+      return '<div class="alarm-banner" role="alert" data-device="' + d.id + '">' + I.alert + "<div><strong>" + esc(t("alarmBanner", { name: L(site.name) + " · " + L(d.label) })) + "</strong>" + esc(t("alarmBannerBody")) + "</div></div>";
+    }).join("");
+  }
+
+  function viewHome() {
+    var homes = sitesOf().filter(function (s) { return s.type !== "building"; }), blds = sitesOf("building");
+    return '<div><h1>' + esc(t("myKitchens")) + "</h1></div>" + alarmBanners() +
+      '<div class="grid two">' + homes.map(function (s) { return devicesOf(s.id).map(function (d) { return kitchenCard(s, d); }).join(""); }).join("") + "</div>" +
+      blds.map(function (b) {
+        var ds = devicesOf(b.id), bad = ds.filter(function (d) { return status(d).rank < 3; });
+        return '<button class="card kitchen' + (ds.some(function (d) { return d.alarm; }) ? " alarm" : "") + '" data-building="' + b.id + '"><div class="krow"><div><div class="kname">' + I.building.replace("<svg ", '<svg width="22" height="22" style="vertical-align:-4px;margin-right:6px" ') + esc(L(b.name)) + '</div><div class="ksub">' + digits(ds.length) + " " + esc(t("units")) + "</div></div>" + (bad.length ? '<span class="state st-warn">' + I.alert + digits(bad.length) + " " + esc(t("needsAttention")) + "</span>" : '<span class="state st-safe">' + I.shield + esc(t("unitsSafe", { n: digits(ds.length) })) + "</span>") + "</div></button>";
+      }).join("");
+  }
+  function kitchenCard(site, d) {
+    return '<button class="card kitchen' + (d.alarm ? " alarm" : "") + '" data-device="' + d.id + '"><div class="krow"><div><div class="kname">' + esc(L(site.name)) + '</div><div class="ksub">' + esc(L(d.label)) + "</div></div>" + chip(d) + "</div>" +
+      '<div class="facts"><div class="fact"><div class="l">' + esc(t("gas")) + '</div><div class="v num">' + digits(Math.round(d.gas)) + '% LEL</div></div><div class="fact"><div class="l">' + esc(t("valve")) + '</div><div class="v">' + esc(t(d.online ? (d.valve === "closed" ? "vClosed" : "vOpen") : "vUnknown")) + '</div></div><div class="fact"><div class="l">' + esc(t("battery")) + '</div><div class="v num">' + digits(Math.min(d.detBatt, d.valveBatt)) + "%</div></div></div>" +
+      '<div class="ksub">' + esc(t("lastSeen")) + ": " + esc(ago(d.lastSeen)) + "</div></button>";
+  }
+
+  function viewDevice() {
+    var d = S.devices[S.device]; if (!d) { S.view = "home"; return viewHome(); }
+    var site = S.sites.filter(function (s) { return s.id === d.site; })[0], st = status(d);
+    var pct = Math.min(100, d.gas / 40 * 100), mark = LEL_LIMIT / 40 * 100;
+    var cmd = S.cmd && S.cmd.device === d.id ? S.cmd : null;
+    var closed = d.valve === "closed" && d.online;
+    var canRemote = site.plan && site.plan.active;
+    var cmdBox = "";
+    if (cmd && cmd.state === "sending") cmdBox = '<div class="cmd st-off">' + I.spin + "<div><strong>" + esc(t("sending")) + "</strong></div></div>";
+    else if (cmd && cmd.state === "waiting") cmdBox = '<div class="cmd st-off">' + I.spin + "<div><strong>" + esc(t("waiting")) + '</strong><div class="note">' + esc(t("waitingNote")) + "</div></div></div>";
+    else if (cmd && cmd.state === "done") cmdBox = '<div class="cmd st-safe">' + I.check + "<div><strong>" + esc(t("confirmed", { time: clock(cmd.at) })) + '</strong><div class="note">' + esc(t("confirmedNote")) + "</div></div></div>";
+    else if (cmd && cmd.state === "timeout") cmdBox = '<div class="cmd st-warn">' + I.clock + "<div><strong>" + esc(t("noAnswer")) + '</strong><div class="note">' + esc(t("noAnswerNote")) + "</div></div></div>";
+    var busy = cmd && (cmd.state === "sending" || cmd.state === "waiting");
+    var evs = S.events.filter(function (e) { return e.device === d.id; }).slice(0, 6);
+    return '<div><button class="back" data-go="' + (site.type === "building" ? "building" : "home") + '">' + I.back + esc(site.type === "building" ? L(site.name) : t("myKitchens")) + "</button></div>" +
+      (d.alarm ? alarmBanners() : "") +
+      '<section class="card hero-state"><div class="big-state"><div class="ring ' + st.cls + '">' + st.icon + '</div><div><div class="ksub">' + esc(L(site.name)) + " · " + esc(L(d.label)) + "</div><h1>" + esc(st.text) + "</h1></div></div>" +
+      (d.online ? "" : '<div class="cmd st-off">' + I.off + '<div class="note"><strong>' + esc(t("offline")) + ".</strong> " + esc(t("offlineNote", { ago: ago(d.lastSeen) })) + "</div></div>") +
+      '<div class="gauge"><div class="krow"><strong>' + esc(t("gasLevel")) + '</strong><span class="num"><strong>' + digits(Math.round(d.gas)) + "</strong>% LEL</span></div>" +
+      '<div class="bar" role="meter" aria-valuemin="0" aria-valuemax="40" aria-valuenow="' + Math.round(d.gas) + '" aria-label="' + esc(t("gasLevel")) + '"><div class="fill' + (d.gas >= LEL_LIMIT ? " hot" : "") + '" style="width:' + pct + '%"></div><div class="mark" style="left:' + mark + '%"></div></div>' +
+      '<div class="note">' + esc(t("gasScale", { n: digits(LEL_LIMIT) })) + "</div></div>" +
+      '<div class="facts"><div class="fact"><div class="l">' + esc(t("valve")) + '</div><div class="v">' + esc(t(d.online ? (d.valve === "closed" ? "vClosed" : "vOpen") : "vUnknown")) + '</div></div><div class="fact"><div class="l">' + esc(t("battery")) + ' · ' + (S.lang === "bn" ? "ডিটেক্টর" : "detector") + '</div><div class="v num">' + digits(d.detBatt) + '%</div></div><div class="fact"><div class="l">' + esc(t("battery")) + " · " + esc(t("valve")) + '</div><div class="v num">' + digits(d.valveBatt) + "%</div></div></div>" +
+      '<div class="ksub">' + esc(t("lastSeen")) + ": " + esc(ago(d.lastSeen)) + "</div></section>" +
+      '<section class="card stack">' +
+      (closed
+        ? '<div class="cmd st-warn">' + I.hand + "<div><strong>" + esc(t("alreadyClosed")) + '</strong><div class="note">' + esc(t("reopenHow")) + "</div></div></div>" + cmdBox
+        : (canRemote
+          ? '<button class="close-btn" id="closeBtn" data-close="' + d.id + '"' + (busy ? " disabled" : "") + ">" + I.valve + "<span>" + esc(d.online ? t("closeNow") : t("closeOffline")) + "</span></button>" + cmdBox + '<p class="note">' + esc(t("reopenHow")) + "</p>"
+          : '<div class="cmd st-off">' + I.valve + "<div><strong>" + esc(t("planOff")) + '</strong><div class="note">' + esc(t("planInactiveClose")) + "</div></div></div>")) +
+      "</section>" +
+      '<section class="card"><h2>' + esc(t("history")) + "</h2>" + timeline(evs) + "</section>" +
+      (DS.demo ? '<div class="demo"><span>Demo</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" data-sim="leak">' + esc(t("simulateLeak")) + '</button><button class="btn ghost" data-sim="reset">' + esc(t("simulateReset")) + '</button><button class="btn ghost" data-sim="offline">' + esc(t("toggleOffline")) + "</button></span></div>" : "");
+  }
+  function evText(e) {
+    return t("ev_" + ({ leak: "leak", remote_close: "remote_close", reset: "reset", test: "test", batt: "batt", offline: "offline", online: "online" }[e.type] || "test"), { who: e.data.who || "", n: digits(e.data.n || "") });
+  }
+  function evIcon(e) {
+    var map = { leak: ["st-danger", I.alert], remote_close: ["st-warn", I.valve], reset: ["st-safe", I.hand], test: ["st-off", I.check], batt: ["st-warn", I.batt], offline: ["st-off", I.off], online: ["st-safe", I.check] };
+    var m = map[e.type] || map.test; return '<span class="' + m[0] + '" style="background:none">' + m[1] + "</span>";
+  }
+  function timeline(evs) {
+    if (!evs.length) return '<p class="note">' + esc(t("noAlerts")) + "</p>";
+    return '<ul class="timeline">' + evs.map(function (e) { return "<li>" + evIcon(e) + "<span>" + esc(evText(e)) + '</span><time datetime="' + new Date(e.at).toISOString() + '">' + esc(ago(e.at)) + "</time></li>"; }).join("") + "</ul>";
+  }
+
+  function viewBuilding() {
+    var b = S.sites.filter(function (s) { return s.id === S.site; })[0]; if (!b) { S.view = "home"; return viewHome(); }
+    var ds = devicesOf(b.id).sort(function (x, y) { return status(x).rank - status(y).rank || L(x.label).localeCompare(L(y.label)); });
+    var counts = {}; ds.forEach(function (d) { var s = status(d); counts[s.cls] = counts[s.cls] || { n: 0, s: s }; counts[s.cls].n++; });
+    return '<div><button class="back" data-go="home">' + I.back + esc(t("myKitchens")) + "</button><h1>" + esc(L(b.name)) + "</h1></div>" + alarmBanners() +
+      '<div class="summary">' + Object.keys(counts).map(function (k) { var c = counts[k]; return '<span class="state ' + k + '">' + c.s.icon + digits(c.n) + " · " + esc(c.s.text) + "</span>"; }).join("") + "</div>" +
+      '<div class="units">' + ds.map(function (d) { var s = status(d); return '<button class="unit' + (d.alarm ? " alarm" : "") + '" data-device="' + d.id + '"><strong>' + esc(L(d.label)) + '</strong><span class="state ' + s.cls + '">' + s.icon + esc(s.text) + '</span><span class="ksub">' + esc(ago(d.lastSeen)) + "</span></button>"; }).join("") + "</div>";
+  }
+
+  function viewAlerts() {
+    var cut = Date.now() - 30 * 864e5;
+    var evs = S.events.filter(function (e) { return e.at >= cut; });
+    return "<div><h1>" + esc(t("alertsTitle")) + '</h1><p class="lead">' + esc(t("alertsLead")) + "</p></div>" + alarmBanners() +
+      '<section class="card">' + (evs.length ? '<ul class="timeline">' + evs.map(function (e) {
+        var d = S.devices[e.device], site = d && S.sites.filter(function (s) { return s.id === d.site; })[0];
+        return "<li>" + evIcon(e) + '<span><strong>' + esc(site ? L(site.name) : "") + " · " + esc(d ? L(d.label) : "") + "</strong><br>" + esc(evText(e)) + '</span><time datetime="' + new Date(e.at).toISOString() + '">' + esc(ago(e.at)) + "</time></li>";
+      }).join("") + "</ul>" : '<p class="note">' + esc(t("noAlerts")) + "</p>") + "</section>";
+  }
+
+  function viewFamily() {
+    return "<div><h1>" + esc(t("familyTitle")) + '</h1><p class="lead">' + esc(t("familyLead")) + "</p></div>" +
+      S.sites.map(function (s) {
+        return '<section class="card"><h2>' + esc(L(s.name)) + "</h2>" + (s.contacts.length ? s.contacts.map(function (c, i) {
+          return '<div class="contact"><div><strong>' + esc(c.name) + '</strong><div class="ksub num">' + esc(digits(c.phone)) + '</div></div><div style="display:flex;gap:10px;align-items:center"><label class="toggle"><input type="checkbox" data-sms="' + s.id + ":" + i + '"' + (c.sms ? " checked" : "") + ">" + esc(t("sms")) + '</label><button class="btn ghost" style="min-height:38px;padding:4px 12px" data-rm="' + s.id + ":" + i + '">' + esc(t("remove")) + "</button></div></div>";
+        }).join("") : "") +
+          (s.contacts.length < 3 ? '<form class="stack" data-add="' + s.id + '" style="margin-top:12px" novalidate><div class="grid two"><label class="f" for="cn-' + s.id + '">' + esc(t("name")) + '<input id="cn-' + s.id + '" name="name" autocomplete="name"></label><label class="f" for="cp-' + s.id + '">' + esc(t("phone")) + '<input id="cp-' + s.id + '" name="phone" type="tel" inputmode="tel"></label></div><div><button class="btn ghost" type="submit">+ ' + esc(t("addPerson")) + "</button></div></form>" : '<p class="note">' + esc(t("max3")) + "</p>") + "</section>";
+      }).join("") +
+      '<section class="card"><div class="plan"><div><h2 style="margin:0">' + esc(t("pushTitle")) + '</h2></div><button class="btn ghost" data-push>' + esc(("Notification" in window && Notification.permission === "granted") ? t("pushOn") : t("pushOff")) + "</button></div></section>";
+  }
+
+  function viewAccount() {
+    var wa = CFG.whatsapp || "8801000000000";
+    return "<div><h1>" + esc(t("accountTitle")) + '</h1><p class="lead num">' + esc(digits(S.user.phone)) + "</p></div>" +
+      S.sites.map(function (s) {
+        var a = s.plan && s.plan.active;
+        return '<section class="card stack"><div class="plan"><div><div class="ksub">' + esc(t("plan")) + '</div><strong>' + esc(L(s.name)) + '</strong></div><span class="pill">' + esc(a ? t("activeUntil", { date: date(s.plan.until) }) : t("expired")) + "</span></div>" +
+          (a ? "" : '<p class="note">' + esc(t("planOffNote")) + "</p>") + '<div><button class="btn" data-renew="' + s.id + '">' + esc(t("renew")) + '</button></div><p class="note">' + esc(t("renewNote")) + "</p></section>";
+      }).join("") +
+      '<section class="card"><h2>' + esc(t("addDevice")) + '</h2><p class="note">' + esc(t("addDeviceNote")) + '</p><form id="fClaim" class="stack" novalidate><div class="grid two"><label class="f" for="inDev">' + esc(t("deviceId")) + '<input id="inDev" placeholder="VG-XXXXXX" autocapitalize="characters"></label><label class="f" for="inClaim">' + esc(t("claimCode")) + '<input id="inClaim" inputmode="numeric"></label></div><div><button class="btn ghost" type="submit">' + esc(t("add")) + "</button></div></form></section>" +
+      '<section class="card stack"><a class="btn ghost" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">' + esc(t("help")) + '</a><button class="btn ghost" data-signout>' + esc(t("signout")) + "</button></section>";
+  }
+
+  /* ===================== actions ===================== */
+  function go(v) { S.view = v; if (v !== "device") S.cmd = S.cmd && S.cmd.state !== "done" ? S.cmd : null; render(); window.scrollTo(0, 0); }
+
+  function confirmClose(id) {
+    var d = S.devices[id], site = S.sites.filter(function (s) { return s.id === d.site; })[0];
+    $("#overlay").innerHTML = '<div class="scrim" data-cancel></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT"><h2 id="shT">' + esc(t("closeSheetTitle", { name: L(site.name) + " · " + L(d.label) })) + '</h2><p class="note" style="margin:0">' + esc(t("closeSheetBody")) + '</p><button class="close-btn" id="holdBtn"><span class="hold" id="holdFill"></span>' + I.valve + "<span>" + esc(t("holdToClose")) + '</span></button><button class="btn ghost block" data-cancel>' + esc(t("cancel")) + "</button></div>";
+    // Press-and-hold for 1.5 s: hard to trigger by accident in a pocket, easy on purpose.
+    var btn = $("#holdBtn"), fill = $("#holdFill"), start = 0, raf = 0, HOLD = 1500;
+    function tick() { var p = Math.min(1, (Date.now() - start) / HOLD); fill.style.width = p * 100 + "%"; if (p >= 1) { stop(); doClose(id); } else raf = requestAnimationFrame(tick); }
+    function begin(e) { e.preventDefault(); start = Date.now(); raf = requestAnimationFrame(tick); }
+    function stop() { cancelAnimationFrame(raf); if (fill) fill.style.width = "0"; }
+    btn.addEventListener("pointerdown", begin); ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { btn.addEventListener(ev, stop); });
+    btn.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && !e.repeat) begin(e); });
+    btn.addEventListener("keyup", function (e) { if (e.key === "Enter" || e.key === " ") stop(); });
+    btn.focus();
+  }
+  function doClose(id) {
+    $("#overlay").innerHTML = "";
+    S.cmd = { device: id, state: "sending" }; render();
+    DS.requestClose(id).then(function (cid) {
+      if (S.cmd && S.cmd.state === "done") return;
+      S.cmd.id = cid; S.cmd.state = "waiting"; render();
+      S.cmd.timer = setTimeout(function () { if (S.cmd && S.cmd.id === cid && S.cmd.state === "waiting") { S.cmd.state = "timeout"; render(); } }, 45000);
+    }).catch(function (e) { S.cmd = null; render(); toast(e.message || String(e)); });
+  }
+
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-go],[data-device],[data-building],[data-close],[data-cancel],[data-sim],[data-rm],[data-renew],[data-signout],[data-push],[data-lang]");
+    if (!el) return;
+    if (el.hasAttribute("data-lang")) return setLang(el.getAttribute("data-lang"));
+    if (el.hasAttribute("data-go")) return go(el.getAttribute("data-go"));
+    if (el.hasAttribute("data-device")) { S.device = el.getAttribute("data-device"); return go("device"); }
+    if (el.hasAttribute("data-building")) { S.site = el.getAttribute("data-building"); return go("building"); }
+    if (el.hasAttribute("data-close")) return confirmClose(el.getAttribute("data-close"));
+    if (el.hasAttribute("data-cancel")) { $("#overlay").innerHTML = ""; var cb = $("#closeBtn"); if (cb) cb.focus(); return; }
+    if (el.hasAttribute("data-sim")) { var a = el.getAttribute("data-sim"); DS[{ leak: "simulateLeak", reset: "simulateReset", offline: "toggleOffline" }[a]](S.device); if (a === "reset") S.cmd = null; return; }
+    if (el.hasAttribute("data-rm")) { var p = el.getAttribute("data-rm").split(":"), s = site(p[0]); s.contacts.splice(+p[1], 1); DS.saveContacts(s.id, s.contacts).then(function () { toast(t("saved")); }); return render(); }
+    if (el.hasAttribute("data-renew")) return DS.renew(el.getAttribute("data-renew")).catch(function (er) { toast(er.message); });
+    if (el.hasAttribute("data-signout")) return DS.signOut().then(function () { S.user = null; S.signin = { step: "phone" }; render(); });
+    if (el.hasAttribute("data-push")) { if ("Notification" in window) Notification.requestPermission().then(function () { render(); }).catch(function () {}); return; }
+  });
+  document.addEventListener("change", function (e) {
+    var a = e.target.getAttribute("data-sms"); if (!a) return;
+    var p = a.split(":"), s = site(p[0]); s.contacts[+p[1]].sms = e.target.checked; DS.saveContacts(s.id, s.contacts).then(function () { toast(t("saved")); });
+  });
+  document.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = e.target;
+    if (f.id === "fPhone") {
+      var ph = normPhone($("#inPhone").value); S.signin.phone = $("#inPhone").value;
+      if (!ph) { S.signin.err = t("badPhone"); return render(); }
+      DS.sendCode(ph).then(function () { S.signin = { step: "code", phone: ph }; render(); $("#inCode").focus(); }).catch(function (er) { S.signin.err = er.message; render(); });
+    } else if (f.id === "fCode") {
+      DS.verify($("#inCode").value.trim()).then(function (u) { S.user = { name: u.name, phone: String(u.phone).replace(/^\+88/, "") }; S.view = "home"; DS.subscribe(onData); render(); }).catch(function (er) { S.signin.err = er.message || t("badCode"); render(); });
+    } else if (f.hasAttribute("data-add")) {
+      var s = site(f.getAttribute("data-add")), nm = f.elements.name.value.trim(), pn = normPhone(f.elements.phone.value);
+      if (!nm || !pn) return toast(t("badPhone"));
+      if (s.contacts.length >= 3) return toast(t("max3"));
+      s.contacts.push({ name: nm, phone: pn, sms: true }); DS.saveContacts(s.id, s.contacts).then(function () { toast(t("saved")); }); render();
+    } else if (f.id === "fClaim") {
+      DS.claimDevice($("#inDev").value.trim().toUpperCase(), $("#inClaim").value.trim()).then(function () { toast(t("saved")); }).catch(function (er) { toast(er.message); });
+    }
+  });
+  function site(id) { return S.sites.filter(function (s) { return s.id === id; })[0]; }
+
+  var lastAlarms = {};
+  function onData(d) {
+    S.sites = d.sites; S.devices = d.devices; S.events = d.events;
+    // A new alarm pulls the person to that kitchen and buzzes the phone (if allowed).
+    Object.keys(S.devices).forEach(function (k) {
+      var a = S.devices[k].alarm;
+      if (a && !lastAlarms[k]) { if (navigator.vibrate) try { navigator.vibrate([300, 150, 300]); } catch (e) {} if (S.view !== "device") { S.device = k; S.view = "device"; } }
+      lastAlarms[k] = a;
+    });
+    // Close confirmed by the device state itself (covers a missed ack).
+    if (S.cmd && S.cmd.state === "waiting" && S.devices[S.cmd.device] && S.devices[S.cmd.device].valve === "closed") { S.cmd.state = "done"; S.cmd.at = Date.now(); clearTimeout(S.cmd.timer); }
+    // Don't redraw under someone who is typing; catch up when they leave the field.
+    var ae = document.activeElement;
+    if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && $("#main").contains(ae)) { S.pending = true; return; }
+    var focusId = ae && ae.id; render(); if (focusId && $("#" + focusId)) $("#" + focusId).focus();
+  }
+  document.addEventListener("focusout", function () { setTimeout(function () { var ae = document.activeElement; if (S.pending && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) { S.pending = false; render(); } }, 0); });
+
+  setLang(S.lang);
+  // Demo opens signed in so the first view shows what the app does.
+  if (DS.demo) { S.user = { name: "Fatema", phone: "01712345678" }; DS.subscribe(onData); }
+  else DS.restore(function (u) { S.user = u; S.view = "home"; DS.subscribe(onData); render(); });
+})();
+</script>
