@@ -17,7 +17,8 @@
           <li><a href="{{ url('landlords-restaurants') }}">{{ t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants") }}</a></li>
           <li><a href="{{ url('dealers') }}">{{ t("ডিলার হোন", "Become a dealer") }}</a></li>
           <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (শীঘ্রই)", "Agro and Marine (coming soon)") }}</a></li>
-          <li><a href="{{ root }}app/" data-track="connected_app_click" data-position="footer">{{ t("কানেক্টেড অ্যাপ", "Connected app") }}</a></li>
+          <li><a href="{{ site.app.web_url }}" data-track="app_open_click" data-position="footer">{{ t("VenGuard অ্যাপ (ডেমো)", "VenGuard app (demo)") }}</a></li>
+          <li><a href="{{ site.app.apk_url }}" data-track="app_apk_click" data-position="footer">{{ t("অ্যান্ড্রয়েড অ্যাপ ডাউনলোড", "Download for Android") }}</a></li>
         </ul>
       </nav>
       <nav aria-label="{{ t('প্রতিষ্ঠান', 'Company') }}">
