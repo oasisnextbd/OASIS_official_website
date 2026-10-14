@@ -2,7 +2,7 @@
 
 The customer side of the **Connected plan (BDT 550/year)** from the VenGuard HCD v4:
 remote valve close from a phone, a live dashboard, SMS alerts to family, and multi-unit monitoring
-for landlords. The customer app is published at `/VENGuard/app/` (source: `apps/connected/app.html`).
+for landlords. The customer app is the VenGuard app in its own repository, oasisnextbd/venguard-app (`/VENGuard/app/` redirects there).
 
 **Safety rules built into every part:** the cloud is never in the safety loop; the only remote
 command is *close*; reopening is the lever at the stove; "closed" is shown only after the device confirms.

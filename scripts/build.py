@@ -9,7 +9,7 @@ Layout of the published site (URLs are stable; do not change them casually):
     /                    OASIS main site            ← oasis-site/
     /VENGuard/           VenGuard website (bn)      ← venguard/  (built by venguard/tools/build.py)
     /VENGuard/en/        VenGuard website (en)
-    /VENGuard/app/       VenGuard Connected app     ← apps/connected/
+    /VENGuard/app/       redirect to the VenGuard app (repository oasisnextbd/venguard-app)
 """
 import pathlib
 import shutil

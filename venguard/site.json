@@ -177,8 +177,10 @@
     }
   },
   "testimonials": [],
-  "connected": {
-    "_readme": "Customer app (VENGuard/app/). firebase: paste the Firebase web config object from backend/connected/README.md step 3. Empty = the app runs as a demo with example data.",
-    "firebase": null
+  "app": {
+    "_readme": "The VenGuard app lives in its own repository (oasisnextbd/venguard-app). /VENGuard/app/ redirects to web_url.",
+    "web_url": "https://oasisnextbd.github.io/venguard-app/",
+    "apk_url": "https://oasisnextbd.github.io/venguard-app/VenGuard.apk",
+    "repo_url": "https://github.com/oasisnextbd/venguard-app"
   }
 }
