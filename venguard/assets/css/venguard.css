@@ -280,6 +280,10 @@ html[lang="bn"] .readout-head { font: 600 .85rem/1.2 var(--font-bn); letter-spac
 .index { display: inline-block; font: 700 .72rem/1 var(--font); color: var(--text-muted); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 14px; }
 .price { font-size: 2.1rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin: 8px 0 4px; }
 .price small { font-size: .95rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0; }
+/* Kit packages: equal-height cards, button at the bottom */
+.package { display: flex; flex-direction: column; }
+.package .ticks { margin-bottom: 16px; }
+.package > :last-child { margin-top: auto; align-self: flex-start; }
 .tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font: 600 .78rem/1.2 var(--font); background: var(--bg-alt); border: 1px solid var(--line); color: var(--text); }
 .tag--accent { background: var(--btn); border-color: var(--btn); color: var(--on-btn); }
 

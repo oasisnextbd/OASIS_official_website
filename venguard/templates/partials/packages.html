@@ -1,0 +1,27 @@
+{#- Kit packages (prices from site.json → preorder). Needs: t, num, url, site, and
+    `pkg_position` (analytics position of the buttons). Used on the homepage and the Home kit page. -#}
+{% from "partials/macros.html" import icon %}
+{% set p = site.preorder %}
+<article class="card package">
+  <span class="index">{{ t("সম্পূর্ণ সুরক্ষা", "FULL PROTECTION") }}</span>
+  <h3>{{ t("সম্পূর্ণ হোম কিট", "Complete Home kit") }}</h3>
+  <p class="price num">{{ t("৳" ~ num(p.kit_price_bdt), "BDT " ~ num(p.kit_price_bdt)) }} <small>{{ t("একবারই", "one time") }}</small></p>
+  <ul class="ticks">
+    <li>{{ icon("tick") }}<span>{{ t("ডিটেক্টর + ভেন্টিলেশন রিলে + স্বয়ংক্রিয় ভালভ", "Detector + ventilation relay + automatic valve") }}</span></li>
+    <li>{{ icon("tick") }}<span>{{ t("গ্যাস টের পায়, ফ্যান চালু করে, নিজেই গ্যাস বন্ধ করে", "Senses gas, starts the fan, shuts off the gas by itself") }}</span></li>
+    <li>{{ icon("tick") }}<span>{{ t("আলাদা কেনার চেয়ে ৳" ~ num(p.detector_relay_bdt + p.valve_addon_bdt - p.kit_price_bdt) ~ " কম", "BDT " ~ num(p.detector_relay_bdt + p.valve_addon_bdt - p.kit_price_bdt) ~ " less than buying the parts separately") }}</span></li>
+  </ul>
+  {% if site.preorder.open %}<div class="mt-2"><a class="btn btn--primary" href="{{ url('pre-order') }}?package=complete" data-track="cta_preorder_click" data-position="{{ pkg_position }}_complete">{{ t("প্রি-অর্ডার করুন", "Pre-order") }}</a></div>{% endif %}
+</article>
+<article class="card package">
+  <span class="index">{{ t("ধাপে ধাপে কিনুন", "MODULAR START") }}</span>
+  <h3>{{ t("ডিটেক্টর + রিলে", "Detector + Relay") }}</h3>
+  <p class="price num">{{ t("৳" ~ num(p.detector_relay_bdt), "BDT " ~ num(p.detector_relay_bdt)) }} <small>{{ t("একবারই", "one time") }}</small></p>
+  <ul class="ticks">
+    <li>{{ icon("tick") }}<span>{{ t("২৪/৭ গ্যাস টের পাওয়া ও ৮৫ ডেসিবেল সতর্কতা", "24/7 gas sensing and an 85 dB alarm") }}</span></li>
+    <li>{{ icon("tick") }}<span>{{ t("লিক হলে এগজস্ট ফ্যান চালু করে", "Switches on the exhaust fan on a leak") }}</span></li>
+    <li>{{ icon("tick") }}<span>{{ t("পরে যেকোনো সময় ভালভ যোগ করুন: ৳" ~ num(p.valve_addon_bdt), "Add the valve any time: BDT " ~ num(p.valve_addon_bdt)) }}</span></li>
+  </ul>
+  <p class="small">{{ t("ভালভ ছাড়া গ্যাস নিজে থেকে বন্ধ হয় না।", "Without the valve, the gas is not shut off automatically.") }}</p>
+  {% if site.preorder.open %}<a class="btn btn--secondary" href="{{ url('pre-order') }}?package=detector_relay" data-track="cta_preorder_click" data-position="{{ pkg_position }}_detector_relay">{{ t("প্রি-অর্ডার করুন", "Pre-order") }}</a>{% endif %}
+</article>

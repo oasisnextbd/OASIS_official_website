@@ -121,20 +121,10 @@
       <p class="label">{{ t("দাম", "Pricing") }}</p>
       <h2 id="layers-title">{{ t("মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Core safety is never locked behind a subscription.") }}</h2>
     </div>
-    <div class="grid grid--2">
+    <div class="grid grid--3">
+      {% set pkg_position = "pricing" %}{% include "partials/packages.html" %}
       <article class="card">
-        <span class="index">{{ t("স্তর ১ · অপরিহার্য সুরক্ষা", "TIER 1 · ESSENTIAL SAFETY") }}</span>
-        <h3>{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</h3>
-        <p class="price num">{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }} <small>{{ t("একবারই", "one time") }}</small></p>
-        <ul class="ticks">
-          <li>{{ icon("tick") }}<span>{{ t("অফলাইনে কাজ করার জন্য তৈরি", "Designed to work fully offline") }}</span></li>
-          <li>{{ icon("tick") }}<span>{{ t("গ্যাস টের পাওয়া, ভালভ বন্ধ, হাতে রিসেট", "Sensing, valve closing, manual reset") }}</span></li>
-          <li>{{ icon("tick") }}<span>{{ t("কোনো সাবস্ক্রিপশন নেই", "No subscription, ever") }}</span></li>
-        </ul>
-        <div class="mt-2">{{ preorder_btn(t, url, site, "pricing") }}</div>
-      </article>
-      <article class="card">
-        <span class="index">{{ t("স্তর ২ · কানেক্টেড (ঐচ্ছিক)", "TIER 2 · CONNECTED (OPTIONAL)") }}</span>
+        <span class="index">{{ t("ঐচ্ছিক অ্যাড-অন", "OPTIONAL ADD-ON") }}</span>
         <h3>{{ t("কানেক্টেড প্ল্যান", "Connected plan") }}</h3>
         <p class="price num">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year), "BDT " ~ num(site.preorder.connected_plan_bdt_per_year)) }} <small>{{ t("/ বছর", "/ year") }}</small></p>
         <ul class="ticks">

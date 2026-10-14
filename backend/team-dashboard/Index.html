@@ -257,7 +257,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
           submitted_at: t.toISOString(), order_id: "VG-" + ymd + "-" + Math.floor(rnd() * 46655 + 1296).toString(36).toUpperCase().padStart(4, "X"),
           form_type: type, status: status, name: pick(names), phone: "017" + String(Math.floor(10000000 + rnd() * 89999999)),
           email: rnd() < 0.4 ? "example" + n + "@mail.example" : "", organisation: type === "enquiry" ? pick(["Rose View Tower", "Kacchi Bhai", "Green Plaza Apartments", "Star Kabab"]) : type === "dealer" ? pick(["Mollah Gas House", "Karim Hardware", "Nabil LPG Point"]) : "",
-          area: pick(areas[dist]), district: dist, kitchen_type: kt, units: type === "enquiry" ? Math.floor(4 + rnd() * 40) : type === "preorder" ? (kt === "home" ? 1 : Math.floor(2 + rnd() * 6)) : "",
+          area: pick(areas[dist]), district: dist, package: type === "preorder" ? (rnd() < 0.75 ? "complete" : "detector_relay") : "", kitchen_type: kt, units: type === "enquiry" ? Math.floor(4 + rnd() * 40) : type === "preorder" ? (kt === "home" ? 1 : Math.floor(2 + rnd() * 6)) : "",
           cylinder_brand: type === "preorder" ? pick(["Bashundhara", "Omera", "Jamuna", "Beximco", "Unknown", ""]) : "", heard_from: src === "" ? pick(["friend", "news", ""]) : "",
           dealer_code: dealer, utm_source: src === "dealer_qr" ? "qr" : src, referrer: src === "google" ? "www.google.com" : "direct",
           lang: rnd() < 0.78 ? "bn" : "en", message: type === "contact" ? "Does it fit a 12 kg Bashundhara cylinder?" : "", consent: "yes",
@@ -297,6 +297,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
   var esc = function (v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var fmtN = function (n) { return Number(n || 0).toLocaleString("en-US"); };
   var TYPE = { preorder: "Pre-order", enquiry: "Landlord / restaurant", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
+  var PACKAGE = { complete: "Complete kit", detector_relay: "Detector + Relay" };
   var STATUS = { new: "New", payment_pending: "Payment pending", contacted: "Contacted", paid: "Deposit paid", refunded: "Refunded", installed: "Installed", not_interested: "Not interested" };
   var SICON = {
     new: '<circle cx="6" cy="6" r="4" fill="currentColor"/>', payment_pending: '<circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/>',
@@ -469,7 +470,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     S.open = id;
     var edit = can("edit");
     var wa = "https://wa.me/88" + String(l.phone).replace(/^0/, "0");
-    var fields = [["Received", when(l.submitted_at)], ["Type", TYPE[l.form_type]], ["Kitchen", cap(l.kitchen_type)], ["Units", l.units], ["Organisation", l.organisation], ["Area", [l.area, l.district].filter(Boolean).join(", ")], ["Email", l.email], ["Cylinder", l.cylinder_brand], ["Dealer code", l.dealer_code], ["Source", source(l) + (l.utm_campaign ? " \u00B7 " + l.utm_campaign : "")], ["Language", l.lang === "en" ? "English" : "Bangla"], ["Payment", [l.payment_status, l.payment_method, l.payment_txn].filter(Boolean).join(" \u00B7 ")], ["Message", l.message]];
+    var fields = [["Received", when(l.submitted_at)], ["Type", TYPE[l.form_type]], ["Package", PACKAGE[l.package] || l.package], ["Kitchen", cap(l.kitchen_type)], ["Units", l.units], ["Organisation", l.organisation], ["Area", [l.area, l.district].filter(Boolean).join(", ")], ["Email", l.email], ["Cylinder", l.cylinder_brand], ["Dealer code", l.dealer_code], ["Source", source(l) + (l.utm_campaign ? " \u00B7 " + l.utm_campaign : "")], ["Language", l.lang === "en" ? "English" : "Bangla"], ["Payment", [l.payment_status, l.payment_method, l.payment_txn].filter(Boolean).join(" \u00B7 ")], ["Message", l.message]];
     $("#drawerRoot").innerHTML = '<div class="drawer-bg" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">' +
       '<header><div><div class="mono muted">' + esc(l.order_id) + '</div><h1 id="dTitle" style="font-size:1.35rem">' + esc(l.name) + "</h1>" + pill(l.status) + '</div><button class="x" data-act="close" aria-label="Close">\u2715</button></header>' +
       '<div class="panel" style="padding:14px"><div style="font-size:1.25rem;font-weight:700" class="num">' + esc(l.phone) + '</div><div class="actions" style="margin-top:10px"><a class="btn primary" href="' + esc(wa) + '">WhatsApp</a><a class="btn" href="tel:' + esc(l.phone) + '" target="_top">Call</a><button class="btn" data-act="copyphone">' + ICON.copy + "Copy number</button></div></div>" +
@@ -494,7 +495,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
   });
 
   function csv(rows) {
-    var cols = ["submitted_at", "order_id", "form_type", "status", "name", "phone", "email", "organisation", "area", "district", "kitchen_type", "units", "cylinder_brand", "dealer_code", "utm_source", "heard_from", "payment_status", "payment_method", "team_notes"];
+    var cols = ["submitted_at", "order_id", "form_type", "status", "name", "phone", "email", "organisation", "area", "district", "package", "kitchen_type", "units", "cylinder_brand", "dealer_code", "utm_source", "heard_from", "payment_status", "payment_method", "team_notes"];
     return [cols.join(",")].concat(rows.map(function (r) { return cols.map(function (c) { var v = String(r[c] == null ? "" : r[c]); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(","); })).join("\n");
   }
   function copyText(text, okMsg) {

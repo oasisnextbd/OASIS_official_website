@@ -228,6 +228,10 @@
       });
     } catch (e) {}
 
+    // A package chosen on a pricing card (?package=…) wins over a saved draft.
+    var wantPkg = new URLSearchParams(location.search).get("package");
+    if (wantPkg) $$("input[name='package']", form).forEach(function (r) { if (r.value === wantPkg) r.checked = true; });
+
     form.addEventListener("focusin", function (e) {
       if (!started) {
         started = true;
@@ -296,7 +300,7 @@
       sendLead(data).then(function (res) {
         try { localStorage.removeItem(draftKey); } catch (e2) {}
         // Analytics gets the type and position only — never the person's details.
-        track("lead_submit", { form: type, kitchen_type: data.kitchen_type || "", units_band: band(data.units), has_dealer_code: !!data.dealer_code });
+        track("lead_submit", { form: type, package: data.package || "", kitchen_type: data.kitchen_type || "", units_band: band(data.units), has_dealer_code: !!data.dealer_code });
         if (type === "preorder") {
           var id = (res && res.order_id) || data.order_id;
           ss("vg_last_order", id);
