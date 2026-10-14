@@ -22,6 +22,14 @@
  *   GA4_PROPERTY_ID     numeric GA4 property id, for visits in the weekly email (optional)
  */
 
+/* ====== EDIT THESE TWO LINES, then save. Everything else works as is. ====== */
+var CONFIG = {
+  ALERT_EMAILS: 'founder1@example.com, founder2@example.com',   // who gets an email for every order/enquiry
+  SITE_URL: 'https://oasisnextbd.github.io/OASIS_official_website/VENGuard'
+};
+/* Optional later (Project Settings → Script properties): SSLC_STORE_ID, SSLC_STORE_PASSWORD,
+   SSLC_SANDBOX, SMS_API_URL, SMS_API_KEY, SMS_SENDER_ID, GA4_PROPERTY_ID. A property overrides CONFIG. */
+
 var SHEET_NAME = 'Leads';
 var COLUMNS = [
   'submitted_at', 'order_id', 'form_type', 'status', 'name', 'phone', 'email', 'organisation',
@@ -33,10 +41,33 @@ var COLUMNS = [
 var STATUSES = ['new', 'payment_pending', 'contacted', 'paid', 'refunded', 'installed', 'not_interested'];
 var FORM_TYPES = ['preorder', 'enquiry', 'dealer', 'waitlist', 'contact'];
 
-function prop(k) { return PropertiesService.getScriptProperties().getProperty(k) || ''; }
+function prop(k) {
+  var v = PropertiesService.getScriptProperties().getProperty(k);
+  if (v) return v;
+  v = CONFIG[k] || '';
+  return /example\.com/.test(v) ? '' : v;
+}
+
+/** Installs the weekly summary trigger the first time the script runs as the owner. */
+function ensureWeeklyTrigger_() {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if (props.getProperty('WEEKLY_TRIGGER_OK')) return;
+    setupWeeklyTrigger();
+    props.setProperty('WEEKLY_TRIGGER_OK', '1');
+  } catch (e) { console.warn('weekly trigger', e); }
+}
+
+/** Run this once from the editor (▶ Run) to grant permissions and create the Leads tab. */
+function setup() {
+  sheet();
+  ensureWeeklyTrigger_();
+  return 'VenGuard leads backend is ready.';
+}
 
 /* ---------------- Website → Sheet ---------------- */
 function doPost(e) {
+  ensureWeeklyTrigger_();
   // SSLCommerz posts back here too (IPN and browser return).
   if (e.parameter && e.parameter.action) return handlePaymentCallback(e);
 

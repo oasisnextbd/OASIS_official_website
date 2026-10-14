@@ -302,7 +302,7 @@ async function alertSite(siteId, deviceId, kind) {
 }
 async function sendSms(phone, message) {
   const url = SMS_API_URL.value();
-  if (!url) return;
+  if (!/^https?:\/\//.test(url || "")) return; // not configured yet (placeholder "-")
   // Adjust the payload to your Bangladeshi SMS gateway's API.
   await fetch(url, { method: "POST", body: new URLSearchParams({ api_key: SMS_API_KEY.value(), senderid: SMS_SENDER_ID.value(), number: "88" + phone, message, type: "unicode" }) });
 }

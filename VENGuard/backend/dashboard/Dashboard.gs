@@ -12,6 +12,13 @@
  * Script property: SHEET_ID = the id of the VenGuard Leads spreadsheet (from its URL).
  */
 
+/* ====== EDIT THIS LINE, then save: the ID of the "VenGuard Leads" Google Sheet ======
+   (the long part of the Sheet's address between /d/ and /edit) */
+var CONFIG = {
+  SHEET_ID: 'PASTE-THE-SHEET-ID-HERE',
+  SITE_URL: 'https://oasisnextbd.github.io/OASIS_official_website/VENGuard'
+};
+
 var TABS = {
   leads: 'Leads',
   team: 'Team',
@@ -40,8 +47,8 @@ function doGet() {
 
 /* ---------------- helpers ---------------- */
 function ss_() {
-  var id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
-  if (!id) throw new Error('SHEET_ID script property is not set.');
+  var id = PropertiesService.getScriptProperties().getProperty('SHEET_ID') || CONFIG.SHEET_ID;
+  if (!id || /PASTE/.test(id)) throw new Error('Set CONFIG.SHEET_ID at the top of Dashboard.gs to the VenGuard Leads Sheet ID.');
   return SpreadsheetApp.openById(id);
 }
 function tab_(name, cols) {
@@ -100,7 +107,7 @@ function getBootstrap() {
     settings: settings_(),
     team: user.role === 'founder' ? rows_(tab_(TABS.team, TEAM_COLS)) : [],
     activity: activity,
-    siteUrl: PropertiesService.getScriptProperties().getProperty('SITE_URL') || '',
+    siteUrl: PropertiesService.getScriptProperties().getProperty('SITE_URL') || CONFIG.SITE_URL,
     statuses: LEAD_STATUSES,
     generatedAt: new Date().toISOString()
   };
