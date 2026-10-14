@@ -1,26 +1,57 @@
 # VenGuard project rules
 
-Set by the VenGuard founders. These override earlier brand notes (including the navy/teal palette in
-the October 2026 website brief). Every page, component and asset must follow them.
+Set by the VenGuard founders. Source of truth for the visual identity: the **Orange theme · logo suite**
+boards (October 2026). These replace the earlier Deep Carbon / Hazard Orange palette and the navy/teal
+palette in the website brief. Every page, component and asset must follow them.
 
 ## Identity
 
 VenGuard is an **industrial-grade, offline IoT gas safety device** — not a generic smart-home gadget.
-Visual language: engineered, precise, calm under pressure. Think safety equipment and instrument panels,
-not lifestyle tech. No cute illustrations, no gradients for decoration, no stock photography.
+Tone: calm, competent, honest. No cute illustrations, no stock photography, no claims ahead of testing.
+
+The product is a **4-stage system** (pitch deck, Team Dibyo Drishty):
+
+1. **24/7 smart tracking**: the detector ("the brain") watches the air continuously.
+2. **Automatic isolation**: the smart solenoid valve cuts off the gas by itself.
+3. **Forced ventilation**: the Active Ventilation Relay switches on the exhaust fan to purge the gas.
+   The fan needs mains power; the shut-off does not.
+4. **Live IoT telemetry** (optional Connected plan): dashboard and alerts.
+
+## Logo
+
+- Symbol: the **wave** (always VenGuard Orange) and the **bar** (navy on light, white on dark), then the
+  wordmark "VenGuard". Bangla lockup: ভেনগার্ড. Tagline: "Safety that acts." / "নিজেই রক্ষা করে।"
+- Variants on the board: primary, all orange, white on orange, reversed (on navy), one colour black, brass etch.
+- Website copy of the logo: `venguard/templates/partials/logo.html` (redrawn from the board; replace with
+  the designer's master SVG when supplied). Icons: `venguard/assets/img/favicon.svg`, `apple-touch-icon.png`.
+- **On the device the logo is one colour only** (navy or white). Orange never sits next to a status light.
 
 ## Colour palette
 
 | Token | Name | Hex | Use |
 |---|---|---|---|
-| `--carbon` | Deep Carbon | `#0B0F17` | Primary base: header, footer, dark sections, headings on light |
-| `--paper` | Clean Off-White | `#F8FAFC` | Secondary surface: page background, cards on dark |
-| `--hazard` | Hazard Orange | `#F97316` | Safety accent and **actions** (primary buttons, key links, focus) |
-| `--safe` | Safe Green | `#10B981` | System normal / safe states only |
-| `--warning` | Warning Yellow | `#FACC15` | Status indicators (attention, testing in progress) |
+| `--orange` | VenGuard Orange | `#E85D0C` | Wave, icons, large display type, packaging |
+| `--orange-deep` | Deep Orange | `#B8460A` | Orange **text** on white/sand |
+| `--navy` | Guard Navy | `#0B2A4A` | Bar, wordmark, headings, brand panels |
+| `--sand` | Sand | `#FBF1EA` | Warm backgrounds |
 
-Derived neutrals (greys) are allowed for text and lines. Do not introduce other hues.
-Orange text on white is only for large/bold text (contrast); body links use Deep Carbon with an orange underline.
+Device status colours (never orange, so the logo can't be mistaken for a status):
+
+| Token | State | Hex |
+|---|---|---|
+| `--safe` | Safe | `#1E9E5A` |
+| `--caution` | Caution | `#F5C400` (ISO yellow) |
+| `--gas-off` | Gas off | `#D7263D` |
+
+Accessibility: white text on `#E85D0C` is only 3.5:1, so buttons use `--btn` `#C94E0A` (4.6:1) with
+white text. Small orange text uses Deep Orange on light, `#FF8A4C` on navy.
+
+## Themes
+
+The website has a **Day** theme (default: white / sand surfaces, navy text) and a **Night** theme (deep navy).
+Visitors switch in the header; with no choice saved, the site follows the device setting. Navy brand panels
+(pricing, evidence, call-to-action, footer) look the same in both themes. All colours are semantic tokens
+in `venguard/assets/css/venguard.css`; components never use raw hex values.
 
 ## Coding standards
 

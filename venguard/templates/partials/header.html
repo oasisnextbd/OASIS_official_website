@@ -22,6 +22,7 @@
         <a href="{{ url(slug, 'bn') }}" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="{{ 'true' if lang == 'bn' else 'false' }}">বাংলা</a>
         <a href="{{ url(slug, 'en') }}" hreflang="en" lang="en" data-lang-switch="en" aria-current="{{ 'true' if lang == 'en' else 'false' }}">EN</a>
       </div>
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="{{ t('রাতের থিম', 'Night theme') }}" title="{{ t('দিন / রাতের থিম', 'Day / night theme') }}">{{ icon("moon", "i-moon") }}{{ icon("sun", "i-sun") }}</button>
       {{ whatsapp(site, t, "header", "icon-btn wa-link", icon_only=true) }}
       {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
       <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>

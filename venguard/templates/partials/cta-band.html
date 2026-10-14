@@ -1,5 +1,5 @@
 {% from "partials/macros.html" import preorder_btn, whatsapp %}
-<section class="cta-band on-dark" aria-labelledby="cta-title">
+<section class="cta-band" aria-labelledby="cta-title">
   <h2 id="cta-title">{{ t("আপনার VenGuard হোম রিজার্ভ করুন", "Reserve your VenGuard Home") }}</h2>
   <p>{{ t("৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য। দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "; জামানত দাম থেকে বাদ যাবে। ডেলিভারির আগে আমরা ফোন করে নিশ্চিত করব।", "BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable. The kit is BDT " ~ num(site.preorder.kit_price_bdt) ~ " and the deposit comes off the price. We call to confirm before delivery.") }}</p>
   <div class="btn-row">
