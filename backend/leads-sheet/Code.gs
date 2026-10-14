@@ -36,7 +36,8 @@ var COLUMNS = [
   'area', 'district', 'kitchen_type', 'business_type', 'units', 'cylinder_brand', 'heard_from',
   'dealer_code', 'qr_tag', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
   'referrer', 'landing_page', 'page_url', 'lang', 'message', 'consent',
-  'payment_status', 'payment_txn', 'payment_method', 'paid_at', 'team_notes'
+  'payment_status', 'payment_txn', 'payment_method', 'paid_at', 'team_notes',
+  'package'   // added Oct 2026: complete kit or detector + relay (kept last so older sheets stay aligned)
 ];
 var STATUSES = ['new', 'payment_pending', 'contacted', 'paid', 'refunded', 'installed', 'not_interested'];
 var FORM_TYPES = ['preorder', 'enquiry', 'dealer', 'waitlist', 'contact'];
@@ -179,7 +180,7 @@ function alertTeam(d) {
   var to = prop('ALERT_EMAILS');
   if (!to) return;
   var label = { preorder: 'Pre-order', enquiry: 'Landlord/restaurant enquiry', dealer: 'Dealer registration', waitlist: 'Agro/Marine waitlist', contact: 'Contact message' }[d.form_type];
-  var lines = ['name', 'phone', 'email', 'organisation', 'area', 'district', 'kitchen_type', 'business_type', 'units', 'cylinder_brand', 'dealer_code', 'utm_source', 'heard_from', 'message']
+  var lines = ['name', 'phone', 'email', 'organisation', 'area', 'district', 'package', 'kitchen_type', 'business_type', 'units', 'cylinder_brand', 'dealer_code', 'utm_source', 'heard_from', 'message']
     .filter(function (k) { return d[k]; }).map(function (k) { return k + ': ' + d[k]; });
   MailApp.sendEmail({
     to: to,

@@ -23,7 +23,7 @@ The product is a **4-stage system** (pitch deck, Team Dibyo Drishty):
   wordmark "VenGuard". Bangla lockup: ভেনগার্ড. Tagline: "Safety that acts." / "নিজেই রক্ষা করে।"
 - Variants on the board: primary, all orange, white on orange, reversed (on navy), one colour black, brass etch.
 - Website copy of the logo: `venguard/templates/partials/logo.html` (redrawn from the board; replace with
-  the designer's master SVG when supplied). Icons: `venguard/assets/img/favicon.svg`, `apple-touch-icon.png`.
+  the designer's master SVG when supplied). Icons: `venguard/assets/img/icon-orange.svg`, `icon-32.png`, `apple-touch-icon.png` (renamed from favicon.svg so browsers drop the cached old icon).
 - **On the device the logo is one colour only** (navy or white). Orange never sits next to a status light.
 
 ## Colour palette

@@ -53,7 +53,8 @@ line("No change to gas pipes and no special tools needed to install.")
 y -= 6
 heading("Pricing")
 pre = SITE["preorder"]
-line(f"Home kit: BDT {pre['kit_price_bdt']:,}, one-time purchase. Core safety is never paywalled.")
+line(f"Complete Home kit (detector, ventilation relay, valve): BDT {pre['kit_price_bdt']:,}, one-time purchase. Core safety is never paywalled.")
+line(f"Modular: detector + relay BDT {pre['detector_relay_bdt']:,}; valve added later BDT {pre['valve_addon_bdt']:,}.")
 line(f"Pre-order deposit: BDT {pre['deposit_bdt']:,}, fully refundable before delivery.")
 line(f"Connected (optional): BDT {pre['connected_plan_bdt_per_year']:,} per year for remote close, alerts and a landlord dashboard.")
 y -= 6

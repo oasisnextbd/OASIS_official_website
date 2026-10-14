@@ -29,6 +29,14 @@
       <li><span class="role">{{ m.role }}</span><strong>{{ m.name }}</strong><span>{{ t(m.owns_bn, m.owns_en) }}</span></li>
       {% endfor %}
     </ul>
+    {% if site.advisors %}
+    <h3 class="mt-3">{{ t("উপদেষ্টা", "Advisor") if site.advisors | length == 1 else t("উপদেষ্টা", "Advisors") }}</h3>
+    <ul class="team">
+      {% for a in site.advisors %}
+      <li><span class="role">{{ t("উপদেষ্টা", "ADVISOR") }}</span><strong>{{ a.name }}</strong><span>{{ t(a.role_bn, a.role_en) }}</span></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </div>
 </section>
 

@@ -6,8 +6,11 @@
     "open": true,
     "deposit_bdt": 500,
     "kit_price_bdt": 3500,
+    "detector_relay_bdt": 1900,
+    "valve_addon_bdt": 1700,
     "connected_plan_bdt_per_year": 550,
-    "_source": "VenGuard HCD Submission v4"
+    "_source": "VenGuard HCD Submission v4",
+    "_pricing_note": "Complete kit (detector + relay + valve) BDT 3,500. Modular: detector + relay bundle BDT 1,900; valve bought separately BDT 1,700. Confirmed by the founders, October 2026."
   },
   "dealer": {
     "wholesale_bdt": 2800,
@@ -77,6 +80,13 @@
       "role": "CFO",
       "owns_en": "Supply chain, financial model, investor relations",
       "owns_bn": "সাপ্লাই চেইন, আর্থিক মডেল, বিনিয়োগকারী সম্পর্ক"
+    }
+  ],
+  "advisors": [
+    {
+      "name": "Prof. Dr. Md. Ali Ahammad Shoukat Choudhury",
+      "role_en": "Professor, Department of Chemical Engineering, BUET",
+      "role_bn": "অধ্যাপক, কেমিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট"
     }
   ],
   "contact": {

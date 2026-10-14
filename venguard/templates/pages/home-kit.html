@@ -84,17 +84,11 @@
 
 <section class="section section--dark" aria-labelledby="price-title">
   <div class="wrap">
-    <div class="section-head"><p class="label">{{ t("দাম", "Price") }}</p><h2 id="price-title">{{ t("একবার কিনুন। ঐচ্ছিক প্ল্যান যোগ করুন।", "Buy once. Add the optional plan.") }}</h2></div>
-    <div class="grid grid--2">
+    <div class="section-head"><p class="label">{{ t("দাম", "Price") }}</p><h2 id="price-title">{{ t("পুরো কিট নিন, বা ধাপে ধাপে।", "Take the complete kit, or build it up.") }}</h2></div>
+    <div class="grid grid--3">
+      {% set pkg_position = "product_price" %}{% include "partials/packages.html" %}
       <article class="card">
-        <span class="index">{{ t("স্তর ১ · অপরিহার্য সুরক্ষা", "TIER 1 · ESSENTIAL SAFETY") }}</span>
-        <h3>{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</h3>
-        <p class="price num">{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }} <small>{{ t("একবারই", "one time") }}</small></p>
-        <p>{{ t("অফলাইনে কাজ করার জন্য তৈরি। কখনো সাবস্ক্রিপশনের পেছনে নয়। এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানতে প্রি-অর্ডার।", "Designed to work offline. Never behind a subscription. Pre-order now with a BDT " ~ num(site.preorder.deposit_bdt) ~ " refundable deposit.") }}</p>
-        {{ preorder_btn(t, url, site, "product_price") }}
-      </article>
-      <article class="card">
-        <span class="index">{{ t("স্তর ২ · কানেক্টেড (ঐচ্ছিক)", "TIER 2 · CONNECTED (OPTIONAL)") }}</span>
+        <span class="index">{{ t("ঐচ্ছিক অ্যাড-অন", "OPTIONAL ADD-ON") }}</span>
         <h3>{{ t("কানেক্টেড প্ল্যান", "Connected plan") }}</h3>
         <p class="price num">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year), "BDT " ~ num(site.preorder.connected_plan_bdt_per_year)) }} <small>{{ t("/ বছর", "/ year") }}</small></p>
         <ul class="ticks"><li>{{ icon("tick") }}<span>{{ t("ফোন থেকে ভালভ বন্ধ", "Close the valve from your phone") }}</span></li><li>{{ icon("tick") }}<span>{{ t("পরিবারকে SMS সতর্কবার্তা", "SMS alerts to family") }}</span></li><li>{{ icon("tick") }}<span>{{ t("বাড়িওয়ালাদের ড্যাশবোর্ড", "Landlord dashboard") }}</span></li></ul>
