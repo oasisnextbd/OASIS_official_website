@@ -24,7 +24,7 @@
 
 /* ====== EDIT THESE TWO LINES, then save. Everything else works as is. ====== */
 var CONFIG = {
-  ALERT_EMAILS: 'founder1@example.com, founder2@example.com',   // who gets an email for every order/enquiry
+  ALERT_EMAILS: 'oasisnextbd@gmail.com',   // who gets an email for every order/enquiry
   SITE_URL: 'https://oasisnextbd.github.io/OASIS_official_website/VENGuard'
 };
 /* Optional later (Project Settings → Script properties): SSLC_STORE_ID, SSLC_STORE_PASSWORD,
