@@ -1,6 +1,6 @@
-{# Simple line icons: 2px strokes, rounded ends, navy (currentColor). #}
-{% macro icon(name, cls="", size=0, style="") -%}
-<svg class="{{ cls }}"{% if size %} width="{{ size }}" height="{{ size }}"{% endif %}{% if style %} style="{{ style }}"{% endif %} viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+{# Line icons: 2px strokes, rounded ends, coloured by CSS (currentColor). #}
+{% macro icon(name, cls="", size=0) -%}
+<svg{% if cls %} class="{{ cls }}"{% endif %}{% if size %} width="{{ size }}" height="{{ size }}"{% endif %} viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 {%- if name == "no-power" -%}<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/><path d="M3 3l18 18"/>
 {%- elif name == "no-internet" -%}<path d="M2 8.8a15 15 0 0 1 4.2-2.6M10 5.1A15 15 0 0 1 22 8.8M5 12.5a10 10 0 0 1 3.5-2M12 10a10 10 0 0 1 7 2.5M8.5 16.4a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/><path d="M3 3l18 18"/>
 {%- elif name == "timer" -%}<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>
@@ -32,17 +32,14 @@
 {%- elif name == "menu" -%}<path d="M4 7h16M4 12h16M4 17h16"/>
 {%- elif name == "users" -%}<circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3 6"/>
 {%- elif name == "chart" -%}<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>
+{%- elif name == "arrow" -%}<path d="M5 12h14M13 6l6 6-6 6"/>
+{%- elif name == "tick" -%}<path d="m5 12.5 4.5 4.5L19 7.5"/>
 {%- elif name == "eye" -%}<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>
 {%- endif -%}
 </svg>
 {%- endmacro %}
 
-{# The Air Line: one smooth flowing line. Use sparingly; never across text. #}
-{% macro airline(cls="") -%}
-<svg class="airline {{ cls }}" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 28 C 90 28, 120 8, 210 12 S 340 34, 420 22 S 540 6, 600 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-{%- endmacro %}
-
-{# Every Pre-order button carries its position so we can see which one converts. #}
+{# Pre-order call to action. Every instance carries its position for analytics. #}
 {% macro preorder_btn(t, url, site, position, cls="btn btn--primary") -%}
 {% if site.preorder.open %}
 <a class="{{ cls }}" href="{{ url('pre-order') }}" data-track="cta_preorder_click" data-position="{{ position }}">{{ t("প্রি-অর্ডার করুন", "Pre-order") }}</a>
@@ -51,11 +48,12 @@
 {% endif %}
 {%- endmacro %}
 
-{# Claims rule helper: confirmed fact vs. "designed to" + testing note. #}
-{% macro testing_note(t) -%}<span class="claim-note">{{ t("পরীক্ষা চলছে", "Testing in progress") }}</span>{%- endmacro %}
+{# Claims rule: shown next to any claim not yet confirmed by testing. #}
+{% macro testing_note(t) -%}<span class="status status--testing">{{ t("পরীক্ষা চলছে", "Testing in progress") }}</span>{%- endmacro %}
 
-{% macro photo_slot(t, bn, en) -%}
-<div class="photo-slot" role="img" aria-label="{{ t(bn, en) }}">
-  <div>{{ icon("camera") }}<span>{{ t(bn, en) }}</span></div>
-</div>
+{# WhatsApp link — renders nothing until a real number is set in site.json (no placeholder contacts). #}
+{% macro whatsapp(site, t, position, cls="", label_bn="", label_en="", icon_only=false) -%}
+{% if site.contact.whatsapp_number %}
+<a class="{{ cls }}" href="https://wa.me/{{ site.contact.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="{{ position }}"{% if icon_only %} aria-label="{{ t('WhatsApp-এ কথা বলুন', 'Chat on WhatsApp') }}"{% endif %}>{{ icon("whatsapp") }}{% if not icon_only %}<span>{{ t(label_bn or "WhatsApp-এ লিখুন", label_en or "Message us on WhatsApp") }}</span>{% endif %}</a>
+{% endif %}
 {%- endmacro %}

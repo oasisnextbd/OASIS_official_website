@@ -9,7 +9,7 @@
     {% set faq_limit = 99 %}
     {% include "partials/faq-list.html" %}
     <div class="notice mt-3">
-      <p class="mt-0">{{ t("আপনার প্রশ্নের উত্তর পাননি?", "Did not find your answer?") }} <a href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="faq">{{ t("WhatsApp-এ জিজ্ঞেস করুন", "Ask us on WhatsApp") }}</a> {{ t("অথবা", "or") }} <a href="{{ url('contact') }}">{{ t("যোগাযোগ করুন", "contact us") }}</a>.</p>
+      <p>{{ t("আপনার প্রশ্নের উত্তর পাননি?", "Did not find your answer?") }} <a href="{{ url('contact') }}">{{ t("আমাদের লিখুন", "Write to us") }}</a>{% if site.contact.whatsapp_number %} {{ t("অথবা", "or") }} <a href="https://wa.me/{{ site.contact.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="faq">{{ t("WhatsApp-এ জিজ্ঞেস করুন", "ask on WhatsApp") }}</a>{% endif %}.</p>
     </div>
   </div>
 </section>

@@ -1,181 +1,202 @@
 {% extends "base.html" %}
-{% from "partials/macros.html" import icon, airline, preorder_btn, testing_note %}
+{% from "partials/macros.html" import icon, preorder_btn, testing_note %}
 {% set page_title = t("VenGuard — নিরাপত্তা যা নিজেই কাজ করে | গ্যাস লিক হলে নিজে থেকেই গ্যাস বন্ধ", "VenGuard — Safety that acts | Automatic gas shut-off for Bangladeshi kitchens") %}
-{% set page_desc = t("গ্যাস লিক হলে VenGuard নিজে থেকেই আপনার গ্যাস বন্ধ করতে তৈরি — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও। ৳৫০০ ফেরতযোগ্য জামানতে প্রি-অর্ডার করুন।", "VenGuard is designed to shut off your gas by itself when it senses a leak, even with nobody home, no power and no internet. Pre-order with a BDT 500 refundable deposit.") %}
+{% set page_desc = t("গ্যাস লিক হলে VenGuard নিজে থেকেই সিলিন্ডারের ভালভ বন্ধ করার জন্য তৈরি — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও। দাম ৳৩,৫০০; ৳৫০০ ফেরতযোগ্য জামানতে প্রি-অর্ডার করুন।", "VenGuard is designed to close the cylinder valve by itself when it senses a leak, even with nobody home, no power and no internet. BDT 3,500; pre-order with a BDT 500 refundable deposit.") %}
+{% set structured = [{
+  "@type": "Product", "name": "VenGuard Home kit", "brand": {"@type": "Brand", "name": "VenGuard"},
+  "description": "Automatic LPG gas shut-off kit: gas detector, automatic valve and batteries.",
+  "image": site.base_url ~ "/assets/img/kit-gray.jpg",
+  "offers": {"@type": "Offer", "priceCurrency": "BDT", "price": site.preorder.kit_price_bdt, "availability": "https://schema.org/PreOrder", "url": site.base_url ~ "/pre-order/"}
+}] %}
 {% block content %}
 
-{# 2. Hero — centered headline, wide rounded media panel #}
-<section class="hero hero--center">
+<section class="hero on-dark" aria-labelledby="hero-title">
   <div class="wrap">
-    <h1>{{ t("নিরাপত্তা যা নিজেই কাজ করে।", "Safety that acts.") }}</h1>
-    <p class="lead">
-      {% if claim("no_power_needed") and claim("no_internet_needed") %}
-      {{ t("VenGuard নিজে থেকেই আপনার গ্যাস বন্ধ করে দেয় — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ না থাকলেও, ইন্টারনেট না থাকলেও।", "VenGuard shuts off your gas by itself, even with nobody home, no power and no internet.") }}
-      {% else %}
-      {{ t("VenGuard এমনভাবে তৈরি যাতে নিজে থেকেই আপনার গ্যাস বন্ধ করে দেয় — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ না থাকলেও, ইন্টারনেট না থাকলেও।", "VenGuard is designed to shut off your gas by itself, even with nobody home, no power and no internet.") }}
-      {% endif %}
-    </p>
-    <div class="btn-row mt-2">
-      {{ preorder_btn(t, url, site, "hero") }}
-      <a class="btn btn--ghost" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="hero">{{ t("কীভাবে কাজ করে দেখুন", "See how it works") }}</a>
-    </div>
-    {% if site.preorder.open %}
-    <p class="btn-note">{{ t("প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit to pre-order, fully refundable.") }} <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
-    {% endif %}
-    <div class="hero-panel">
-      {# Replace with a calm, real kitchen photo or a short silent loop when available (brief Part 4). #}
-      <picture>
-        <source srcset="{{ root }}assets/img/kit-blue-sm.webp 640w, {{ root }}assets/img/kit-blue.webp 1100w" sizes="(min-width: 1200px) 1168px, 100vw" type="image/webp">
-        <img src="{{ root }}assets/img/kit-blue.jpg" width="1100" height="746" alt="{{ t('VenGuard হোম কিট: গ্যাস ভালভ, কন্ট্রোল ইউনিট এবং গ্যাস ডিটেক্টর', 'The VenGuard Home kit: gas valve, control unit and gas detector') }}" fetchpriority="high">
-      </picture>
+    <div class="hero-grid">
+      <div>
+        <p class="label">{{ t("এলপিজি রান্নাঘরের জন্য স্বয়ংক্রিয় গ্যাস বন্ধ", "Automatic gas shut-off for LPG kitchens") }}</p>
+        <h1 id="hero-title">{{ t("নিরাপত্তা যা", "Safety that") }} <span class="accent">{{ t("নিজেই কাজ করে।", "acts.") }}</span></h1>
+        <p class="lead">
+          {% if claim("no_power_needed") and claim("no_internet_needed") %}
+          {{ t("গ্যাস লিক হলে VenGuard নিজেই সিলিন্ডারের ভালভ বন্ধ করে — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও।", "When gas leaks, VenGuard closes the cylinder valve by itself — even with nobody home, no power and no internet.") }}
+          {% else %}
+          {{ t("গ্যাস লিক হলে VenGuard নিজেই সিলিন্ডারের ভালভ বন্ধ করার জন্য তৈরি — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও।", "VenGuard is designed to close the cylinder valve by itself when gas leaks — even with nobody home, no power and no internet.") }}
+          {% endif %}
+        </p>
+        <div class="btn-row">
+          {{ preorder_btn(t, url, site, "hero") }}
+          <a class="btn btn--secondary" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="hero">{{ t("কীভাবে কাজ করে", "How it works") }}</a>
+        </div>
+        {% if site.preorder.open %}
+        <p class="btn-note">{{ t("দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "। প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.kit_price_bdt) ~ ". Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable.") }} <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
+        {% endif %}
+      </div>
+      <figure class="hero-figure">
+        <span class="corner corner--tl"></span><span class="corner corner--tr"></span><span class="corner corner--bl"></span><span class="corner corner--br"></span>
+        <picture>
+          <source srcset="{{ root }}assets/img/kit-gray-sm.webp 640w, {{ root }}assets/img/kit-gray.webp 1100w" sizes="(min-width: 960px) 46vw, 100vw" type="image/webp">
+          <img src="{{ root }}assets/img/kit-gray.jpg" width="1100" height="767" alt="{{ t('VenGuard হোম কিট: স্বয়ংক্রিয় ভালভ, কন্ট্রোল ইউনিট ও গ্যাস ডিটেক্টর', 'The VenGuard Home kit: automatic valve, control unit and gas detector') }}" fetchpriority="high">
+        </picture>
+        <figcaption><span>VenGuard Home</span><span>{{ t("ডিটেক্টর · ভালভ · ব্যাটারি", "Detector · Valve · Batteries") }}</span></figcaption>
+      </figure>
     </div>
 
-    {# 3. Three-fact strip (claims rule applies) #}
-    <div class="facts facts--clean" style="text-align:left" aria-label="{{ t('মূল তথ্য', 'Key facts') }}">
-      <div class="fact">{{ icon("no-power") }}<div>
-        <strong>{{ t("বিদ্যুৎ লাগে না", "No power needed") if claim("no_power_needed") else t("বিদ্যুৎ ছাড়াই কাজ করার জন্য তৈরি", "Designed to work without mains power") }}</strong>
-        <p class="muted mt-1">{{ t("ব্যাটারিতে চলে, লোডশেডিংয়েও।", "Runs on batteries, even in a blackout.") }}</p>
-        {% if not claim("no_power_needed") %}{{ testing_note(t) }}{% endif %}
-      </div></div>
-      <div class="fact">{{ icon("no-internet") }}<div>
+    <ul class="readouts" aria-label="{{ t('মূল তথ্য', 'Key facts') }}">
+      <li class="readout">
+        <span class="readout-head">01 · {{ t("বিদ্যুৎ", "Power") }} {% if claim("no_power_needed") %}<span class="status status--safe">{{ t("নিশ্চিত", "Confirmed") }}</span>{% else %}{{ testing_note(t) }}{% endif %}</span>
+        {{ icon("no-power") }}
+        <strong>{{ t("বিদ্যুৎ লাগে না", "No mains power needed") if claim("no_power_needed") else t("বিদ্যুৎ ছাড়াই কাজ করার জন্য তৈরি", "Designed to work without mains power") }}</strong>
+        <p>{{ t("ব্যাটারিতে চলে, লোডশেডিংয়েও।", "Runs on batteries, even during load-shedding.") }}</p>
+      </li>
+      <li class="readout">
+        <span class="readout-head">02 · {{ t("সংযোগ", "Network") }} {% if claim("no_internet_needed") %}<span class="status status--safe">{{ t("নিশ্চিত", "Confirmed") }}</span>{% else %}{{ testing_note(t) }}{% endif %}</span>
+        {{ icon("no-internet") }}
         <strong>{{ t("ইন্টারনেট লাগে না", "No internet needed") if claim("no_internet_needed") else t("ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি", "Designed to work without internet") }}</strong>
-        <p class="muted mt-1">{{ t("সুরক্ষা পুরোটাই যন্ত্রের ভেতরে।", "All the protection happens inside the device.") }}</p>
-        {% if not claim("no_internet_needed") %}{{ testing_note(t) }}{% endif %}
-      </div></div>
-      <div class="fact">{{ icon("timer") }}<div>
-        <strong>{{ t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধ", "Closes the valve in under 1 second") if claim("closes_under_1s") else t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধ করার লক্ষ্যে তৈরি", "Designed to close the valve in under 1 second") }}</strong>
-        <p class="muted mt-1">{{ t("লিক নিশ্চিত হওয়ার পর।", "Once a leak is confirmed.") }}</p>
-        {% if not claim("closes_under_1s") %}{{ testing_note(t) }}{% endif %}
-      </div></div>
+        <p>{{ t("ডিটেক্টর ও ভালভ নিজেদের রেডিও সংযোগে কথা বলে।", "Detector and valve talk over their own radio link.") }}</p>
+      </li>
+      <li class="readout">
+        <span class="readout-head">03 · {{ t("সাড়া", "Response") }} {% if claim("closes_under_1s") %}<span class="status status--safe">{{ t("নিশ্চিত", "Confirmed") }}</span>{% else %}{{ testing_note(t) }}{% endif %}</span>
+        {{ icon("timer") }}
+        <strong>{{ t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধ", "Closes the valve in under 1 second") if claim("closes_under_1s") else t("১ সেকেন্ডের কম সময়ে ভালভ বন্ধের লক্ষ্যে তৈরি", "Designed to close the valve in under 1 second") }}</strong>
+        <p>{{ t("৭ সেকেন্ডের যাচাইয়ে লিক নিশ্চিত হওয়ার পর।", "After a 7-second check confirms the leak.") }}</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+{# The problem — facts, no fear imagery #}
+<section class="section" aria-labelledby="problem-title">
+  <div class="wrap split">
+    <div>
+      <p class="label">{{ t("সমস্যা", "The problem") }}</p>
+      <h2 id="problem-title">{{ t("সাধারণ অ্যালার্ম শুধু শব্দ করে।", "An ordinary alarm only makes noise.") }}</h2>
+      <ul class="ticks">
+        <li>{{ icon("bell") }}<span>{{ t("অ্যালার্ম বাজে, কিন্তু গ্যাস বন্ধ হয় না।", "It sounds, but the gas keeps flowing.") }}</span></li>
+        <li>{{ icon("users") }}<span>{{ t("এর জন্য কাউকে জেগে থাকতে হয় এবং সিলিন্ডারের কাছে যেতে হয়।", "It needs someone awake who can reach the cylinder.") }}</span></li>
+        <li>{{ icon("clock") }}<span>{{ t("কিন্তু লিক হয় রাত ২টায়ও, যখন সবাই ঘুমিয়ে।", "But leaks happen at 2 a.m. too, when everyone is asleep.") }}</span></li>
+      </ul>
+    </div>
+    <div class="stat-figure">
+      <span class="num-big num">{{ num(site.evidence.bfscd_fire_incidents_per_year) }}</span>
+      <p>{{ t("বাংলাদেশে বছরে প্রায় এতগুলো অগ্নিকাণ্ড ঘটে। ত্রুটিপূর্ণ চুলা, পুরনো হোস ও সিলিন্ডারের সমস্যা বাসাবাড়ির আগুনের অন্যতম প্রধান কারণ।", "fire incidents a year in Bangladesh. Faulty burners, worn hoses and cylinder failures are among the leading causes of home fires.") }}</p>
+      <cite>{{ t("সূত্র: বাংলাদেশ ফায়ার সার্ভিস ও সিভিল ডিফেন্স", "Source: Bangladesh Fire Service and Civil Defence") }}</cite>
     </div>
   </div>
 </section>
 
-{# Product showcase — photos and short silent clips #}
-<section class="section" style="padding-bottom:0">
+{# How it works #}
+<section class="section section--alt" aria-labelledby="how-title">
   <div class="wrap">
-    <div class="gallery-head section-head" style="max-width:none">
-      <div><span class="eyebrow">{{ t("কাছ থেকে দেখুন", "See it up close") }}</span>
-      <h2 class="mb-0">{{ t("ছোট, শান্ত, সবসময় পাহারায়।", "Small, quiet, always on guard.") }}</h2></div>
-      <a class="arrow-link" href="{{ url('home-kit') }}">{{ t("কিটের বিস্তারিত →", "Kit details →") }}</a>
+    <div class="section-head">
+      <p class="label">{{ t("কীভাবে কাজ করে", "How it works") }}</p>
+      <h2 id="how-title">{{ t("এটা নিজেই কাজ করে, আপনাকে কিছু করতে হয় না।", "It acts, so you don't have to.") }}</h2>
+    </div>
+    <ol class="steps">
+      <li>{{ icon("sense") }}<h3>{{ t("গ্যাস টের পায়", "It senses gas") }}</h3><p>{{ t("ডিটেক্টর সারাক্ষণ রান্নাঘরের বাতাস পরীক্ষা করে, আর রান্নার ধোঁয়া থেকে আসল লিক আলাদা করে।", "The detector checks the kitchen air all the time and tells cooking fumes apart from a real leak.") }}</p></li>
+      <li>{{ icon("valve") }}<h3>{{ t("ভালভ নিজেই বন্ধ হয়", "The valve closes by itself") }}</h3><p>{{ t("লিক নিশ্চিত হলে সিলিন্ডারের ভালভ বন্ধ হয়ে যায় — কোনো মানুষ, বিদ্যুৎ বা ইন্টারনেট ছাড়াই।", "Once the leak is confirmed, the cylinder valve closes — no person, power or internet needed.") }}</p></li>
+      <li>{{ icon("reset") }}<h3>{{ t("১০ সেকেন্ডে রিসেট", "Reset in 10 seconds") }}</h3><p>{{ t("জায়গাটা নিরাপদ হলে চুলার কাছে লিভার তুলে আবার গ্যাস চালু করুন। টেকনিশিয়ান লাগে না।", "When it's safe, lift the lever at the stove to turn gas back on. No technician needed.") }}</p></li>
+    </ol>
+    <p class="mt-3"><a class="arrow-link" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="steps">{{ t("পুরো সুরক্ষা-শৃঙ্খল দেখুন", "See the full safety chain") }} {{ icon("arrow", "", 18) }}</a></p>
+  </div>
+</section>
+
+{# Product up close #}
+<section class="section" aria-labelledby="kit-title">
+  <div class="wrap">
+    <div class="row-between section-head">
+      <div>
+        <p class="label">{{ t("কাছ থেকে দেখুন", "Up close") }}</p>
+        <h2 id="kit-title" class="mb-0">{{ t("ছোট, শান্ত, সবসময় পাহারায়।", "Small, quiet, always on guard.") }}</h2>
+      </div>
+      <a class="arrow-link" href="{{ url('home-kit') }}">{{ t("কিটের বিস্তারিত", "Kit details") }} {{ icon("arrow", "", 18) }}</a>
     </div>
     {% include "partials/gallery.html" %}
   </div>
 </section>
 
-{# 4. The problem — no fear imagery #}
-<section class="section">
-  <div class="wrap feature">
-    <div>
-      <span class="eyebrow">{{ t("সমস্যাটা কোথায়", "The problem") }}</span>
-      <h2>{{ t("সাধারণ অ্যালার্ম শুধু শব্দ করে।", "An ordinary alarm only makes noise.") }}</h2>
-      <ul class="checklist">
-        <li>{{ icon("bell") }}<span>{{ t("সাধারণ গ্যাস অ্যালার্ম শুধু শব্দ করে।", "An ordinary gas alarm only makes noise.") }}</span></li>
-        <li>{{ icon("users") }}<span>{{ t("এর জন্য কাউকে জেগে থাকতে হয়, কাছাকাছি থাকতে হয়।", "It needs someone awake and nearby.") }}</span></li>
-        <li>{{ icon("clock") }}<span>{{ t("কিন্তু গ্যাস লিক হয় রাত ২টায়ও, যখন কেউ জেগে থাকে না।", "Gas leaks at 2 a.m. too, when nobody is.") }}</span></li>
-      </ul>
-    </div>
-    <div class="panel" style="padding:40px 32px">
-      {# FOUNDERS: replace with one sourced BFSCD statistic and the exact source/year. #}
-      <p class="mt-0" style="font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--navy);line-height:1.25">{{ t("[বাংলাদেশ ফায়ার সার্ভিস ও সিভিল ডিফেন্স (BFSCD)-এর একটি পরিসংখ্যান]", "[One statistic from Bangladesh Fire Service and Civil Defence (BFSCD)]") }}</p>
-      <p class="small muted mb-0">{{ t("সূত্র: BFSCD, বছর — প্রতিষ্ঠাতারা সরবরাহ করবেন", "Source: BFSCD, year — to be supplied by the founders") }}</p>
-    </div>
-  </div>
-</section>
-
-{# 5. How it works — three steps with the Air Line #}
-<section class="section" style="padding-top:0">
-  <div class="wrap"><div class="panel">
-    <div class="section-head">
-      <span class="eyebrow">{{ t("কীভাবে কাজ করে", "How it works") }}</span>
-      <h2>{{ t("এটা নিজেই কাজ করে, আপনাকে কিছু করতে হয় না।", "It acts, so you don't have to.") }}</h2>
-    </div>
-    {{ airline() }}
-    <ol class="steps mt-1">
-      <li><span class="step-num">{{ num(1) }}</span>{{ icon("sense") }}<h3>{{ t("গ্যাস টের পায়", "It senses gas") }}</h3><p class="muted">{{ t("ডিটেক্টর সারাক্ষণ রান্নাঘরের বাতাস পরীক্ষা করে।", "The detector checks the kitchen air all the time.") }}</p></li>
-      <li><span class="step-num">{{ num(2) }}</span>{{ icon("valve") }}<h3>{{ t("ভালভ নিজেই বন্ধ হয়", "The valve closes by itself") }}</h3><p class="muted">{{ t("লিক নিশ্চিত হলে ভালভ সিলিন্ডারের গ্যাস বন্ধ করে দেয়।", "When a leak is confirmed, the valve shuts off gas from the cylinder.") }}</p></li>
-      <li><span class="step-num">{{ num(3) }}</span>{{ icon("reset") }}<h3>{{ t("১০ সেকেন্ডে রিসেট", "You reset it in 10 seconds") }}</h3><p class="muted">{{ t("জায়গাটা নিরাপদ হলে হাতে রিসেট করুন, আবার রান্না শুরু করুন।", "Once the area is safe, reset it by hand and cook again.") }}</p></li>
-    </ol>
-    <p class="mt-2 mb-0"><a class="arrow-link" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="steps">{{ t("বিস্তারিত দেখুন →", "Read the full explanation →") }}</a></p>
-  </div></div>
-</section>
-
-{# 6. Two layers: honest pricing, no lock-in #}
-<section class="section">
+{# Two layers: honest pricing #}
+<section class="section section--dark" aria-labelledby="layers-title">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">{{ t("দুই স্তর", "Two layers") }}</span>
-      <h2>{{ t("মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Core safety is never behind a subscription.") }}</h2>
+      <p class="label">{{ t("দাম", "Pricing") }}</p>
+      <h2 id="layers-title">{{ t("মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Core safety is never locked behind a subscription.") }}</h2>
     </div>
     <div class="grid grid--2">
-      <div class="card card--mist">
-        {{ icon("shield", "icon") }}
-        <span class="tag tag--teal">{{ t("সবার জন্য", "Included") }}</span>
-        <h3 class="mt-1">{{ t("কোর সেফটি", "Core Safety") }}</h3>
-        <p class="price">{{ t("একবার কিনলেই", "One-time purchase") }}</p>
-        <ul>
-          <li>{{ t("ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি", "Designed to work fully offline") }}</li>
-          <li>{{ t("গ্যাস টের পাওয়া, ভালভ বন্ধ, হাতে রিসেট", "Sensing, valve closing, manual reset") }}</li>
-          <li>{{ t("কখনো পেওয়ালের পেছনে নয়", "Never paywalled") }}</li>
+      <article class="card">
+        <span class="index">{{ t("স্তর ১ · অপরিহার্য সুরক্ষা", "TIER 1 · ESSENTIAL SAFETY") }}</span>
+        <h3>{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</h3>
+        <p class="price num">{{ t("৳" ~ num(site.preorder.kit_price_bdt), "BDT " ~ num(site.preorder.kit_price_bdt)) }} <small>{{ t("একবারই", "one time") }}</small></p>
+        <ul class="ticks">
+          <li>{{ icon("tick") }}<span>{{ t("অফলাইনে কাজ করার জন্য তৈরি", "Designed to work fully offline") }}</span></li>
+          <li>{{ icon("tick") }}<span>{{ t("গ্যাস টের পাওয়া, ভালভ বন্ধ, হাতে রিসেট", "Sensing, valve closing, manual reset") }}</span></li>
+          <li>{{ icon("tick") }}<span>{{ t("কোনো সাবস্ক্রিপশন নেই", "No subscription, ever") }}</span></li>
         </ul>
-      </div>
-      <div class="card">
-        {{ icon("cloud", "icon") }}
-        <span class="tag">{{ t("ঐচ্ছিক", "Optional") }}</span>
-        <h3 class="mt-1">{{ t("কানেক্টেড", "Connected") }}</h3>
-        <p class="price">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / বছর", "BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " / year") }}</p>
-        <ul>
-          <li>{{ t("দূর থেকে ভালভ বন্ধ", "Remote close") }}</li>
-          <li>{{ t("ফোনে সতর্কবার্তা", "Alerts on your phone") }}</li>
-          <li>{{ t("বাড়িওয়ালাদের জন্য ড্যাশবোর্ড", "Landlord dashboard") }}</li>
+        <div class="mt-2">{{ preorder_btn(t, url, site, "pricing") }}</div>
+      </article>
+      <article class="card">
+        <span class="index">{{ t("স্তর ২ · কানেক্টেড (ঐচ্ছিক)", "TIER 2 · CONNECTED (OPTIONAL)") }}</span>
+        <h3>{{ t("কানেক্টেড প্ল্যান", "Connected plan") }}</h3>
+        <p class="price num">{{ t("৳" ~ num(site.preorder.connected_plan_bdt_per_year), "BDT " ~ num(site.preorder.connected_plan_bdt_per_year)) }} <small>{{ t("/ বছর", "/ year") }}</small></p>
+        <ul class="ticks">
+          <li>{{ icon("tick") }}<span>{{ t("ফোন থেকে ভালভ বন্ধ", "Close the valve from your phone") }}</span></li>
+          <li>{{ icon("tick") }}<span>{{ t("পরিবারকে SMS সতর্কবার্তা", "SMS alerts to family") }}</span></li>
+          <li>{{ icon("tick") }}<span>{{ t("বাড়িওয়ালাদের জন্য সব ইউনিটের ড্যাশবোর্ড", "Multi-unit dashboard for landlords") }}</span></li>
         </ul>
-        <p class="small muted">{{ t("বাদ দিলেও কোর সেফটি আগের মতোই চলবে।", "Cancel any time; Core Safety keeps working.") }}</p>
-      </div>
+        <p class="small mt-2">{{ t("আবার চালু করা সবসময় চুলার কাছে, হাতে — দূর থেকে কখনো নয়।", "Turning gas back on is always manual, at the stove — never remote.") }}</p>
+      </article>
     </div>
   </div>
 </section>
 
-{# 7. Fits your kitchen — alternating feature rows #}
-<section class="section">
-  <div class="wrap">
-    <div class="feature feature--flip">
-      <div>
-        <span class="eyebrow">{{ t("আপনার রান্নাঘরে মানানসই", "Fits your kitchen") }}</span>
-        <h2>{{ t("গ্যাস লাইনে হাত দেওয়ার ভয় নেই।", "No need to fear touching the gas line.") }}</h2>
-        <ul class="checklist">
-          <li>{{ icon("pipe") }}<span><strong>{{ t("পাইপে কোনো পরিবর্তন নেই।", "No change to gas pipes.") }}</strong> {{ t("কাটাকাটি বা পাইপ বদল ছাড়াই বর্তমান গ্যাস লাইনে বসে।", "It fits your existing gas line without cutting or changing pipes.") }}</span></li>
-          <li>{{ icon("tools") }}<span><strong>{{ t("বিশেষ যন্ত্র লাগে না।", "No special tools.") }}</strong> {{ t("ছবিসহ সহজ ধাপে বসানো যায়।", "Simple steps with picture instructions.") }}</span></li>
-          <li>{{ icon("battery") }}<span><strong>{{ t("ব্যাটারিতে চলে।", "Works on batteries.") }}</strong> {{ t("প্লাগ বা ওয়্যারিং লাগে না।", "No plug or wiring needed.") }}</span></li>
-        </ul>
-        <p class="mt-2"><a class="arrow-link" href="{{ url('home-kit') }}">{{ t("কিটে কী থাকে দেখুন →", "See what's in the kit →") }}</a></p>
-      </div>
-      {# FOUNDERS: replace with a real photo of hands installing the device (with written consent). #}
-      <div class="feature-media"><picture><source srcset="{{ root }}assets/img/valve-sm.webp 560w, {{ root }}assets/img/valve.webp 900w" sizes="(min-width: 880px) 50vw, 100vw" type="image/webp"><img src="{{ root }}assets/img/valve.jpg" width="900" height="565" loading="lazy" alt="{{ t('VenGuard স্বয়ংক্রিয় গ্যাস ভালভ', 'The VenGuard automatic gas valve') }}"></picture></div>
+{# Fits your kitchen #}
+<section class="section" aria-labelledby="fit-title">
+  <div class="wrap split split--flip">
+    <div>
+      <p class="label">{{ t("বসানো", "Installation") }}</p>
+      <h2 id="fit-title">{{ t("আপনার রান্নাঘর যেমন আছে, তেমনই।", "Fits the kitchen you already have.") }}</h2>
+      <ul class="ticks">
+        <li>{{ icon("pipe") }}<span><strong>{{ t("পাইপে কোনো পরিবর্তন নেই।", "No changes to gas pipes.") }}</strong> {{ t("সাধারণ ফিটিং ও ক্ল্যাম্প দিয়ে বর্তমান লাইনে বসে।", "Fits your existing line with standard fittings and clamps.") }}</span></li>
+        <li>{{ icon("tools") }}<span><strong>{{ t("বিশেষ যন্ত্র লাগে না।", "No special tools.") }}</strong> {{ t("ছবিসহ সহজ ধাপে কয়েক মিনিটে বসানো যায়।", "Simple picture steps, a few minutes.") }}</span></li>
+        <li>{{ icon("battery") }}<span><strong>{{ t("ব্যাটারিতে চলে।", "Runs on batteries.") }}</strong> {{ t("সিলিন্ডারের কাছে প্লাগ লাগে না।", "No socket needed near the cylinder.") }}</span></li>
+      </ul>
     </div>
+    <figure class="media-figure">
+      <picture><source srcset="{{ root }}assets/img/valve-sm.webp 560w, {{ root }}assets/img/valve.webp 900w" sizes="(min-width: 900px) 50vw, 100vw" type="image/webp"><img src="{{ root }}assets/img/valve.jpg" width="900" height="565" loading="lazy" alt="{{ t('VenGuard স্বয়ংক্রিয় গ্যাস ভালভ', 'The VenGuard automatic gas valve') }}"></picture>
+    </figure>
   </div>
 </section>
 
-{# 8. Voices from the field — only real, permitted quotes (venguard/site.json → testimonials) #}
+{# Voices from the field — only real quotes with written permission (site.json → testimonials) #}
 {% if site.testimonials %}
-<section class="section">
+<section class="section section--alt" aria-labelledby="voices-title">
   <div class="wrap">
-    <div class="section-head"><span class="eyebrow">{{ t("মাঠ থেকে", "Voices from the field") }}</span><h2>{{ t("যাঁদের সাথে আমরা কথা বলেছি", "What people told us") }}</h2></div>
+    <div class="section-head"><p class="label">{{ t("মাঠ থেকে", "Voices from the field") }}</p><h2 id="voices-title">{{ t("যাঁদের সাথে আমরা কথা বলেছি", "What people told us") }}</h2></div>
     <div class="grid grid--3">
       {% for q in site.testimonials %}
-      <figure class="card quote"><p>“{{ t(q.quote_bn, q.quote_en) }}”</p><footer>— {{ t(q.name_bn, q.name_en) }}, {{ num(q.age) }}, {{ t(q.area_bn, q.area_en) }}</footer></figure>
+      <figure class="card"><blockquote><p>“{{ t(q.quote_bn, q.quote_en) }}”</p></blockquote><figcaption class="muted">{{ t(q.name_bn, q.name_en) }}, {{ num(q.age) }}, {{ t(q.area_bn, q.area_en) }}</figcaption></figure>
       {% endfor %}
     </div>
   </div>
 </section>
 {% endif %}
 
-{# 9. Where we are today — honest status #}
-<section class="section" style="padding-top:0">
+{# Where we are today — honest status + demand evidence #}
+<section class="section section--dark" aria-labelledby="status-title">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">{{ t("আমরা এখন কোথায়", "Where we are today") }}</span>
-      <h2>{{ t("সৎভাবে বলছি, আমরা কোন ধাপে আছি।", "An honest look at where we are.") }}</h2>
+      <p class="label">{{ t("আমরা এখন কোথায়", "Where we are today") }}</p>
+      <h2 id="status-title">{{ t("সৎভাবে বলছি, আমরা কোন ধাপে আছি।", "An honest look at where we are.") }}</h2>
+      <p>{{ t("ঢাকার বাসাবাড়ি, রেস্তোরাঁ ও বাড়িওয়ালাদের সাথে মুখোমুখি সাক্ষাৎকারে আমরা যা পেয়েছি:", "What we found in face-to-face interviews with Dhaka households, restaurants and landlords:") }}</p>
     </div>
+    <div class="figures">
+      <div><strong class="num">{{ num(site.evidence.interviews) }}</strong><span>{{ t("সাক্ষাৎকার", "in-person interviews") }}</span></div>
+      <div><strong class="num">{{ num(site.evidence.asked_where_to_buy) }}</strong><span>{{ t("জন জানতে চেয়েছেন কোথায় কিনবেন", "asked where to buy it") }}</span></div>
+      <div><strong class="num">{{ num(site.evidence.tried_to_buy) }}</strong><span>{{ t("জন সেখানেই কিনতে চেয়েছেন", "tried to buy on the spot") }}</span></div>
+    </div>
+  </div>
+</section>
+<section class="section section--tight" aria-label="{{ t('অগ্রগতি', 'Progress') }}">
+  <div class="wrap">
     {% include "partials/timeline.html" %}
     {% if not site.certifications_granted %}
     <p class="small muted mt-1">{{ t("সার্টিফিকেশন পাওয়ার পরই শুধু এখানে সার্টিফিকেশন চিহ্ন দেখানো হবে।", "Certification marks will appear here only after they are granted.") }}</p>
@@ -183,28 +204,25 @@
   </div>
 </section>
 
-{# 10. Who it is for — tabbed #}
-<section class="section" style="padding-top:0">
-  <div class="wrap"><div class="panel">
-    <div class="section-head"><span class="eyebrow">{{ t("কার জন্য", "Who it is for") }}</span><h2>{{ t("আপনার রান্নাঘর, আপনার ভবন, আপনার ব্যবসা।", "Your kitchen, your building, your business.") }}</h2></div>
+{# Who it is for #}
+<section class="section section--alt" aria-labelledby="who-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("কার জন্য", "Who it is for") }}</p><h2 id="who-title">{{ t("আপনার রান্নাঘর, আপনার ভবন, আপনার ব্যবসা।", "Your kitchen, your building, your business.") }}</h2></div>
     {% include "partials/audience-tabs.html" %}
-  </div></div>
+  </div>
 </section>
 
-{# 11. FAQ (short) #}
-<section class="section">
+{# FAQ (short) #}
+<section class="section" aria-labelledby="faq-title">
   <div class="wrap">
-    <div class="section-head"><span class="eyebrow">{{ t("সাধারণ প্রশ্ন", "FAQ") }}</span><h2>{{ t("আপনার প্রশ্নের উত্তর", "Answers to common questions") }}</h2></div>
-    {% set faq_limit = 7 %}
+    <div class="section-head"><p class="label">{{ t("সাধারণ প্রশ্ন", "FAQ") }}</p><h2 id="faq-title">{{ t("আপনার প্রশ্নের উত্তর", "Answers to common questions") }}</h2></div>
+    {% set faq_limit = 6 %}
     {% include "partials/faq-list.html" %}
-    <p class="mt-2"><a href="{{ url('faq') }}">{{ t("সব প্রশ্ন দেখুন →", "See all questions →") }}</a></p>
+    <p class="mt-2"><a class="arrow-link" href="{{ url('faq') }}">{{ t("সব প্রশ্ন দেখুন", "See all questions") }} {{ icon("arrow", "", 18) }}</a></p>
   </div>
 </section>
 
-{# 12. Final call to action #}
-<section class="section">
-  <div class="wrap">
-    {% include "partials/cta-band.html" %}
-  </div>
-</section>
+<div class="wrap section section--tight">
+  {% include "partials/cta-band.html" %}
+</div>
 {% endblock %}

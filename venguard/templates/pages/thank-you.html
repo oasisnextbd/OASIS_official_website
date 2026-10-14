@@ -5,7 +5,7 @@
 {% block content %}
 <section class="section">
   <div class="wrap prose" data-thank-you>
-    {{ icon("check", "", 56, "color:#0A7F76") }}
+    <span class="done-mark">{{ icon("tick") }}</span>
     <h1 class="mt-1" data-state="paid">{{ t("ধন্যবাদ! আপনার VenGuard রিজার্ভ হয়েছে।", "Thank you! Your VenGuard is reserved.") }}</h1>
     <h1 class="mt-1" data-state="pending" hidden>{{ t("ধন্যবাদ! আপনার তথ্য আমরা পেয়েছি।", "Thank you! We have your details.") }}</h1>
     <h1 class="mt-1" data-state="failed" hidden>{{ t("পেমেন্ট সম্পূর্ণ হয়নি, তবে আপনার তথ্য সংরক্ষিত আছে।", "The payment did not go through, but your details are saved.") }}</h1>
@@ -26,7 +26,7 @@
       <li>{{ t("পরীক্ষা ও সার্টিফিকেশনের অগ্রগতি আমরা আপনাকে জানাতে থাকব।", "We keep you updated on testing and certification.") }}</li>
       <li>{{ t("ডেলিভারির তারিখ ঠিক হলে সবার আগে আপনি জানবেন।", "You hear first when delivery dates are set.") }}</li>
     </ol>
-    <p>{{ t("প্রশ্ন আছে?", "Questions?") }} <a href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="thank_you">{{ t("WhatsApp-এ লিখুন", "Message us on WhatsApp") }}</a> · <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
+    <p>{{ t("প্রশ্ন আছে?", "Questions?") }} <a href="{{ url('contact') }}">{{ t("আমাদের লিখুন", "Write to us") }}</a>{% if site.contact.whatsapp_number %} · <a href="https://wa.me/{{ site.contact.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="thank_you">WhatsApp</a>{% endif %} · <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
   </div>
 </section>
 {% endblock %}

@@ -1,14 +1,15 @@
 {% from "partials/macros.html" import icon %}
+{% set c = site.contact %}
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="logo" href="{{ url('') }}">{% include "partials/logo.html" %}</a>
-        <p class="mt-1">{{ t("নিরাপত্তা যা নিজেই কাজ করে।", "Safety that acts.") }}</p>
-        <p class="small">{{ t("VenGuard কোনো ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি। এই ওয়েবসাইট কখনো আপনার ভালভ নিয়ন্ত্রণ করে না।", "VenGuard is designed to work with no internet. This website never controls your valve.") }}</p>
+        <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
+        <p class="mt-2">{{ t("নিরাপত্তা যা নিজেই কাজ করে।", "Safety that acts.") }}</p>
+        <p class="small">{{ t("VenGuard ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি। এই ওয়েবসাইট কখনো আপনার ভালভ নিয়ন্ত্রণ করে না।", "VenGuard is designed to work with no internet. This website never controls your valve.") }}</p>
       </div>
-      <div>
-        <h3>{{ t("পণ্য", "Product") }}</h3>
+      <nav aria-label="{{ t('পণ্য', 'Product') }}">
+        <h2>{{ t("পণ্য", "Product") }}</h2>
         <ul>
           <li><a href="{{ url('home-kit') }}">{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</a></li>
           <li><a href="{{ url('how-it-works') }}">{{ t("কীভাবে কাজ করে", "How it works") }}</a></li>
@@ -16,45 +17,42 @@
           <li><a href="{{ url('landlords-restaurants') }}">{{ t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants") }}</a></li>
           <li><a href="{{ url('dealers') }}">{{ t("ডিলার হোন", "Become a dealer") }}</a></li>
           <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (শীঘ্রই)", "Agro and Marine (coming soon)") }}</a></li>
-          <li><a href="{{ root }}app/" data-track="connected_app_click" data-position="footer">{{ t("কানেক্টেড অ্যাপে ঢুকুন", "Connected app sign-in") }}</a></li>
+          <li><a href="{{ root }}app/" data-track="connected_app_click" data-position="footer">{{ t("কানেক্টেড অ্যাপ", "Connected app") }}</a></li>
         </ul>
-      </div>
-      <div>
-        <h3>{{ t("প্রতিষ্ঠান", "Company") }}</h3>
+      </nav>
+      <nav aria-label="{{ t('প্রতিষ্ঠান', 'Company') }}">
+        <h2>{{ t("প্রতিষ্ঠান", "Company") }}</h2>
         <ul>
           <li><a href="{{ url('about') }}">{{ t("আমাদের কথা", "About us") }}</a></li>
           <li><a href="{{ url('faq') }}">{{ t("সাধারণ প্রশ্ন", "FAQ") }}</a></li>
           <li><a href="{{ url('guides') }}">{{ t("নিরাপত্তা গাইড", "Safety guides") }}</a></li>
           <li><a href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></li>
-          <li><a href="{{ root }}assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="footer">{{ t("ফ্যাক্ট শিট (PDF)", "Fact sheet (PDF)") }}</a></li>
+          <li><a href="{{ root }}assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="footer">{{ t("ফ্যাক্ট শিট (PDF, ইংরেজি)", "Fact sheet (PDF)") }}</a></li>
         </ul>
-      </div>
+      </nav>
       <div>
-        <h3>{{ t("যোগাযোগ", "Contact") }}</h3>
+        <h2>{{ t("যোগাযোগ", "Contact") }}</h2>
         <ul>
-          <li><a href="https://wa.me/{{ site.contact.whatsapp_number }}" data-track="whatsapp_click" data-position="footer">WhatsApp</a></li>
-          <li><a href="tel:{{ site.contact.phone_tel }}" data-track="call_click" data-position="footer">{{ site.contact.phone_display }}</a></li>
-          <li><a href="mailto:{{ site.contact.email }}" data-track="email_click" data-position="footer">{{ site.contact.email }}</a></li>
-          <li>{{ t(site.contact.address_bn, site.contact.address_en) }}</li>
-          <li>{{ t(site.contact.hours_bn, site.contact.hours_en) }}</li>
-          {% if site.contact.facebook %}<li><a href="{{ site.contact.facebook }}" rel="noopener" data-track="social_click" data-position="footer">Facebook</a></li>{% endif %}
-          {% if site.contact.linkedin %}<li><a href="{{ site.contact.linkedin }}" rel="noopener" data-track="social_click" data-position="footer">LinkedIn</a></li>{% endif %}
+          {% if c.whatsapp_number %}<li><a href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="footer">WhatsApp</a></li>{% endif %}
+          {% if c.phone_tel %}<li><a href="tel:{{ c.phone_tel }}" data-track="call_click" data-position="footer">{{ c.phone_display or c.phone_tel }}</a></li>{% endif %}
+          {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer">{{ c.email }}</a></li>{% endif %}
+          {% if c.address_en %}<li>{{ t(c.address_bn or c.address_en, c.address_en) }}</li>{% endif %}
+          {% if c.hours_en %}<li>{{ t(c.hours_bn or c.hours_en, c.hours_en) }}</li>{% endif %}
+          {% if c.facebook %}<li><a href="{{ c.facebook }}" rel="noopener" data-track="social_click" data-position="footer">Facebook</a></li>{% endif %}
+          {% if c.linkedin %}<li><a href="{{ c.linkedin }}" rel="noopener" data-track="social_click" data-position="footer">LinkedIn</a></li>{% endif %}
+          <li><a href="{{ url('contact') }}">{{ t("বার্তা পাঠান", "Send us a message") }}</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <ul class="btn-row small">
+      <ul>
         <li><a href="{{ url('privacy') }}">{{ t("গোপনীয়তা নীতি", "Privacy") }}</a></li>
         <li><a href="{{ url('terms') }}">{{ t("শর্তাবলি", "Terms") }}</a></li>
         <li><a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></li>
         <li><a href="{{ url('cookies') }}">{{ t("কুকি নীতি", "Cookies") }}</a></li>
         <li><button type="button" class="linkbtn" data-consent-open>{{ t("কুকি সেটিংস", "Cookie settings") }}</button></li>
       </ul>
-      <div class="lang-switch" role="group" aria-label="{{ t('ভাষা', 'Language') }}">
-        <a href="{{ url(slug, 'bn') }}" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="{{ 'true' if lang == 'bn' else 'false' }}">বাংলা</a>
-        <a href="{{ url(slug, 'en') }}" hreflang="en" lang="en" data-lang-switch="en" aria-current="{{ 'true' if lang == 'en' else 'false' }}">English</a>
-      </div>
+      <p class="small mb-0">© {{ t("২০২৬", "2026") }} VenGuard</p>
     </div>
-    <p class="small mt-2">© {{ t("২০২৬", "2026") }} VenGuard. {{ t("সর্বস্বত্ব সংরক্ষিত।", "All rights reserved.") }}</p>
   </div>
 </footer>

@@ -1,46 +1,61 @@
 {% extends "base.html" %}
-{% from "partials/macros.html" import icon, airline %}
+{% from "partials/macros.html" import icon %}
 {% import "partials/forms.html" as f %}
 {% set page_title = t("আমাদের কথা — VenGuard কেন তৈরি হলো", "About VenGuard — why we exist") %}
-{% set page_desc = t("VenGuard-এর পাঁচ প্রতিষ্ঠাতা, BUET-এর সাথে আমাদের সংযোগ, আর আমাদের লক্ষ্য: প্রতিটি রান্নাঘরে এমন সুরক্ষা যা নিজেই কাজ করে।", "The five founders of VenGuard, our BUET connection, and our mission: safety that acts, in every kitchen.") %}
+{% set page_desc = t("VenGuard-এর পাঁচ প্রতিষ্ঠাতা, আমাদের গবেষণা, BUET BRTC-তে স্বাধীন পরীক্ষার পরিকল্পনা ও আমাদের লক্ষ্য: রান্নাঘরের গ্যাসের জন্য একটি সার্কিট ব্রেকার।", "VenGuard's five founders, our field research, the plan for independent testing at BUET BRTC, and our mission: a circuit breaker for kitchen gas.") %}
 {% block content %}
-{{ f.page_head(t, url, "আমাদের কথা", "Our story", "আমরা চাই, গ্যাস লিক হলে কাউকে জেগে থাকতে বা দৌড়ে আসতে না হোক।", "We want a gas leak to be handled without anyone having to be awake or come running.") }}
-<section class="section">
-  <div class="wrap prose">
-    <h2>{{ t("কেন আমরা আছি", "Why we exist") }}</h2>
-    {# FOUNDERS: replace with your own story in your own words. #}
-    <p>{{ t("বাংলাদেশের লক্ষ লক্ষ রান্নাঘরে এলপিজি সিলিন্ডার ব্যবহার হয়। বেশিরভাগ বাসায় কোনো সুরক্ষা নেই, আর যেখানে আছে সেখানেও সাধারণ অ্যালার্ম শুধু শব্দ করে। আমরা এমন কিছু বানাতে চেয়েছি যা নিজেই কাজ করে — বিদ্যুৎ, ইন্টারনেট বা কারো উপস্থিতির ওপর নির্ভর না করে।", "Millions of kitchens in Bangladesh use LPG cylinders. Most have no protection, and where there is some, an ordinary alarm only makes noise. We set out to build something that acts by itself, without relying on power, the internet or anyone being there.") }}</p>
-    <h2>{{ t("আমাদের লক্ষ্য", "Our mission") }}</h2>
-    <p class="lead">{{ t("প্রতিটি রান্নাঘরে এমন সাশ্রয়ী সুরক্ষা পৌঁছে দেওয়া, যা নিজেই কাজ করে।", "To bring affordable safety that acts by itself to every kitchen.") }}</p>
-    <h2>{{ t("BUET-এর সাথে সংযোগ", "Our BUET connection") }}</h2>
-    {# FOUNDERS: describe the exact relationship with BUET. Do not imply certification before it is granted. #}
-    <p>{{ t("[BUET-এর সাথে আমাদের সম্পর্কের সঠিক বিবরণ এখানে বসবে — প্রতিষ্ঠাতারা সরবরাহ করবেন।]", "[An accurate description of our relationship with BUET goes here — to be supplied by the founders.]") }}</p>
-  </div>
-</section>
-<section class="section section--mist">
-  <div class="wrap">
-    <h2>{{ t("পাঁচ প্রতিষ্ঠাতা", "The five founders") }}</h2>
-    {% set founders = [("CEO", t("প্রধান নির্বাহী", "Chief Executive")), ("CTO", t("প্রধান প্রযুক্তি কর্মকর্তা", "Chief Technology Officer")), ("COO", t("প্রধান পরিচালন কর্মকর্তা", "Chief Operating Officer")), ("CFO", t("প্রধান আর্থিক কর্মকর্তা", "Chief Financial Officer")), ("CMO", t("প্রধান বিপণন কর্মকর্তা", "Chief Marketing Officer"))] %}
-    <div class="grid grid--3 mt-1">
-      {% for code, role in founders %}
-      <div class="card">
-        {{ icon("users", "icon") }}
-        <h3>{{ t("[নাম]", "[Name]") }}</h3>
-        <p class="muted mt-0">{{ role }} ({{ code }})</p>
-        <p class="small muted">{{ t("[এক লাইনের পরিচয়]", "[One-line background]") }}</p>
-      </div>
-      {% endfor %}
+{{ f.page_head(t, url, "আমাদের কথা", "Our story", "রান্নাঘরের গ্যাসের জন্য একটি সার্কিট ব্রেকার — যা কাউকে জেগে থাকতে বা দৌড়ে আসতে বাধ্য করে না।", "A circuit breaker for kitchen gas — one that never needs someone awake or running to the cylinder.") }}
+
+<section class="section" aria-labelledby="why-title">
+  <div class="wrap split">
+    <div class="prose">
+      <p class="label">{{ t("কেন আমরা আছি", "Why we exist") }}</p>
+      <h2 id="why-title" class="mt-0">{{ t("অ্যালার্মকে মানুষ নিরাপত্তা মনে করেন না।", "People don't see an alarm as safety.") }}</h2>
+      <p>{{ t("ঢাকার ২০টি বাসা ও ১০টি বাণিজ্যিক রান্নাঘর ঘুরে আমরা একটি প্রশ্ন বারবার শুনেছি: সবাই ঘুমিয়ে থাকলে বা বাসায় না থাকলে গ্যাসভর্তি ঘরে ঢুকে ভালভ বন্ধ করবে কে?", "Visiting 20 homes and 10 commercial kitchens in Dhaka, we heard one question again and again: if everyone is asleep or away, who walks into a gas-filled room to turn off the valve?") }}</p>
+      <p>{{ t("তাই VenGuard নিজেই ভালভ বন্ধ করে — সার্কিট ব্রেকারের মতো স্বয়ংক্রিয়, এয়ারব্যাগের মতো কারো কিছু করার দরকার নেই। পুরো সুরক্ষা-লুপ ব্যাটারিতে, ইন্টারনেট ছাড়াই চলার জন্য তৈরি, কারণ লোডশেডিং আর রাউটার বন্ধ হওয়া এখানে প্রতিদিনের ঘটনা।", "So VenGuard closes the valve itself — automatic like a circuit breaker, needing no one's action like an airbag. The whole safety loop is designed to run on batteries without the internet, because load-shedding and router outages are daily realities here.") }}</p>
+    </div>
+    <div class="stat-figure">
+      <span class="label">{{ t("আমাদের লক্ষ্য", "Our mission") }}</span>
+      <p class="lead">{{ t("রান্নাঘরের গ্যাস থেকে মৃত্যু, দগ্ধ হওয়া ও সম্পদের ক্ষতি বন্ধ করা — আর লুকানো লিকে নষ্ট হওয়া জ্বালানি বাঁচানো।", "End deaths, burns and property loss from kitchen gas fires — and stop the fuel wasted by undetected leaks.") }}</p>
     </div>
   </div>
 </section>
-<section class="section">
+
+<section class="section section--alt" aria-labelledby="team-title">
   <div class="wrap">
-    <h2>{{ t("আমরা এখন কোথায়", "Where we are today") }}</h2>
+    <div class="section-head"><p class="label">{{ t("দল", "Team") }}</p><h2 id="team-title">{{ t("পাঁচ প্রতিষ্ঠাতা", "The five founders") }}</h2></div>
+    <ul class="team">
+      {% for m in site.team %}
+      <li><span class="role">{{ m.role }}</span><strong>{{ m.name }}</strong><span>{{ t(m.owns_bn, m.owns_en) }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="test-title">
+  <div class="wrap split">
+    <div>
+      <p class="label">{{ t("স্বাধীন পরীক্ষা", "Independent testing") }}</p>
+      <h2 id="test-title">{{ t("দাবি নয়, প্রমাণ।", "Evidence, not claims.") }}</h2>
+      <p>{{ t("প্রতিটি অনুমোদনের ভিত্তি হবে BUET-এর ব্যুরো অফ রিসার্চ, টেস্টিং অ্যান্ড কনসালটেশন (BRTC)-এর স্বাধীন যান্ত্রিক ও স্পার্ক-নিরাপত্তা প্রতিবেদন। এরপর ক্রমানুসারে BTRC, বিস্ফোরক পরিদপ্তর ও BSTI। অনুমোদন পাওয়ার আগে আমরা কোনো সার্টিফিকেশন চিহ্ন দেখাই না।", "Every approval will rest on an independent mechanical and spark-safety report from BUET's Bureau of Research, Testing and Consultation (BRTC), followed in order by BTRC, the Department of Explosives and BSTI. We show no certification mark before it is granted.") }}</p>
+    </div>
+    <ol class="ticks">
+      <li>{{ icon("tick") }}<span>{{ t("৩০ দিন ধরে সরিষার তেল, বাষ্প বা মশলায় একবারও ভুল বন্ধ নয়", "Zero false closures from mustard oil, steam or spices over 30 days") }}</span></li>
+      <li>{{ icon("tick") }}<span>{{ t("ইচ্ছাকৃত গ্যাস-নির্গমনে প্রতিটি ইউনিটে ১০০% বন্ধ", "100% shut-off on deliberate gas releases, on every unit") }}</span></li>
+      <li>{{ icon("tick") }}<span>{{ t("১.৫ গুণ কাজের চাপে ভালভ সিল অটুট", "Valve seals hold at 1.5× working pressure") }}</span></li>
+      <li>{{ icon("tick") }}<span>{{ t("প্রত্যেক রাঁধুনি নিজে কারণ বুঝে লিভার রিসেট করতে পারেন", "Every test cook finds the cause and resets the lever unaided") }}</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section section--alt" aria-labelledby="now-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("অগ্রগতি", "Progress") }}</p><h2 id="now-title">{{ t("আমরা এখন কোথায়", "Where we are today") }}</h2></div>
     {% include "partials/timeline.html" %}
-    <div class="notice mt-2">
-      <p class="mt-0"><strong>{{ t("সাংবাদিক, বিনিয়োগকারী ও নিয়ন্ত্রক সংস্থার জন্য", "For press, investors and regulators") }}</strong></p>
-      <p class="mt-0">{{ t("ফ্যাক্ট শিট ডাউনলোড করুন বা সরাসরি যোগাযোগ করুন।", "Download our fact sheet or contact us directly.") }}</p>
-      <div class="btn-row"><a class="btn btn--ghost btn--sm" href="{{ root }}assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="about">{{ icon("doc", "", 18) }} {{ t("ফ্যাক্ট শিট (PDF)", "Fact sheet (PDF)") }}</a><a class="btn btn--ghost btn--sm" href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></div>
+    <div class="notice notice--info mt-3">
+      <p><strong>{{ t("সাংবাদিক, বিনিয়োগকারী ও নিয়ন্ত্রক সংস্থার জন্য", "For press, investors and regulators") }}</strong></p>
+      <p>{{ t("ফ্যাক্ট শিট (ইংরেজি) ডাউনলোড করুন বা যোগাযোগ পাতা থেকে লিখুন।", "Download the fact sheet or write to us from the contact page.") }}</p>
+      <div class="btn-row"><a class="btn btn--secondary btn--sm" href="{{ root }}assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="about">{{ icon("doc") }}{{ t("ফ্যাক্ট শিট (PDF)", "Fact sheet (PDF)") }}</a><a class="btn btn--secondary btn--sm" href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></div>
     </div>
   </div>
 </section>

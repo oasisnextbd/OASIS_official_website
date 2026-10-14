@@ -87,7 +87,7 @@
 {% macro page_head(t, url, title_bn, title_en, intro_bn="", intro_en="") -%}
 <section class="page-head">
   <div class="wrap">
-    <p class="breadcrumb"><a href="{{ url('') }}">VenGuard</a> / {{ t(title_bn, title_en) }}</p>
+    <nav aria-label="{{ t('আপনি এখানে', 'Breadcrumb') }}"><ol class="breadcrumb"><li><a href="{{ url('') }}">VenGuard</a></li><li aria-current="page">{{ t(title_bn, title_en) }}</li></ol></nav>
     <h1>{{ t(title_bn, title_en) }}</h1>
     {% if intro_bn %}<p class="lead">{{ t(intro_bn, intro_en) }}</p>{% endif %}
   </div>
@@ -97,6 +97,6 @@
 {# Lead form shared by landlord / restaurant / dealer / waitlist / contact. #}
 {% macro thanks_messages(t) -%}
 data-msg-ok="{{ t('ধন্যবাদ! আপনার তথ্য পেয়েছি। আমাদের দল শীঘ্রই যোগাযোগ করবে।', 'Thank you! We have your details. Our team will be in touch soon.') }}"
-data-msg-fail="{{ t('দুঃখিত, পাঠানো যায়নি। আবার চেষ্টা করুন বা WhatsApp-এ লিখুন।', 'Sorry, that did not send. Please try again or message us on WhatsApp.') }}"
+data-msg-fail="{{ t('দুঃখিত, পাঠানো যায়নি। আবার চেষ্টা করুন বা যোগাযোগ পাতা থেকে লিখুন।', 'Sorry, that did not send. Please try again or use the contact page.') }}"
 data-msg-check="{{ t('কিছু ঘর ঠিক করতে হবে, নিচে দেখুন।', 'Some fields need attention, see below.') }}"
 {%- endmacro %}

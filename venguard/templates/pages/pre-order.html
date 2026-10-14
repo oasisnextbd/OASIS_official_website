@@ -8,7 +8,7 @@
 <section class="section">
   <div class="wrap">
     {% if not site.preorder.open %}
-    <div class="notice"><p class="mt-0">{{ t("প্রি-অর্ডার এই মুহূর্তে বন্ধ আছে। আপডেট পেতে যোগাযোগ করুন।", "Pre-orders are paused right now. Contact us to be notified.") }} <a href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></p></div>
+    <div class="notice"><p>{{ t("প্রি-অর্ডার এই মুহূর্তে বন্ধ আছে। আপডেট পেতে যোগাযোগ করুন।", "Pre-orders are paused right now. Contact us to be notified.") }} <a href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></p></div>
     {% else %}
     <form class="form" data-vg-form="preorder" novalidate
       data-next="{{ url('pre-order/thank-you') }}"
@@ -39,7 +39,7 @@
           <span class="muted small">{{ t("এখন দিতে হবে", "To pay now") }}</span><br>
           <strong>{{ t("৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত", "BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit") }}</strong>
         </div>
-        <div class="pay-methods" aria-label="{{ t('পেমেন্টের মাধ্যম', 'Payment methods') }}"><span>bKash</span><span>Nagad</span><span>{{ t("কার্ড", "Card") }}</span></div>
+        <ul class="pay-methods" aria-label="{{ t('পেমেন্টের মাধ্যম', 'Payment methods') }}"><li>bKash</li><li>Nagad</li><li>{{ t("কার্ড", "Card") }}</li></ul>
       </div>
       {# FOUNDERS: replace with the final refund wording (brief Part 6). #}
       <div class="refund-terms">
@@ -47,7 +47,7 @@
         {{ t("ডেলিভারির আগে যেকোনো সময়, কোনো কারণ না দেখিয়েই ফেরত চাইতে পারবেন। যে মাধ্যমে দিয়েছেন সেখানেই ফেরত যাবে। কিট কেনার সময় এই টাকা দাম থেকে বাদ যাবে।", "You can ask for it back any time before delivery, no reason needed. It goes back the way you paid. When you buy the kit, it comes off the price.") }}
         <a href="{{ url('refund-policy') }}">{{ t("পুরো ফেরত নীতি", "Full refund policy") }}</a>
       </div>
-      <p class="small muted mt-0">{{ icon("shield", "", 16, "vertical-align:-3px") }} {{ t("আপনার কার্ড বা bKash/Nagad-এর পিন আমরা কখনো দেখি না বা রাখি না; পেমেন্ট প্রোভাইডার নিরাপদে তা সামলায়।", "We never see or store your card or bKash/Nagad PIN; the payment provider handles it securely.") }}</p>
+      <p class="small muted mt-0">{{ t("আপনার কার্ড বা bKash/Nagad-এর পিন আমরা কখনো দেখি না বা রাখি না; পেমেন্ট প্রোভাইডার নিরাপদে তা সামলায়।", "We never see or store your card or bKash/Nagad PIN; the payment provider handles it securely.") }}</p>
       {{ f.status() }}
       {{ f.submit(t, "তথ্য পাঠান ও জামানত দিন", "Continue to pay deposit") }}
     </form>

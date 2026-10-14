@@ -19,12 +19,12 @@
       "The gas stays off and the detector's light shows that the valve has closed. Open the windows and do not use switches or flames. Once the area is safe, reset it by hand; it takes about 10 seconds.")),
   ("cost",
     t("দাম কত?", "What does it cost?"),
-    t("এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানত দিয়ে প্রি-অর্ডার করা যায়। হোম কিটের চূড়ান্ত দাম শীঘ্রই জানানো হবে, আর জামানত সেই দাম থেকে বাদ যাবে। ঐচ্ছিক কানেক্টেড প্ল্যান বছরে ৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ "।",
-      "You can pre-order now with a refundable BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit. The final Home kit price will be announced soon, and your deposit comes off that price. The optional Connected plan is BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " a year.")),
+    t("VenGuard হোম কিটের দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ ", একবারই দিতে হয়। এখন ৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানত দিয়ে প্রি-অর্ডার করা যায়; জামানত দাম থেকে বাদ যাবে। ঐচ্ছিক কানেক্টেড প্ল্যান বছরে ৳" ~ num(site.preorder.connected_plan_bdt_per_year) ~ "।",
+      "The VenGuard Home kit is BDT " ~ num(site.preorder.kit_price_bdt) ~ ", paid once. You can pre-order now with a refundable BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, which comes off the price. The optional Connected plan is BDT " ~ num(site.preorder.connected_plan_bdt_per_year) ~ " a year.")),
   ("refund",
     t("জামানত কীভাবে ফেরত পাব?", "How do I get a refund of the deposit?"),
-    t("ডেলিভারির আগে যেকোনো সময় WhatsApp, ফোন বা ইমেইলে আপনার অর্ডার নম্বর দিয়ে জানান। যে মাধ্যমে টাকা দিয়েছেন, সেখানেই ফেরত পাঠানো হবে। বিস্তারিত ফেরত নীতিতে দেখুন।",
-      "Tell us any time before delivery by WhatsApp, phone or email, with your order number. We send the money back the way you paid. See the refund policy for details.")),
+    t("ডেলিভারির আগে যেকোনো সময় যোগাযোগ পাতা থেকে আপনার অর্ডার নম্বর দিয়ে জানান। যে মাধ্যমে টাকা দিয়েছেন, সেখানেই ফেরত পাঠানো হবে। বিস্তারিত ফেরত নীতিতে দেখুন।",
+      "Tell us any time before delivery through the contact page, with your order number. We send the money back the way you paid. See the refund policy for details.")),
   ("cylinders",
     t("কোন সিলিন্ডারে লাগানো যায়?", "Which cylinders does it fit?"),
     t("আমরা বাংলাদেশে প্রচলিত গৃহস্থালি এলপিজি সিলিন্ডার ও রেগুলেটরের জন্য VenGuard তৈরি করছি। কোন কোন ব্র্যান্ডে মিলবে তার নিশ্চিত তালিকা পরীক্ষা শেষে প্রকাশ করব। প্রি-অর্ডার ফর্মে আপনার সিলিন্ডারের ব্র্যান্ড লিখলে আমরা মিলিয়ে দেখব।",
@@ -35,8 +35,8 @@
       "An alarm only makes noise; then someone has to come and turn off the gas. VenGuard is designed to turn off the gas itself, even when nobody is home.")),
   ("delivery",
     t("কবে হাতে পাব?", "When will I receive it?"),
-    t("পরীক্ষা ও সার্টিফিকেশন শেষ হলে ডেলিভারি শুরু হবে। আমরা অনুমান করে তারিখ দিতে চাই না; তারিখ ঠিক হলে প্রি-অর্ডারকারীদের সবার আগে SMS ও WhatsApp-এ জানাব।",
-      "Deliveries start once testing and certification are complete. We do not want to guess a date; when it is set, pre-order customers hear first by SMS and WhatsApp.")),
+    t("আমাদের পরিকল্পনা ২০২৭ সালের মার্চ থেকে ডেলিভারি শুরু করা — তবে কেবল সব নিরাপত্তা পরীক্ষা ও সার্টিফিকেশন শেষ হলে। তারিখ চূড়ান্ত হলে প্রি-অর্ডারকারীরা সবার আগে SMS-এ জানবেন।",
+      "We plan to start deliveries in March 2027 — but only once all safety testing and certification are complete. When the date is final, pre-order customers hear first by SMS.")),
 ] %}
 <div class="faq">
   {% for id, q, a in faqs[:faq_limit] %}

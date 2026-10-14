@@ -1,14 +1,18 @@
 {
-  "_readme": "Site-wide settings. Edit this file and commit; GitHub rebuilds the site (preview locally with `python3 scripts/build.py`). Every value here appears on the site. See README.md.",
+  "_readme": "Site-wide settings. Edit and commit; GitHub rebuilds the site (preview: python3 scripts/build.py). Never put placeholder prices or contacts here: leave a value empty and the site hides it.",
   "brand": "VenGuard",
   "base_url": "https://oasisnextbd.github.io/OASIS_official_website/VENGuard",
   "preorder": {
     "open": true,
     "deposit_bdt": 500,
-    "kit_price_bdt": null,
-    "kit_price_note_bn": "চূড়ান্ত দাম শীঘ্রই জানানো হবে",
-    "kit_price_note_en": "Final price to be announced",
-    "connected_plan_bdt_per_year": 550
+    "kit_price_bdt": 3500,
+    "connected_plan_bdt_per_year": 550,
+    "_source": "VenGuard HCD Submission v4"
+  },
+  "dealer": {
+    "wholesale_bdt": 2800,
+    "margin_bdt": 700,
+    "_source": "VenGuard HCD Submission v4"
   },
   "claims": {
     "_readme": "Claims rule (brief Part 7). Set a claim to true ONLY when testing supports it (CTO sign-off). While false, the site says 'designed to' and shows a 'testing in progress' note.",
@@ -35,16 +39,56 @@
       "state": "current"
     }
   ],
+  "evidence": {
+    "_source": "VenGuard HCD Submission v4 (BFSCD figure as cited there)",
+    "bfscd_fire_incidents_per_year": 27059,
+    "interviews": 30,
+    "asked_where_to_buy": 25,
+    "tried_to_buy": 15
+  },
+  "team": [
+    {
+      "name": "Mohammad Omayer Ahamed",
+      "role": "CEO",
+      "owns_en": "Product strategy, B2B partnerships, regulatory liaison",
+      "owns_bn": "পণ্য কৌশল, ব্যবসায়িক অংশীদারিত্ব, নিয়ন্ত্রক সংস্থার সাথে যোগাযোগ"
+    },
+    {
+      "name": "Tasnim Al Hossain",
+      "role": "CTO",
+      "owns_en": "Sensor R&D, firmware, safety-loop testing",
+      "owns_bn": "সেন্সর গবেষণা, ফার্মওয়্যার, সুরক্ষা-লুপ পরীক্ষা"
+    },
+    {
+      "name": "M. Sadat Rahman",
+      "role": "CMO",
+      "owns_en": "Digital platforms, UI/UX, customer discovery",
+      "owns_bn": "ডিজিটাল প্ল্যাটফর্ম, ইউআই/ইউএক্স, গ্রাহক গবেষণা"
+    },
+    {
+      "name": "Kajim Al Shahriar",
+      "role": "COO",
+      "owns_en": "Mechanical prototyping, tooling, field operations",
+      "owns_bn": "যান্ত্রিক প্রোটোটাইপ, টুলিং, মাঠ পর্যায়ের কাজ"
+    },
+    {
+      "name": "Md Shahriar Kabir Nadim",
+      "role": "CFO",
+      "owns_en": "Supply chain, financial model, investor relations",
+      "owns_bn": "সাপ্লাই চেইন, আর্থিক মডেল, বিনিয়োগকারী সম্পর্ক"
+    }
+  ],
   "contact": {
-    "whatsapp_number": "8801000000000",
-    "phone_display": "+880 1000-000000",
-    "phone_tel": "+8801000000000",
-    "email": "hello@venguard.example",
-    "address_bn": "ঢাকা, বাংলাদেশ (পূর্ণ ঠিকানা শীঘ্রই)",
-    "address_en": "Dhaka, Bangladesh (full address to follow)",
-    "hours_bn": "শনি–বৃহস্পতি, সকাল ১০টা – সন্ধ্যা ৬টা",
-    "hours_en": "Sat–Thu, 10 a.m. – 6 p.m.",
-    "facebook": "https://www.facebook.com/",
+    "_readme": "Real values only. Leave empty until confirmed; empty values are not shown anywhere on the site.",
+    "whatsapp_number": "",
+    "phone_display": "",
+    "phone_tel": "",
+    "email": "",
+    "address_bn": "",
+    "address_en": "",
+    "hours_bn": "",
+    "hours_en": "",
+    "facebook": "",
     "linkedin": ""
   },
   "endpoints": {
