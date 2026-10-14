@@ -1,0 +1,21 @@
+{#- Honest status line. Steps and their state come from site.json → status_timeline. -#}
+{% set labels = {
+  "prototype": (t("প্রোটোটাইপ", "Prototype"), t("কাজ করা প্রোটোটাইপ তৈরি হয়েছে।", "Working prototype built.")),
+  "testing": (t("পরীক্ষা", "Testing"), t("প্রতিষ্ঠাতাদের বাসায় ও বাণিজ্যিক রান্নাঘরে নিরাপত্তা ও নির্ভরযোগ্যতার পরীক্ষা।", "Safety and reliability tests in founders' homes and commercial kitchens.")),
+  "certification": (t("সার্টিফিকেশন", "Certification"), t("BUET BRTC-তে স্বাধীন পরীক্ষা, তারপর BTRC, বিস্ফোরক পরিদপ্তর ও BSTI।", "Independent testing at BUET BRTC, then BTRC, the Department of Explosives and BSTI.")),
+  "preorders": (t("প্রি-অর্ডার", "Pre-orders"), t("৳" ~ num(site.preorder.deposit_bdt) ~ " ফেরতযোগ্য জামানতে জায়গা নিশ্চিত করুন।", "Reserve yours with a refundable BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit.")),
+} %}
+{% set states = {
+  "done": ("status--done", t("সম্পন্ন", "Done")),
+  "current": ("status--now", t("চলমান", "In progress")),
+  "next": ("status--next", t("পরবর্তী ধাপ", "Next")),
+} %}
+<ol class="timeline">
+  {% for step in site.status_timeline %}
+  <li>
+    <span class="status {{ states[step.state][0] }}">{{ states[step.state][1] }}</span>
+    <h3>{{ labels[step.key][0] }}</h3>
+    <p>{{ labels[step.key][1] }}</p>
+  </li>
+  {% endfor %}
+</ol>

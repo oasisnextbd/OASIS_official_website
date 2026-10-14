@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{% set page_title = t("যোগাযোগ — VenGuard", "Contact VenGuard") %}
+{% set page_desc = t("VenGuard দলের সাথে যোগাযোগ করুন। সহায়তার সময় ও ঠিকানা।", "Reach the VenGuard team by WhatsApp, phone or email. Support hours and address.") %}
+{% block content %}
+{{ f.page_head(t, url, "যোগাযোগ", "Contact us", "প্রশ্ন, প্রি-অর্ডার বা ব্যবসার জন্য লিখুন। আমরা কর্মদিবসে উত্তর দিই।", "Questions, pre-orders or business enquiries. We reply on working days.") }}
+{% set c = site.contact %}
+<section class="section" aria-labelledby="msg-title">
+  <div class="wrap split">
+    <div>
+      {% if c.whatsapp_number or c.phone_tel or c.email or c.address_en %}
+      <h2>{{ t("সরাসরি যোগাযোগ", "Reach us directly") }}</h2>
+      <ul class="contact-list">
+        {% if c.whatsapp_number %}<li>{{ icon("whatsapp") }}<span><strong>WhatsApp</strong><a href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="contact_page">{{ t("চ্যাট শুরু করুন", "Start a chat") }}</a></span></li>{% endif %}
+        {% if c.phone_tel %}<li>{{ icon("phone") }}<span><strong>{{ t("ফোন", "Phone") }}</strong><a href="tel:{{ c.phone_tel }}" data-track="call_click" data-position="contact_page">{{ c.phone_display or c.phone_tel }}</a></span></li>{% endif %}
+        {% if c.email %}<li>{{ icon("mail") }}<span><strong>{{ t("ইমেইল", "Email") }}</strong><a href="mailto:{{ c.email }}" data-track="email_click" data-position="contact_page">{{ c.email }}</a></span></li>{% endif %}
+        {% if c.hours_en %}<li>{{ icon("clock") }}<span><strong>{{ t("সহায়তার সময়", "Support hours") }}</strong>{{ t(c.hours_bn or c.hours_en, c.hours_en) }}</span></li>{% endif %}
+        {% if c.address_en %}<li>{{ icon("pin") }}<span><strong>{{ t("ঠিকানা", "Address") }}</strong>{{ t(c.address_bn or c.address_en, c.address_en) }}</span></li>{% endif %}
+      </ul>
+      {% else %}
+      <p class="label">{{ t("বার্তা", "Message") }}</p>
+      <h2>{{ t("আমাদের লিখুন", "Write to us") }}</h2>
+      <p class="lead">{{ t("ফর্মটি পূরণ করুন — আপনার বার্তা সরাসরি VenGuard দলের কাছে যায় এবং আমরা আপনার নম্বরে যোগাযোগ করব।", "Fill in the form — your message goes straight to the VenGuard team and we will contact you on your number.") }}</p>
+      {% endif %}
+      <div class="notice mt-3">
+        <p><strong>{{ t("এখনই গ্যাসের গন্ধ পাচ্ছেন?", "Smell gas right now?") }}</strong> {{ t("সিলিন্ডারের রেগুলেটর বন্ধ করুন, জানালা-দরজা খুলে দিন, কোনো সুইচ বা আগুন জ্বালাবেন না, বাইরে গিয়ে ফায়ার সার্ভিসকে ১০২ বা ৯৯৯ নম্বরে ফোন করুন।", "Turn off the cylinder regulator, open doors and windows, do not use switches or flames, go outside and call the fire service on 102 or 999.") }}</p>
+      </div>
+    </div>
+    <div>
+      <h2 id="msg-title">{{ t("বার্তা পাঠান", "Send a message") }}</h2>
+      <form class="form" data-vg-form="contact" novalidate {{ f.thanks_messages(t) }}>
+        {{ f.hidden(t) }}
+        {{ f.field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
+        {{ f.phone(t) }}
+        {{ f.field(t, "email", "ইমেইল", "Email", "email", false, "email", attrs='data-validate="email" data-msg-invalid="' ~ t("সঠিক ইমেইল ঠিকানা লিখুন।", "Please enter a valid email address.") ~ '"') }}
+        {{ f.select(t, "kitchen_type", "বিষয়", "Topic", [("home", t("বাসার জন্য", "For my home")), ("restaurant", t("রেস্তোরাঁ", "Restaurant")), ("landlord", t("বাড়িওয়ালা / ভবন", "Landlord / building")), ("dealer", t("ডিলারশিপ", "Dealership")), ("press", t("সংবাদমাধ্যম / বিনিয়োগ", "Press / investment")), ("support", t("সহায়তা", "Support")), ("other", t("অন্যান্য", "Other"))], true) }}
+        {{ f.field(t, "message", "আপনার বার্তা", "Your message", "textarea", true) }}
+        {{ f.consent(t, url) }}
+        {{ f.status() }}
+        {{ f.submit(t, "পাঠান", "Send") }}
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

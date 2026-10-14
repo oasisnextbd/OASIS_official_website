@@ -1,0 +1,6 @@
+# Binary assets: never diff or convert
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.pdf binary

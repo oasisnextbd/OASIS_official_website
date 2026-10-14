@@ -1,0 +1,78 @@
+{#- Page frame shared by every VenGuard page.
+    Child templates set: page_title, page_desc, and optionally `structured` (extra JSON-LD). -#}
+{% from "partials/macros.html" import icon, preorder_btn, whatsapp %}
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_desc }}">
+{% if noindex %}<meta name="robots" content="noindex">{% endif %}
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" hreflang="bn" href="{{ alt_bn }}">
+<link rel="alternate" hreflang="en" href="{{ alt_en }}">
+<link rel="alternate" hreflang="x-default" href="{{ alt_bn }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VenGuard">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_desc }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:image" content="{{ site.base_url }}/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ t('VenGuard হোম কিট', 'The VenGuard Home kit') }}">
+<meta property="og:locale" content="{{ 'bn_BD' if lang == 'bn' else 'en_US' }}">
+<meta property="og:locale:alternate" content="{{ 'en_US' if lang == 'bn' else 'bn_BD' }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B0F17">
+{% if site.tracking.search_console_verification %}<meta name="google-site-verification" content="{{ site.tracking.search_console_verification }}">{% endif %}
+<link rel="icon" href="{{ root }}assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ root }}assets/img/apple-touch-icon.png">
+{% if lang == "bn" %}<link rel="preload" href="{{ root }}assets/fonts/noto-sans-bengali-bengali.woff2" as="font" type="font/woff2" crossorigin>{% endif %}
+<link rel="preload" href="{{ root }}assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ root }}assets/css/fonts.css">
+<link rel="stylesheet" href="{{ root }}assets/css/venguard.css">
+<script>
+/* Remember the visitor's language. Bangla is the default; if they chose English before, take them there. */
+(function(){try{var l=localStorage.getItem("vg_lang");if(l==="en"&&document.documentElement.lang==="bn"&&!/[?&]lang=bn/.test(location.search)){location.replace("{{ url(slug, 'en') }}"+location.search+location.hash);}}catch(e){}})();
+</script>
+<script src="{{ root }}assets/js/config.js" defer></script>
+<script src="{{ root }}assets/js/analytics.js" defer></script>
+<script src="{{ root }}assets/js/site.js" defer></script>
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@graph": [
+    {"@type": "Organization", "@id": site.base_url ~ "/#org", "name": "VenGuard", "url": site.base_url ~ "/",
+     "logo": site.base_url ~ "/assets/img/apple-touch-icon.png"},
+    {"@type": "WebSite", "@id": site.base_url ~ "/#site", "name": "VenGuard", "url": site.base_url ~ "/",
+     "inLanguage": ["bn-BD", "en"], "publisher": {"@id": site.base_url ~ "/#org"}}
+  ] + (structured if structured is defined else [])
+} | tojson }}
+</script>
+</head>
+<body class="{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}has-mobile-cta{% endif %}" data-page="{{ slug or 'home' }}" data-lang="{{ lang }}">
+<a class="skip-link" href="#main">{{ t("মূল অংশে যান", "Skip to content") }}</a>
+{% include "partials/header.html" %}
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+{% include "partials/footer.html" %}
+{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}
+<div class="mobile-cta">
+  {{ preorder_btn(t, url, site, "mobile_sticky") }}
+  {{ whatsapp(site, t, "mobile_sticky", "btn btn--secondary btn--icon", icon_only=true) }}
+</div>
+{% endif %}
+<section class="consent" id="consent" aria-label="{{ t('কুকি পছন্দ', 'Cookie choice') }}">
+  <div class="wrap">
+    <p>{{ t("সাইটটি আরও ভালো করতে আমরা কতজন ভিজিট করছেন তা গুনতে কুকি ব্যবহার করতে চাই। আপনার ফোন নম্বর বা নাম কখনো এসব টুলে যায় না।", "We would like to use cookies to count visits so we can improve this site. Your name and phone number are never sent to these tools.") }} <a href="{{ url('cookies') }}">{{ t("বিস্তারিত", "Details") }}</a></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--secondary btn--sm" data-consent="denied">{{ t("শুধু প্রয়োজনীয়", "Essential only") }}</button>
+      <button type="button" class="btn btn--primary btn--sm" data-consent="granted">{{ t("মেনে নিচ্ছি", "Accept analytics") }}</button>
+    </div>
+  </div>
+</section>
+</body>
+</html>
