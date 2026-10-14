@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% from "partials/macros.html" import icon, preorder_btn, testing_note %}
 {% import "partials/forms.html" as f %}
-{% set page_title = t("VenGuard হোম কিট — ডিটেক্টর, স্বয়ংক্রিয় ভালভ ও ব্যাটারি | ৳৩,৫০০", "VenGuard Home kit — detector, automatic valve and batteries | BDT 3,500") %}
+{% set page_title = t("VenGuard হোম কিট — ডিটেক্টর, স্বয়ংক্রিয় ভালভ ও ভেন্টিলেশন রিলে | ৳৩,৫০০", "VenGuard Home kit — detector, automatic valve and ventilation relay | BDT 3,500") %}
 {% set page_desc = t("VenGuard হোম কিটে কী থাকে, কীভাবে বসাতে হয়, পূর্ণ স্পেসিফিকেশন ও দাম (৳৩,৫০০)। মূল সুরক্ষা একবার কিনলেই, কানেক্টেড প্ল্যান ঐচ্ছিক।", "What is in the VenGuard Home kit, how it installs, full specifications and price (BDT 3,500). Core safety is a one-time purchase; Connected is optional.") %}
 {% set structured = [{
   "@type": "Product", "name": "VenGuard Home kit", "brand": {"@type": "Brand", "name": "VenGuard"},
-  "description": "Automatic LPG gas shut-off kit: gas detector, automatic valve and batteries.",
+  "description": "Automatic LPG gas shut-off kit: gas detector, automatic valve, active ventilation relay and batteries.",
   "image": site.base_url ~ "/assets/img/kit-gray.jpg",
   "offers": {"@type": "Offer", "priceCurrency": "BDT", "price": site.preorder.kit_price_bdt, "availability": "https://schema.org/PreOrder", "url": site.base_url ~ "/pre-order/"}
 }] %}
@@ -19,11 +19,12 @@
     </figure>
     <div>
       <p class="label">{{ t("বাক্সে যা থাকে", "In the box") }}</p>
-      <h2 id="box-title">{{ t("তিনটি অংশ, একটি সুরক্ষা-শৃঙ্খল।", "Three parts, one safety chain.") }}</h2>
+      <h2 id="box-title">{{ t("চারটি অংশ, একটি সুরক্ষা-শৃঙ্খল।", "Four parts, one safety chain.") }}</h2>
       <ul class="ticks">
         <li>{{ icon("sense") }}<span><strong>{{ t("গ্যাস ডিটেক্টর।", "Gas detector.") }}</strong> {{ t("নিচের দিকে বসে — এলপিজি বাতাসের চেয়ে ভারী। ৮৫ ডেসিবেল বাজার ও আলো দিয়ে অবস্থা জানায়।", "Mounted low, because LPG is heavier than air. Shows its state with an 85 dB buzzer and status lights.") }}</span></li>
         <li>{{ icon("valve") }}<span><strong>{{ t("স্বয়ংক্রিয় ভালভ।", "Automatic valve.") }}</strong> {{ t("পিতলের বডি, স্প্রিং-চালিত বন্ধ, হাতে রিসেট করার লিভার।", "Brass body, spring-loaded closing, manual reset lever.") }}</span></li>
-        <li>{{ icon("battery") }}<span><strong>{{ t("ব্যাটারি।", "Batteries.") }}</strong> {{ t("ডিটেক্টরে লিথিয়াম-আয়ন সেল, ভালভে ২টি AA — বিদ্যুৎ লাইন লাগে না।", "Li-ion cell in the detector, 2 × AA in the valve — no mains wiring.") }}</span></li>
+        <li>{{ icon("fan") }}<span><strong>{{ t("অ্যাকটিভ ভেন্টিলেশন রিলে।", "Active Ventilation Relay.") }}</strong> {{ t("লিক নিশ্চিত হলে রান্নাঘরের এগজস্ট ফ্যান চালু করে গ্যাস বাইরে বের করার জন্য তৈরি।", "Designed to switch on the kitchen exhaust fan when a leak is confirmed, to push the gas outside.") }}</span></li>
+        <li>{{ icon("battery") }}<span><strong>{{ t("ব্যাটারি।", "Batteries.") }}</strong> {{ t("ডিটেক্টরে লিথিয়াম-আয়ন সেল, ভালভে ২টি AA — গ্যাস বন্ধ করতে বিদ্যুৎ লাইন লাগে না।", "Li-ion cell in the detector, 2 × AA in the valve — shutting off the gas needs no mains power.") }}</span></li>
       </ul>
     </div>
   </div>
@@ -43,10 +44,11 @@
       <h2 id="install-title">{{ t("কয়েক মিনিটে, পাইপে হাত না দিয়ে।", "A few minutes, no pipe work.") }}</h2>
       <p>{{ t("সাধারণ বার্বড ফিটিং ও জুবিলি ক্ল্যাম্প। গ্যাস পাইপ বা সিলিন্ডারের প্যাঁচে কোনো পরিবর্তন নেই।", "Standard barbed fittings and jubilee clamps. No changes to gas pipes or cylinder threads.") }}</p>
     </div>
-    <ol class="steps">
+    <ol class="steps steps--4">
       <li><h3>{{ t("সিলিন্ডার বন্ধ করুন", "Turn off the cylinder") }}</h3><p>{{ t("রেগুলেটরের সুইচ বন্ধ করুন।", "Switch the regulator off.") }}</p></li>
       <li><h3>{{ t("ভালভ লাগান", "Fit the valve") }}</h3><p>{{ t("ছবির নির্দেশনা দেখে রেগুলেটরের পরে লাইনে ভালভ বসান, ক্ল্যাম্প আটকান।", "Following the picture guide, fit the valve on the line after the regulator and tighten the clamps.") }}</p></li>
-      <li><h3>{{ t("ডিটেক্টর বসান, পরীক্ষা করুন", "Place the detector, test") }}</h3><p>{{ t("ডিটেক্টর নিচের দিকে লাগান, টেস্ট বোতাম চেপে দেখুন ভালভ বন্ধ হয়।", "Mount the detector low and press the test button to see the valve close.") }}</p></li>
+      <li><h3>{{ t("রিলে ফ্যানের সাথে যুক্ত করুন", "Connect the relay to the fan") }}</h3><p>{{ t("ভেন্টিলেশন রিলে রান্নাঘরের এগজস্ট ফ্যানের লাইনে যুক্ত করুন। বিদ্যুতের কাজে অভ্যস্ত না হলে আমাদের দল বা ডিলার করে দেবে।", "Connect the ventilation relay to the kitchen exhaust fan's supply. If you are not used to electrical work, our team or a dealer will do it.") }}</p></li>
+      <li><h3>{{ t("ডিটেক্টর বসান, পরীক্ষা করুন", "Place the detector, test") }}</h3><p>{{ t("ডিটেক্টর নিচের দিকে লাগান, টেস্ট বোতাম চেপে দেখুন ভালভ বন্ধ হয় ও ফ্যান চালু হয়।", "Mount the detector low and press the test button to see the valve close and the fan start.") }}</p></li>
     </ol>
     <p class="small muted mt-2">{{ t("নিজে বসাতে না চাইলে আমাদের দল বা অনুমোদিত ডিলার বসিয়ে দেবে।", "Prefer not to do it yourself? Our team or an authorised dealer will install it.") }}</p>
   </div>
@@ -69,6 +71,7 @@
         <tr><th scope="row">{{ t("ভালভ বন্ধ হওয়ার সময়", "Valve closing time") }}</th><td>{% if claim("closes_under_1s") %}{{ t("১ সেকেন্ডের কম", "Under 1 second") }}{% else %}{{ t("লক্ষ্য: ১ সেকেন্ডের কম", "Designed for under 1 second") }} {{ testing_note(t) }}{% endif %}</td></tr>
         <tr><th scope="row">{{ t("ডিটেক্টর–ভালভ সংযোগ", "Detector–valve link") }}</th><td>{{ t("২.৪ গিগাহার্টজ পয়েন্ট-টু-পয়েন্ট রেডিও, ইন্টারনেট ছাড়া", "2.4 GHz point-to-point radio, no internet") }}{% if not claim("no_internet_needed") %} {{ testing_note(t) }}{% endif %}</td></tr>
         <tr><th scope="row">{{ t("বিদ্যুৎ", "Power") }}</th><td>{{ t("ডিটেক্টর: লিথিয়াম-আয়ন সেল · ভালভ: ২ × AA", "Detector: Li-ion cell · Valve: 2 × AA") }}{% if not claim("no_power_needed") %} {{ testing_note(t) }}{% endif %}</td></tr>
+        <tr><th scope="row">{{ t("বাতাস চলাচল", "Ventilation") }}</th><td>{{ t("অ্যাকটিভ ভেন্টিলেশন রিলে: লিক নিশ্চিত হলে এগজস্ট ফ্যান চালু করে (ফ্যান চলতে বিদ্যুৎ লাগে)", "Active Ventilation Relay: switches on the exhaust fan when a leak is confirmed (the fan needs mains power)") }}{% if not claim("ventilation_relay") %} {{ testing_note(t) }}{% endif %}</td></tr>
         <tr><th scope="row">{{ t("সতর্কতা", "Alarm") }}</th><td>{{ t("৮৫ ডেসিবেল বাজার, অবস্থা-আলো, বাংলা নির্দেশিকা কার্ড", "85 dB buzzer, status lights, Bangla instruction placard") }}</td></tr>
         <tr><th scope="row">{{ t("রিসেট", "Reset") }}</th><td>{{ t("চুলার কাছে হাতে লিভার, প্রায় ১০ সেকেন্ড", "Manual lever at the stove, about 10 seconds") }}</td></tr>
         <tr><th scope="row">{{ t("ভালভ বডি", "Valve body") }}</th><td>{{ t("পিতল; ১.৫ গুণ কাজের চাপে লিক-পরীক্ষিত", "Brass; leak-tested at 1.5× working pressure") }}</td></tr>
