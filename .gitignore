@@ -1,0 +1,19 @@
+# Build output (GitHub Actions builds and publishes this)
+_site/
+
+# Dependencies
+node_modules/
+
+# Local secrets / tooling state
+.secret.local
+.env
+.env.*
+.firebase/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/

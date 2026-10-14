@@ -1,0 +1,56 @@
+# Builds the whole site and publishes it to GitHub Pages.
+# Pull requests: build + checks only. Pushes to main: build, check, publish.
+# Requires: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+name: Build and publish site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build site
+        run: python scripts/build.py
+      - name: Check internal links
+        run: python scripts/check_links.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Test Connected backend helpers
+        working-directory: backend/connected-firebase/functions
+        run: node --test test/keys.test.js
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
