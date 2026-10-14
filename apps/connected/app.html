@@ -981,7 +981,7 @@ label.f { display: grid; gap: 6px; font-weight: 600; color: var(--navy); font-si
   }
 
   function viewAccount() {
-    var wa = CFG.whatsapp || "8801000000000", claim = S.ui.claim || {};
+    var wa = CFG.whatsapp || "", claim = S.ui.claim || {};
     return '<div class="greet"><h1>' + esc(t("accountTitle")) + '</h1><span class="hello num">' + esc(prettyPhone(S.user.phone)) + "</span></div>" +
       S.sites.map(function (s) {
         var a = s.plan && s.plan.active, left = a ? Math.max(0, Math.ceil((s.plan.until - Date.now()) / 864e5)) : 0;
@@ -991,7 +991,7 @@ label.f { display: grid; gap: 6px; font-weight: 600; color: var(--navy); font-si
       }).join("") +
       '<section class="card"><div class="card-head"><h2>' + esc(t("addDevice")) + '</h2></div><p class="small muted" style="margin-bottom:12px">' + esc(t("addDeviceNote")) + '</p><form id="fClaim" class="add-row" novalidate><label class="f" for="inDev">' + esc(t("deviceId")) + '<input class="input" id="inDev" placeholder="VG-0001A3" autocapitalize="characters" autocomplete="off" spellcheck="false"' + (claim.devErr ? ' aria-invalid="true"' : "") + '></label><label class="f" for="inClaim">' + esc(t("stickerCode")) + '<input class="input" id="inClaim" inputmode="numeric" maxlength="6" autocomplete="off"' + (claim.codeErr ? ' aria-invalid="true"' : "") + '></label><button type="submit" class="btn ghost">' + I.plus + esc(t("add")) + "</button></form>" + (claim.err ? '<p class="err" style="margin-top:8px">' + I.alert + esc(claim.err) + "</p>" : "") + "</section>" +
       '<section class="card"><div class="list-row" style="padding-top:0"><strong>' + esc(t("language")) + '</strong><span class="seg" role="group"><button type="button" data-lang="bn" lang="bn" aria-pressed="' + (S.lang === "bn") + '">বাংলা</button><button type="button" data-lang="en" lang="en" aria-pressed="' + (S.lang === "en") + '">English</button></span></div>' +
-      '<div class="list-row"><a class="link" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener" style="display:inline-flex;gap:8px;align-items:center;text-decoration:none">' + I.whatsapp.replace("<svg ", '<svg width="20" height="20" ') + esc(t("help")) + "</a></div>" +
+      (wa ? '<div class="list-row"><a class="link" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener" style="display:inline-flex;gap:8px;align-items:center;text-decoration:none">' + I.whatsapp.replace("<svg ", '<svg width="20" height="20" ') + esc(t("help")) + "</a></div>" : "") +
       '<div class="list-row" style="padding-bottom:0"><button type="button" class="link" style="color:var(--danger);display:inline-flex;gap:8px;align-items:center" data-signout>' + I.out.replace("<svg ", '<svg width="20" height="20" ') + esc(S.ui.so ? t("signoutConfirm") : t("signout")) + "</button></div></section>";
   }
 

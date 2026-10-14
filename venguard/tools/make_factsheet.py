@@ -9,7 +9,8 @@ from reportlab.pdfgen import canvas
 SRC = pathlib.Path(__file__).resolve().parent.parent  # venguard/
 SITE = json.loads((SRC / "site.json").read_text(encoding="utf-8"))
 OUT = SRC / "assets/docs/venguard-fact-sheet.pdf"
-NAVY, TEAL, DEEP, SLATE, INK, MIST = (HexColor(c) for c in ("#0B2A4A", "#12B5A6", "#0A7F76", "#5B6B7A", "#0A1622", "#EAF2F6"))
+# Brand palette (docs/venguard/brand-rules.md): Deep Carbon, Hazard Orange, steel grey for small print.
+CARBON, HAZARD, STEEL = (HexColor(c) for c in ("#0B0F17", "#F97316", "#4A5565"))
 c = SITE["claims"]
 
 def claim(ok, confirmed, designed):
@@ -18,19 +19,18 @@ def claim(ok, confirmed, designed):
 W, H = A4
 pdf = canvas.Canvas(str(OUT), pagesize=A4)
 pdf.setTitle("VenGuard fact sheet")
-pdf.setFillColor(NAVY); pdf.rect(0, H - 120, W, 120, stroke=0, fill=1)
+pdf.setFillColor(CARBON); pdf.rect(0, H - 120, W, 120, stroke=0, fill=1)
+pdf.setFillColor(HAZARD); pdf.rect(0, H - 124, W, 4, stroke=0, fill=1)
 pdf.setFillColor(HexColor("#FFFFFF")); pdf.setFont("Helvetica-Bold", 28); pdf.drawString(48, H - 70, "VenGuard")
 pdf.setFont("Helvetica", 13); pdf.drawString(48, H - 95, "Safety that acts.  Fact sheet, October 2026")
-pdf.setStrokeColor(TEAL); pdf.setLineWidth(2.5)
-p = pdf.beginPath(); p.moveTo(300, H - 80); p.curveTo(360, H - 80, 380, H - 50, 440, H - 60); p.curveTo(500, H - 70, 520, H - 45, W - 48, H - 55); pdf.drawPath(p)
 
 y = H - 165
 def heading(t):
     global y
-    pdf.setFillColor(NAVY); pdf.setFont("Helvetica-Bold", 14); pdf.drawString(48, y, t); y -= 22
+    pdf.setFillColor(CARBON); pdf.setFont("Helvetica-Bold", 14); pdf.drawString(48, y, t); y -= 22
 def line(t, bullet=True):
     global y
-    pdf.setFillColor(INK); pdf.setFont("Helvetica", 11)
+    pdf.setFillColor(CARBON); pdf.setFont("Helvetica", 11)
     words, cur = t.split(), ""
     first = True
     for w in words:
@@ -51,11 +51,13 @@ line("Manual reset in about 10 seconds; gas never turns back on by itself.")
 line("No change to gas pipes and no special tools needed to install.")
 y -= 6
 heading("Pricing")
-line(f"Core Safety: one-time purchase, never paywalled. Pre-order deposit BDT {SITE['preorder']['deposit_bdt']}, fully refundable.")
-line(f"Connected (optional): BDT {SITE['preorder']['connected_plan_bdt_per_year']} per year for remote close, alerts and a landlord dashboard.")
+pre = SITE["preorder"]
+line(f"Home kit: BDT {pre['kit_price_bdt']:,}, one-time purchase. Core safety is never paywalled.")
+line(f"Pre-order deposit: BDT {pre['deposit_bdt']:,}, fully refundable before delivery.")
+line(f"Connected (optional): BDT {pre['connected_plan_bdt_per_year']:,} per year for remote close, alerts and a landlord dashboard.")
 y -= 6
 heading("Status")
-certs = ", ".join(SITE["certifications_granted"]) or "none granted yet; certification pathway in progress (BUET, BSTI)"
+certs = ", ".join(SITE["certifications_granted"]) or "none granted yet; pathway: BUET BRTC test report, then BTRC, Department of Explosives and BSTI"
 line("Working prototype built. Safety and reliability testing under way. Pre-orders open.")
 line("Certifications: " + certs + ".")
 y -= 6
@@ -63,11 +65,13 @@ heading("Who it is for")
 line("Homes, restaurants, landlords and building developers. Agro (poultry) and Marine versions are planned.")
 y -= 6
 heading("Contact")
-k = SITE["contact"]
-line(f"WhatsApp / phone: {k['phone_display']}    Email: {k['email']}", False)
+k = SITE["contact"]  # only real details are printed; empty fields are left out
+details = [f"WhatsApp / phone: {k['phone_display']}" if k.get("phone_display") else "", f"Email: {k['email']}" if k.get("email") else ""]
+if any(details):
+    line("    ".join(d for d in details if d), False)
 line(SITE["base_url"], False)
 
-pdf.setFillColor(SLATE); pdf.setFont("Helvetica", 8.5)
+pdf.setFillColor(STEEL); pdf.setFont("Helvetica", 8.5)
 pdf.drawString(48, 36, "We state only what testing supports. Claims marked 'designed to' are being tested. Certification marks are shown only once granted.")
 pdf.save()
 print("Wrote", OUT)
