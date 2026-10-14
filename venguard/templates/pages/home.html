@@ -4,13 +4,13 @@
 {% set page_desc = t("গ্যাস লিক হলে VenGuard নিজে থেকেই সিলিন্ডারের ভালভ বন্ধ করার জন্য তৈরি — বাড়িতে কেউ না থাকলেও, বিদ্যুৎ বা ইন্টারনেট না থাকলেও। দাম ৳৩,৫০০; ৳৫০০ ফেরতযোগ্য জামানতে প্রি-অর্ডার করুন।", "VenGuard is designed to close the cylinder valve by itself when it senses a leak, even with nobody home, no power and no internet. BDT 3,500; pre-order with a BDT 500 refundable deposit.") %}
 {% set structured = [{
   "@type": "Product", "name": "VenGuard Home kit", "brand": {"@type": "Brand", "name": "VenGuard"},
-  "description": "Automatic LPG gas shut-off kit: gas detector, automatic valve and batteries.",
+  "description": "Automatic LPG gas shut-off kit: gas detector, automatic valve, active ventilation relay and batteries.",
   "image": site.base_url ~ "/assets/img/kit-gray.jpg",
   "offers": {"@type": "Offer", "priceCurrency": "BDT", "price": site.preorder.kit_price_bdt, "availability": "https://schema.org/PreOrder", "url": site.base_url ~ "/pre-order/"}
 }] %}
 {% block content %}
 
-<section class="hero on-dark" aria-labelledby="hero-title">
+<section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
     <div class="hero-grid">
       <div>
@@ -32,7 +32,6 @@
         {% endif %}
       </div>
       <figure class="hero-figure">
-        <span class="corner corner--tl"></span><span class="corner corner--tr"></span><span class="corner corner--bl"></span><span class="corner corner--br"></span>
         <picture>
           <source srcset="{{ root }}assets/img/kit-gray-sm.webp 640w, {{ root }}assets/img/kit-gray.webp 1100w" sizes="(min-width: 960px) 46vw, 100vw" type="image/webp">
           <img src="{{ root }}assets/img/kit-gray.jpg" width="1100" height="767" alt="{{ t('VenGuard হোম কিট: স্বয়ংক্রিয় ভালভ, কন্ট্রোল ইউনিট ও গ্যাস ডিটেক্টর', 'The VenGuard Home kit: automatic valve, control unit and gas detector') }}" fetchpriority="high">
@@ -91,9 +90,10 @@
       <p class="label">{{ t("কীভাবে কাজ করে", "How it works") }}</p>
       <h2 id="how-title">{{ t("এটা নিজেই কাজ করে, আপনাকে কিছু করতে হয় না।", "It acts, so you don't have to.") }}</h2>
     </div>
-    <ol class="steps">
+    <ol class="steps steps--4">
       <li>{{ icon("sense") }}<h3>{{ t("গ্যাস টের পায়", "It senses gas") }}</h3><p>{{ t("ডিটেক্টর সারাক্ষণ রান্নাঘরের বাতাস পরীক্ষা করে, আর রান্নার ধোঁয়া থেকে আসল লিক আলাদা করে।", "The detector checks the kitchen air all the time and tells cooking fumes apart from a real leak.") }}</p></li>
       <li>{{ icon("valve") }}<h3>{{ t("ভালভ নিজেই বন্ধ হয়", "The valve closes by itself") }}</h3><p>{{ t("লিক নিশ্চিত হলে সিলিন্ডারের ভালভ বন্ধ হয়ে যায় — কোনো মানুষ, বিদ্যুৎ বা ইন্টারনেট ছাড়াই।", "Once the leak is confirmed, the cylinder valve closes — no person, power or internet needed.") }}</p></li>
+      <li>{{ icon("fan") }}<h3>{{ t("গ্যাস বের করে দেয়", "It clears the air") }}</h3><p>{{ t("ভেন্টিলেশন রিলে এগজস্ট ফ্যান চালু করে জমে থাকা গ্যাস বাইরে বের করে দেওয়ার জন্য তৈরি।", "The ventilation relay is designed to switch on your exhaust fan and push the built-up gas outside.") if not claim("ventilation_relay") else t("ভেন্টিলেশন রিলে এগজস্ট ফ্যান চালু করে জমে থাকা গ্যাস বাইরে বের করে দেয়।", "The ventilation relay switches on your exhaust fan and pushes the built-up gas outside.") }}</p></li>
       <li>{{ icon("reset") }}<h3>{{ t("১০ সেকেন্ডে রিসেট", "Reset in 10 seconds") }}</h3><p>{{ t("জায়গাটা নিরাপদ হলে চুলার কাছে লিভার তুলে আবার গ্যাস চালু করুন। টেকনিশিয়ান লাগে না।", "When it's safe, lift the lever at the stove to turn gas back on. No technician needed.") }}</p></li>
     </ol>
     <p class="mt-3"><a class="arrow-link" href="{{ url('how-it-works') }}" data-track="cta_how_it_works_click" data-position="steps">{{ t("পুরো সুরক্ষা-শৃঙ্খল দেখুন", "See the full safety chain") }} {{ icon("arrow", "", 18) }}</a></p>

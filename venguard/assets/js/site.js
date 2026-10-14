@@ -24,6 +24,21 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     /* ---------- Mobile menu ---------- */
+    // Day / night theme switch (the choice is applied before paint in base.html)
+    var root = document.documentElement, themeBtn = $("[data-theme-toggle]");
+    function syncTheme() {
+      if (!themeBtn) return;
+      themeBtn.setAttribute("aria-pressed", root.getAttribute("data-theme") === "dark" ? "true" : "false");
+    }
+    if (themeBtn) themeBtn.addEventListener("click", function () {
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      ls("vg_theme", next);
+      syncTheme();
+      track("theme_switch", { theme: next });
+    });
+    syncTheme();
+
     var toggle = $(".menu-toggle"), nav = $("#site-nav");
     if (toggle && nav) toggle.addEventListener("click", function () {
       var open = nav.classList.toggle("is-open");

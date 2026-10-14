@@ -9,8 +9,8 @@ from reportlab.pdfgen import canvas
 SRC = pathlib.Path(__file__).resolve().parent.parent  # venguard/
 SITE = json.loads((SRC / "site.json").read_text(encoding="utf-8"))
 OUT = SRC / "assets/docs/venguard-fact-sheet.pdf"
-# Brand palette (docs/venguard/brand-rules.md): Deep Carbon, Hazard Orange, steel grey for small print.
-CARBON, HAZARD, STEEL = (HexColor(c) for c in ("#0B0F17", "#F97316", "#4A5565"))
+# Brand palette (docs/venguard/brand-rules.md): Guard Navy, VenGuard Orange, muted slate for small print.
+CARBON, HAZARD, STEEL = (HexColor(c) for c in ("#0B2A4A", "#E85D0C", "#4F6178"))
 c = SITE["claims"]
 
 def claim(ok, confirmed, designed):
@@ -40,12 +40,13 @@ def line(t, bullet=True):
     pdf.drawString(66 if not (bullet and first) else 48, y, ("•  " if bullet and first else "") + cur.strip()); y -= 20
 
 heading("What it is")
-line("An automatic gas shut-off kit for LPG kitchens in Bangladesh: a gas detector, an automatic valve and batteries. When it confirms a leak, it closes the gas by itself, even with nobody home.", False)
+line("An automatic gas shut-off kit for LPG kitchens in Bangladesh: a gas detector, an automatic valve, an active ventilation relay and batteries. When it confirms a leak, it closes the gas by itself and switches on the exhaust fan, even with nobody home.", False)
 y -= 6
 heading("Key facts")
 line(claim(c["no_power_needed_confirmed"], "Works without mains power (battery operated).", "Designed to work without mains power (battery operated)"))
 line(claim(c["no_internet_needed_confirmed"], "Works without internet; all protection happens in the device.", "Designed to work without internet; all protection happens in the device"))
 line(claim(c["closes_under_1s_confirmed"], "Closes the valve in under 1 second after a confirmed leak.", "Designed to close the valve in under 1 second after a confirmed leak"))
+line(claim(c["ventilation_relay_confirmed"], "Switches on the kitchen exhaust fan to clear the gas (fan needs mains power).", "Designed to switch on the kitchen exhaust fan to clear the gas (fan needs mains power)"))
 line("A 7-second confirmation check avoids false alarms from brief cooking smells.")
 line("Manual reset in about 10 seconds; gas never turns back on by itself.")
 line("No change to gas pipes and no special tools needed to install.")

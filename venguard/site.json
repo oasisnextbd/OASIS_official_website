@@ -18,7 +18,8 @@
     "_readme": "Claims rule (brief Part 7). Set a claim to true ONLY when testing supports it (CTO sign-off). While false, the site says 'designed to' and shows a 'testing in progress' note.",
     "closes_under_1s_confirmed": false,
     "no_power_needed_confirmed": false,
-    "no_internet_needed_confirmed": false
+    "no_internet_needed_confirmed": false,
+    "ventilation_relay_confirmed": false
   },
   "certifications_granted": [],
   "status_timeline": [
