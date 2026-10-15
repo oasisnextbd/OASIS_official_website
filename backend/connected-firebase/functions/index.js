@@ -1,5 +1,5 @@
 /**
- * VenGuard Connected — cloud backend (Firebase, Node 20).
+ * VenGuard Connected — cloud backend (Firebase, Node 22).
  *
  * Safety principles (VenGuard HCD v4):
  *  - The cloud is never part of the safety loop. Devices detect and close on their own, offline.

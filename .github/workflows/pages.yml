@@ -32,7 +32,7 @@ jobs:
         run: python scripts/check_links.py
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
       - name: Test Connected backend helpers
         working-directory: backend/connected-firebase/functions
         run: node --test test/keys.test.js
