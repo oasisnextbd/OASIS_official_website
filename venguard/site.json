@@ -153,8 +153,63 @@
     "items": []
   },
   "achievements": {
-    "_readme": "Real awards, grants, competitions or press only. Empty = hidden on the About and home pages. Item: {year, title_en, title_bn, text_en, text_bn}.",
-    "items": []
+    "_readme": "Real awards, grants, competitions only. Empty = hidden on the About and home pages. Item: {year, date_en, date_bn, title_en, title_bn, text_en, text_bn, highlight (short line for the home hero), image (optional, under assets/img/, with alt_en/alt_bn)}. Newest first.",
+    "items": [
+      {
+        "year": 2026,
+        "date_en": "23 July 2026",
+        "date_bn": "২৩ জুলাই ২০২৬",
+        "title_en": "1st place, Idea Competition 2026",
+        "title_bn": "প্রথম স্থান, আইডিয়া কম্পিটিশন ২০২৬",
+        "text_en": "Team Dibyo Drishty won first prize (USD 1,000) at the KOICA Bangladesh Idea Competition under the CREATIVE Bangladesh Project, held at the University of Dhaka. VenGuard is one of 41 teams selected for its Entrepreneurship Education Program.",
+        "text_bn": "KOICA বাংলাদেশের CREATIVE Bangladesh প্রকল্পের আইডিয়া কম্পিটিশনে (ঢাকা বিশ্ববিদ্যালয়) টিম দিব্য দৃষ্টি প্রথম পুরস্কার (১,০০০ মার্কিন ডলার) জিতেছে। উদ্যোক্তা শিক্ষা প্রোগ্রামের জন্য নির্বাচিত ৪১টি দলের একটি VenGuard।",
+        "highlight_en": "1st place, KOICA Idea Competition 2026",
+        "highlight_bn": "KOICA আইডিয়া কম্পিটিশন ২০২৬-এ প্রথম",
+        "image": "idea-competition-2026",
+        "alt_en": "Prize cheque: Idea Competition 2026, 1st winner, Team Dibyo Drishty, USD 1,000",
+        "alt_bn": "পুরস্কারের চেক: আইডিয়া কম্পিটিশন ২০২৬, প্রথম বিজয়ী টিম দিব্য দৃষ্টি, ১,০০০ মার্কিন ডলার"
+      },
+      {
+        "year": 2026,
+        "date_en": "2026",
+        "date_bn": "২০২৬",
+        "title_en": "Top 50 innovators, National Innovation Fair 2026",
+        "title_bn": "শীর্ষ ৫০ উদ্ভাবক, জাতীয় উদ্ভাবন মেলা ২০২৬",
+        "text_en": "Selected among the top 50 innovations in the country and exhibited VenGuard at its own stall, where visitors showed strong interest.",
+        "text_bn": "দেশের শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত; নিজস্ব স্টলে VenGuard প্রদর্শন করা হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পাওয়া যায়।",
+        "highlight_en": "Top 50, National Innovation Fair 2026",
+        "highlight_bn": "জাতীয় উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০"
+      }
+    ]
+  },
+  "press": {
+    "_readme": "Real coverage only. Headlines are quoted as published (in their own language). Add url when you have the article link; without it the item is shown without a link. Item: {outlet, date_en, date_bn, headline, lang (bn|en), url}.",
+    "items": [
+      {
+        "outlet": "Samakal (সমকাল)",
+        "date_en": "8 August 2026",
+        "date_bn": "৮ আগস্ট ২০২৬",
+        "headline": "গ্যাস দুর্ঘটনা রুখতে বুয়েট শিক্ষার্থীদের ‘ভ্যানগার্ড’",
+        "lang": "bn",
+        "url": ""
+      },
+      {
+        "outlet": "The Delta Lens",
+        "date_en": "8 August 2026",
+        "date_bn": "৮ আগস্ট ২০২৬",
+        "headline": "গ্যাস সিলিন্ডার লিকেজ থেকে সৃষ্ট দুর্ঘটনা রুখতে বুয়েট শিক্ষার্থীরা বানালেন ‘ভ্যানগার্ড’, মানুষের উপস্থিতি ছাড়াই কাজ করবে এই ওয়্যারলেস ইকোসিস্টেম",
+        "lang": "bn",
+        "url": ""
+      },
+      {
+        "outlet": "BUET Media & Communication Club",
+        "date_en": "2026",
+        "date_bn": "২০২৬",
+        "headline": "Detecting Danger Before Disaster: BUET Students’ ‘VenGuard’",
+        "lang": "en",
+        "url": ""
+      }
+    ]
   },
   "contact": {
     "_readme": "Real values only. Leave empty until confirmed; empty values are not shown anywhere on the site.",

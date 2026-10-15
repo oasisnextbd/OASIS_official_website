@@ -540,9 +540,28 @@ html[lang="bn"] .roadmap-period { font: 600 .95rem/1.3 var(--font-bn); letter-sp
 /* Achievements */
 .achievements { list-style: none; display: grid; gap: 12px; }
 @media (min-width: 720px) { .achievements { grid-template-columns: repeat(2, 1fr); } }
-.achievements li { display: grid; gap: 4px; padding: 20px 24px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--orange); }
-.achievement-year { font: 700 .78rem/1 var(--font); letter-spacing: .12em; color: var(--accent-text); }
-.achievements span:last-child:not(.achievement-year) { color: var(--text-muted); font-size: .95rem; }
+.achievements li { display: grid; gap: 4px; align-content: start; padding: 20px 24px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--orange); }
+.achievements li > div { display: grid; gap: 6px; }
+.achievements p { margin: 0; color: var(--text-muted); font-size: .95rem; }
+.achievement-year { font: 700 .78rem/1.3 var(--font); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); }
+html[lang="bn"] .achievement-year { font-family: var(--font-bn); letter-spacing: 0; font-size: .88rem; }
+/* The entry with a photo spans the full row: photo beside the text on wide screens */
+.achievement--photo { gap: 16px !important; }
+.achievement--photo img { width: 100%; height: auto; border-radius: var(--r); }
+@media (min-width: 720px) { .achievement--photo { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 28px !important; } }
+.press-title { margin: 40px 0 14px; font-size: 1.15rem; }
+.press { list-style: none; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.press li { display: grid; gap: 4px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 720px) { .press li { grid-template-columns: 260px 1fr; gap: 24px; align-items: baseline; } }
+.press-meta { color: var(--text-muted); font-size: .9rem; }
+.press-meta strong { color: var(--text); }
+.press-headline, .press a { font-weight: 600; }
+.press [lang="bn"] { font-family: var(--font-bn); }
+/* Recognition line under the hero buttons */
+.hero-proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.hero-proof a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); font-size: .86rem; font-weight: 600; text-decoration: none; }
+.hero-proof a:hover { border-color: var(--accent); }
+.hero-proof svg { width: 16px; height: 16px; color: var(--accent-text); }
 
 /* How-it-works chain (step text + diagram) */
 .chain { list-style: none; display: grid; gap: 16px; }

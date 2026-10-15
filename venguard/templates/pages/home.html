@@ -38,6 +38,13 @@
         {% if site.preorder.open %}
         <p class="btn-note">{{ t("দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "। প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.kit_price_bdt) ~ ". Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable.") }} <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></p>
         {% endif %}
+        {% if site.achievements["items"] %}
+        <ul class="hero-proof" aria-label="{{ t('স্বীকৃতি', 'Recognition') }}">
+          {% for a in site.achievements["items"] if a.get("highlight_en") %}
+          <li><a href="{{ url('about') }}#achievements" data-track="proof_click" data-position="hero">{{ icon("award") }}{{ t(a.highlight_bn, a.highlight_en) }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
       </div>
       <figure class="hero-figure">
         <picture>
