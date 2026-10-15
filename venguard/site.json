@@ -157,6 +157,17 @@
     "items": [
       {
         "year": 2026,
+        "date_en": "12–14 September 2026",
+        "date_bn": "১২–১৪ সেপ্টেম্বর ২০২৬",
+        "title_en": "Top 50 innovators, National Innovation Fair 2026",
+        "title_bn": "শীর্ষ ৫০ উদ্ভাবক, জাতীয় উদ্ভাবন মেলা ২০২৬",
+        "text_en": "Selected among the top 50 innovations in the country and exhibited VenGuard at its own stall, where visitors showed strong interest.",
+        "text_bn": "দেশের শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত; নিজস্ব স্টলে VenGuard প্রদর্শন করা হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পাওয়া যায়।",
+        "highlight_en": "Top 50, National Innovation Fair 2026",
+        "highlight_bn": "জাতীয় উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০"
+      },
+      {
+        "year": 2026,
         "date_en": "23 July 2026",
         "date_bn": "২৩ জুলাই ২০২৬",
         "title_en": "1st place, Idea Competition 2026",
@@ -168,17 +179,6 @@
         "image": "idea-competition-2026",
         "alt_en": "Prize cheque: Idea Competition 2026, 1st winner, Team Dibyo Drishty, USD 1,000",
         "alt_bn": "পুরস্কারের চেক: আইডিয়া কম্পিটিশন ২০২৬, প্রথম বিজয়ী টিম দিব্য দৃষ্টি, ১,০০০ মার্কিন ডলার"
-      },
-      {
-        "year": 2026,
-        "date_en": "2026",
-        "date_bn": "২০২৬",
-        "title_en": "Top 50 innovators, National Innovation Fair 2026",
-        "title_bn": "শীর্ষ ৫০ উদ্ভাবক, জাতীয় উদ্ভাবন মেলা ২০২৬",
-        "text_en": "Selected among the top 50 innovations in the country and exhibited VenGuard at its own stall, where visitors showed strong interest.",
-        "text_bn": "দেশের শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত; নিজস্ব স্টলে VenGuard প্রদর্শন করা হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পাওয়া যায়।",
-        "highlight_en": "Top 50, National Innovation Fair 2026",
-        "highlight_bn": "জাতীয় উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০"
       }
     ]
   },
@@ -191,7 +191,7 @@
         "date_bn": "৮ আগস্ট ২০২৬",
         "headline": "গ্যাস দুর্ঘটনা রুখতে বুয়েট শিক্ষার্থীদের ‘ভ্যানগার্ড’",
         "lang": "bn",
-        "url": ""
+        "url": "https://samakal.com/kisualonil/article/366677"
       },
       {
         "outlet": "The Delta Lens",
