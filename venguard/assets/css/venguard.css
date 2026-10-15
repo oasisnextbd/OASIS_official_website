@@ -198,13 +198,14 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
 .skip-link:focus { left: 8px; }
 .site-header { position: sticky; top: 0; z-index: 50; background: var(--header-bg); color: var(--text); border-bottom: 1px solid var(--line); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); }
 .site-header .wrap { display: flex; align-items: center; gap: 16px; min-height: var(--header-h); }
+.site-header .wrap { max-width: 1440px; } /* the full menu needs more width than page content */
 .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font: 800 1.35rem/1 var(--font); letter-spacing: -.02em; }
 .logo-mark { width: 38px; height: 32px; flex: none; }
 .logo-mark .wave { stroke: var(--orange); }
 .logo-word { white-space: nowrap; }
 .logo:hover { color: var(--text); }
 .nav { margin-left: auto; }
-.nav ul { list-style: none; display: flex; gap: 2px; }
+.nav > ul { list-style: none; display: flex; align-items: center; gap: 2px; }
 .nav a { display: block; white-space: nowrap; padding: 8px 11px; border-radius: var(--r); color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: .95rem; }
 .nav a:hover { color: var(--text); background: var(--bg-alt); }
 .nav a[aria-current="page"] { color: var(--text); box-shadow: inset 0 -3px 0 var(--accent); border-radius: 0; }
@@ -216,23 +217,48 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
 .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--text); background: transparent; cursor: pointer; }
 .icon-btn svg { width: 20px; height: 20px; }
 .icon-btn:hover { background: var(--bg-alt); color: var(--text); }
+/* Dropdown menus: open on hover/focus on wide screens; the chevron button toggles them
+   for touch and keyboard (site.js), and inside the mobile menu. */
+.has-sub { position: relative; display: flex; align-items: center; }
+.has-sub > a { padding-right: 4px; }
+.sub-toggle { display: grid; place-items: center; width: 26px; height: 32px; padding: 0; border: 0; border-radius: var(--r); background: none; color: var(--text-muted); cursor: pointer; }
+.sub-toggle svg { width: 16px; height: 16px; transition: transform .15s; }
+.sub-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.sub-menu { list-style: none; display: none; }
+.sub-menu a { white-space: nowrap; }
+@media (min-width: 1501px) {
+  .sub-menu { position: absolute; top: 100%; left: 0; z-index: 60; min-width: 220px; padding: 8px; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+  .has-sub:hover > .sub-menu, .has-sub:focus-within > .sub-menu, .sub-menu.is-open { display: flex; }
+  .sub-menu a { padding: 9px 12px; border-radius: var(--r); color: var(--text); }
+  .sub-menu a:hover { background: var(--bg-alt); color: var(--accent-text); }
+  .nav-app { display: none; }
+}
+.app-btn svg, .nav-app svg { width: 18px; height: 18px; }
+.nav-app a { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-text); font-weight: 700; }
+
 /* Theme switch shows the theme it will switch to */
 .theme-toggle .i-sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
 :root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
 .menu-toggle { display: none; }
-@media (max-width: 1220px) {
+@media (max-width: 1500px) {
   .site-header .wrap { flex-wrap: wrap; }
   .menu-toggle { display: inline-grid; }
   .nav { order: 10; width: 100%; display: none; margin: 0; padding-bottom: 12px; }
   .nav.is-open { display: block; }
-  .nav ul { flex-direction: column; }
+  .nav > ul { flex-direction: column; align-items: stretch; }
   .nav a { padding: 12px 8px; font-size: 1rem; }
   .nav a[aria-current="page"] { box-shadow: inset 3px 0 0 var(--accent); padding-left: 14px; }
   .header-actions { margin-left: auto; }
+  .has-sub { flex-wrap: wrap; }
+  .has-sub > a { flex: 1; }
+  .sub-toggle { width: 44px; height: 44px; }
+  .sub-menu.is-open { display: block; width: 100%; padding: 0 0 8px 16px; border-left: 2px solid var(--line); margin-left: 8px; }
+  .sub-menu a { padding: 9px 8px; font-size: .95rem; }
+  .nav-app { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 }
 @media (max-width: 719px) {
-  .header-actions .btn--primary, .header-actions .wa-link { display: none; }
+  .header-actions .btn--primary, .header-actions .wa-link, .header-actions .app-btn { display: none; }
   .logo { font-size: 1.2rem; }
   .logo-mark { width: 32px; height: 27px; }
 }
@@ -470,6 +496,47 @@ html[lang="bn"] .breadcrumb { font: 500 .88rem/1.4 var(--font-bn); letter-spacin
 .contact-list strong { display: block; }
 .media-figure { margin: 0; border-radius: var(--r-lg); overflow: hidden; background: var(--surface); }
 .media-figure img { width: 100%; }
+/* Mission / vision statements */
+.statement { padding: 32px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+.statement--accent { border-top: 4px solid var(--orange); }
+.statement-text { font-size: clamp(1.2rem, 2.4vw, 1.55rem); font-weight: 700; line-height: 1.4; color: var(--text); margin: 0; }
+
+/* Roadmap: dots on one line, period above, text below (vertical on small screens) */
+.roadmap { list-style: none; display: grid; gap: 0; position: relative; }
+.roadmap-item { position: relative; display: grid; gap: 6px; align-content: start; padding: 0 0 32px 36px; }
+.roadmap-item::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: -6px; width: 2px; background: var(--line-strong); }
+.roadmap-item:last-child::before { display: none; }
+.roadmap-dot { position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--line-strong); background: var(--bg); }
+.roadmap-item--done .roadmap-dot { background: var(--orange); border-color: var(--orange); }
+.roadmap-item--now .roadmap-dot { border-color: var(--orange); box-shadow: 0 0 0 5px rgb(232 93 12 / .25); }
+.roadmap-item--done::before { background: var(--orange); }
+.roadmap-period { font: 700 .78rem/1.2 var(--font); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); }
+html[lang="bn"] .roadmap-period { font: 600 .95rem/1.3 var(--font-bn); letter-spacing: 0; text-transform: none; }
+.roadmap h3 { margin: 0; }
+.roadmap p { margin: 0; color: var(--text-muted); font-size: .95rem; }
+.roadmap .status { margin-top: 4px; }
+@media (min-width: 1000px) {
+  .roadmap { grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .roadmap-item { padding: 40px 0 0; }
+  .roadmap-item::before { left: 20px; right: -20px; top: 9px; bottom: auto; width: auto; height: 2px; }
+  .roadmap-dot { top: 0; }
+}
+
+/* Features */
+.features { list-style: none; display: grid; gap: 16px; }
+@media (min-width: 720px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .features { grid-template-columns: repeat(3, 1fr); } }
+.features li { padding: 24px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+.features .icon { width: 32px; height: 32px; color: var(--accent); margin-bottom: 14px; }
+.features p { margin: 0; color: var(--text-muted); }
+
+/* Achievements */
+.achievements { list-style: none; display: grid; gap: 12px; }
+@media (min-width: 720px) { .achievements { grid-template-columns: repeat(2, 1fr); } }
+.achievements li { display: grid; gap: 4px; padding: 20px 24px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--orange); }
+.achievement-year { font: 700 .78rem/1 var(--font); letter-spacing: .12em; color: var(--accent-text); }
+.achievements span:last-child:not(.achievement-year) { color: var(--text-muted); font-size: .95rem; }
+
 /* How-it-works chain (step text + diagram) */
 .chain { list-style: none; display: grid; gap: 16px; }
 .chain-step { display: grid; gap: 24px; align-items: center; padding: 28px 24px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
