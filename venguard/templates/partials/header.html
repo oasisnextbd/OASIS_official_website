@@ -43,7 +43,6 @@
         <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a></li>
         {% endif %}
         {% endfor %}
-        <li class="nav-app"><a href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="menu">{{ icon("download") }}{{ t("ডেমো অ্যাপ নিন", "Get Demo App") }}</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -53,7 +52,6 @@
       </div>
       <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="{{ t('রাতের থিম', 'Night theme') }}" title="{{ t('দিন / রাতের থিম', 'Day / night theme') }}">{{ icon("moon", "i-moon") }}{{ icon("sun", "i-sun") }}</button>
       {{ whatsapp(site, t, "header", "icon-btn wa-link", icon_only=true) }}
-      <a class="btn btn--secondary btn--sm app-btn" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="header">{{ icon("download") }}{{ t("ডেমো অ্যাপ নিন", "Get Demo App") }}</a>
       {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
       <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
     </div>

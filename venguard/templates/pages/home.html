@@ -12,6 +12,14 @@
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
+    <div class="app-strip">
+      <span class="app-strip-icon">{{ icon("smartphone") }}</span>
+      <p><strong>{{ t("VenGuard অ্যাপ", "The VenGuard app") }}</strong> · {{ t("লাইভ গ্যাসের মাত্রা, সতর্কবার্তা ও দূর থেকে গ্যাস বন্ধ। ডেমো দেখুন বা সাইন ইন করুন।", "Live gas level, alerts and remote shut-off. Try the demo or sign in.") }}</p>
+      <div class="btn-row">
+        <a class="btn btn--secondary btn--sm" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="hero">{{ t("অ্যাপ খুলুন", "Open the app") }}</a>
+        <a class="btn btn--dark btn--sm" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="hero">{{ icon("download") }}{{ t("ডেমো অ্যাপ নিন", "Get Demo App") }}</a>
+      </div>
+    </div>
     <div class="hero-grid">
       <div>
         <p class="label">{{ t("এলপিজি রান্নাঘরের জন্য স্বয়ংক্রিয় গ্যাস বন্ধ", "Automatic gas shut-off for LPG kitchens") }}</p>
@@ -144,7 +152,7 @@
           <li>{{ icon("tick") }}<span>{{ t("বাড়িওয়ালাদের জন্য সব ইউনিটের ড্যাশবোর্ড", "Multi-unit dashboard for landlords") }}</span></li>
         </ul>
         <p class="small mt-2">{{ t("আবার চালু করা সবসময় চুলার কাছে, হাতে — দূর থেকে কখনো নয়।", "Turning gas back on is always manual, at the stove — never remote.") }}</p>
-        <a class="btn btn--secondary" href="{{ site.app.web_url }}" data-track="app_open_click" data-position="connected_plan">{{ t("অ্যাপটি ডেমোতে দেখুন", "Try the app demo") }}</a>
+        <a class="btn btn--secondary" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="connected_plan">{{ t("অ্যাপটি ডেমোতে দেখুন", "Try the app demo") }}</a>
       </article>
     </div>
   </div>

@@ -78,7 +78,7 @@
     var cfg = window.VG_CONFIG || {};
     if (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
       $$("[data-app-link]").forEach(function (a) {
-        if (cfg.app_web_url) { a.href = cfg.app_web_url; a.removeAttribute("download"); }
+        if (cfg.app_web_url) { a.href = cfg.app_web_url + "#/welcome/" + (document.documentElement.lang === "bn" ? "bn" : "en"); a.removeAttribute("download"); }
       });
     }
 
