@@ -153,18 +153,23 @@
     "items": []
   },
   "achievements": {
-    "_readme": "Real awards, grants, competitions only. Empty = hidden on the About and home pages. Item: {year, date_en, date_bn, title_en, title_bn, text_en, text_bn, highlight (short line for the home hero), image (optional, under assets/img/, with alt_en/alt_bn)}. Newest first.",
+    "_readme": "Real awards, grants, competitions only. Empty = hidden on the About and home pages. Item: {year, date_en, date_bn, title_en, title_bn, text_en, text_bn, highlight (short line for the home hero), image (optional: base name of a .webp + .jpg pair under assets/img/, with image_w, image_h, alt_en, alt_bn)}. Newest first.",
     "items": [
       {
         "year": 2026,
         "date_en": "12–14 September 2026",
         "date_bn": "১২–১৪ সেপ্টেম্বর ২০২৬",
-        "title_en": "Top 50 innovators, National Innovation Fair 2026",
-        "title_bn": "শীর্ষ ৫০ উদ্ভাবক, জাতীয় উদ্ভাবন মেলা ২০২৬",
-        "text_en": "Selected among the top 50 innovations in the country and exhibited VenGuard at its own stall, where visitors showed strong interest.",
-        "text_bn": "দেশের শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত; নিজস্ব স্টলে VenGuard প্রদর্শন করা হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পাওয়া যায়।",
-        "highlight_en": "Top 50, National Innovation Fair 2026",
-        "highlight_bn": "জাতীয় উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০"
+        "title_en": "Top 50 innovators, Bangladesh Innovation Fair 2026",
+        "title_bn": "শীর্ষ ৫০ উদ্ভাবক, বাংলাদেশ উদ্ভাবন মেলা ২০২৬",
+        "text_en": "Selected among the top 50 innovations at the fair organised by the Ministry of Science and Technology (“Innovate to Market”). VenGuard was shown at its own stall in the Security, Cyber and Frontier Technology zone, with a live demo, and drew strong interest from visitors.",
+        "text_bn": "বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয় আয়োজিত মেলায় (“Innovate to Market”) শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত। ‘সিকিউরিটি, সাইবার ও ফ্রন্টিয়ার টেকনোলজি’ অংশে নিজস্ব স্টলে লাইভ ডেমোসহ VenGuard প্রদর্শিত হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পায়।",
+        "highlight_en": "Top 50, Bangladesh Innovation Fair 2026",
+        "highlight_bn": "বাংলাদেশ উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০",
+        "image": "innovation-fair-2026",
+        "image_w": 900,
+        "image_h": 1069,
+        "alt_en": "The VenGuard stall at Bangladesh Innovation Fair 2026, with the kit, a live app demo and the OASIS banner",
+        "alt_bn": "বাংলাদেশ উদ্ভাবন মেলা ২০২৬-এ VenGuard স্টল: কিট, অ্যাপের লাইভ ডেমো ও OASIS ব্যানার"
       },
       {
         "year": 2026,
@@ -178,7 +183,9 @@
         "highlight_bn": "KOICA আইডিয়া কম্পিটিশন ২০২৬-এ প্রথম",
         "image": "idea-competition-2026",
         "alt_en": "Prize cheque: Idea Competition 2026, 1st winner, Team Dibyo Drishty, USD 1,000",
-        "alt_bn": "পুরস্কারের চেক: আইডিয়া কম্পিটিশন ২০২৬, প্রথম বিজয়ী টিম দিব্য দৃষ্টি, ১,০০০ মার্কিন ডলার"
+        "alt_bn": "পুরস্কারের চেক: আইডিয়া কম্পিটিশন ২০২৬, প্রথম বিজয়ী টিম দিব্য দৃষ্টি, ১,০০০ মার্কিন ডলার",
+        "image_w": 1200,
+        "image_h": 642
       }
     ]
   },

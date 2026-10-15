@@ -612,3 +612,6 @@ html[lang="bn"] .site-footer h2 { font: 600 .92rem/1.3 var(--font-bn); letter-sp
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+/* A portrait photo (e.g. a stall) takes a narrower column so the card does not get tall */
+.achievement--portrait img { max-height: 520px; width: auto; max-width: 100%; margin-inline: auto; }
+@media (min-width: 720px) { .achievement--portrait { grid-template-columns: minmax(0, .55fr) minmax(0, 1fr); } .achievement--portrait img { max-height: 440px; } }

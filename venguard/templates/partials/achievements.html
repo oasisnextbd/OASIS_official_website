@@ -1,11 +1,11 @@
 {#- Achievements list (site.json → achievements.items). Shown only when there are real entries. -#}
 <ul class="achievements">
   {% for a in site.achievements["items"] %}
-  <li{% if a.get("image") %} class="achievement--photo"{% endif %}>
+  <li{% if a.get("image") %} class="achievement--photo{% if a.get("image_h", 0) > a.get("image_w", 0) %} achievement--portrait{% endif %}"{% endif %}>
     {% if a.get("image") %}
     <picture>
       <source srcset="{{ root }}assets/img/{{ a.image }}.webp" type="image/webp">
-      <img src="{{ root }}assets/img/{{ a.image }}.jpg" width="1200" height="642" loading="lazy" alt="{{ t(a.alt_bn, a.alt_en) }}">
+      <img src="{{ root }}assets/img/{{ a.image }}.jpg" width="{{ a.get("image_w", 1200) }}" height="{{ a.get("image_h", 800) }}" loading="lazy" alt="{{ t(a.alt_bn, a.alt_en) }}">
     </picture>
     {% endif %}
     <div>
