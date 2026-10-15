@@ -1,6 +1,29 @@
 {#- Achievements list (site.json → achievements.items). Shown only when there are real entries. -#}
 <ul class="achievements">
   {% for a in site.achievements["items"] %}
-  <li><span class="achievement-year">{{ num(a.year) }}</span><strong>{{ t(a.title_bn, a.title_en) }}</strong>{% if a.text_en %}<span>{{ t(a.text_bn, a.text_en) }}</span>{% endif %}</li>
+  <li{% if a.get("image") %} class="achievement--photo"{% endif %}>
+    {% if a.get("image") %}
+    <picture>
+      <source srcset="{{ root }}assets/img/{{ a.image }}.webp" type="image/webp">
+      <img src="{{ root }}assets/img/{{ a.image }}.jpg" width="1200" height="642" loading="lazy" alt="{{ t(a.alt_bn, a.alt_en) }}">
+    </picture>
+    {% endif %}
+    <div>
+      <span class="achievement-year">{{ t(a.date_bn, a.date_en) if a.get("date_en") else num(a.year) }}</span>
+      <strong>{{ t(a.title_bn, a.title_en) }}</strong>
+      {% if a.get("text_en") %}<p>{{ t(a.text_bn, a.text_en) }}</p>{% endif %}
+    </div>
+  </li>
   {% endfor %}
 </ul>
+{% if site.press["items"] %}
+<h3 class="press-title">{{ t("সংবাদমাধ্যমে VenGuard", "VenGuard in the news") }}</h3>
+<ul class="press">
+  {% for p in site.press["items"] %}
+  <li>
+    <span class="press-meta"><strong>{{ p.outlet }}</strong> · {{ t(p.date_bn, p.date_en) }}</span>
+    {% if p.get("url") %}<a href="{{ p.url }}" target="_blank" rel="noopener" lang="{{ p.lang }}">{{ p.headline }}</a>{% else %}<span class="press-headline" lang="{{ p.lang }}">{{ p.headline }}</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
