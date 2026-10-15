@@ -508,25 +508,44 @@ html[lang="bn"] .breadcrumb { font: 500 .88rem/1.4 var(--font-bn); letter-spacin
 .statement--accent { border-top: 4px solid var(--orange); }
 .statement-text { font-size: clamp(1.2rem, 2.4vw, 1.55rem); font-weight: 700; line-height: 1.4; color: var(--text); margin: 0; }
 
-/* Roadmap: dots on one line, period above, text below (vertical on small screens) */
-.roadmap { list-style: none; display: grid; gap: 0; position: relative; }
-.roadmap-item { position: relative; display: grid; gap: 6px; align-content: start; padding: 0 0 32px 36px; }
-.roadmap-item::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: -6px; width: 2px; background: var(--line-strong); }
-.roadmap-item:last-child::before { display: none; }
-.roadmap-dot { position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--line-strong); background: var(--bg); }
-.roadmap-item--done .roadmap-dot { background: var(--orange); border-color: var(--orange); }
-.roadmap-item--now .roadmap-dot { border-color: var(--orange); box-shadow: 0 0 0 5px rgb(232 93 12 / .25); }
-.roadmap-item--done::before { background: var(--orange); }
+/* Roadmap ("Our journey"): a vertical line with an icon node per step.
+   Small screens: line on the left, cards to its right. ≥ 900px: line in the centre, cards alternate sides.
+   done = filled orange node, solid card · now = glowing node, orange card edge · next = outlined node, dashed card. */
+.roadmap { --node: 44px; list-style: none; position: relative; display: grid; gap: 20px; margin: 0; padding: 0; }
+.roadmap::before { content: ""; position: absolute; top: 8px; bottom: 8px; left: calc(var(--node) / 2 - 1px); width: 2px; background: linear-gradient(var(--orange), var(--orange) var(--done-to, 40%), var(--line-strong) var(--done-to, 40%)); }
+.roadmap-item { position: relative; display: grid; grid-template-columns: var(--node) minmax(0, 1fr); gap: 16px; align-items: start; }
+.roadmap-node { position: relative; z-index: 1; display: grid; place-items: center; width: var(--node); height: var(--node); border-radius: 50%; background: var(--bg); border: 2px solid var(--line-strong); color: var(--text-muted); }
+.roadmap-node svg { width: 20px; height: 20px; }
+.roadmap-item--done .roadmap-node { background: var(--orange); border-color: var(--orange); color: #fff; }
+.roadmap-item--now .roadmap-node { border-color: var(--orange); color: var(--accent-text); box-shadow: 0 0 0 6px rgb(232 93 12 / .22); }
+.roadmap-card { display: grid; gap: 6px; padding: 18px 20px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); }
+.roadmap-item--now .roadmap-card { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange), var(--shadow); }
+.roadmap-item--next .roadmap-card { background: transparent; border-style: dashed; border-color: var(--line-strong); }
 .roadmap-period { font: 700 .78rem/1.2 var(--font); letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text); }
 html[lang="bn"] .roadmap-period { font: 600 .95rem/1.3 var(--font-bn); letter-spacing: 0; text-transform: none; }
-.roadmap h3 { margin: 0; }
+.roadmap h3 { margin: 0; font-size: 1.15rem; }
 .roadmap p { margin: 0; color: var(--text-muted); font-size: .95rem; }
-.roadmap .status { margin-top: 4px; }
-@media (min-width: 1000px) {
-  .roadmap { grid-template-columns: repeat(6, 1fr); gap: 20px; }
-  .roadmap-item { padding: 40px 0 0; }
-  .roadmap-item::before { left: 20px; right: -20px; top: 9px; bottom: auto; width: auto; height: 2px; }
-  .roadmap-dot { top: 0; }
+.roadmap .status { margin-top: 4px; justify-self: start; }
+@media (min-width: 900px) {
+  .roadmap { gap: 0; }
+  .roadmap::before { left: calc(50% - 1px); }
+  .roadmap-item { grid-template-columns: minmax(0, 1fr) var(--node) minmax(0, 1fr); gap: 28px; margin-top: -28px; }
+  .roadmap-item:first-child { margin-top: 0; }
+  .roadmap-node { grid-column: 2; grid-row: 1; margin-top: 18px; }
+  .roadmap-card { grid-row: 1; }
+  .roadmap-item:nth-child(odd) .roadmap-card { grid-column: 1; text-align: right; }
+  .roadmap-item:nth-child(odd) .status { justify-self: end; }
+  .roadmap-item:nth-child(even) .roadmap-card { grid-column: 3; }
+  /* a short connector from the node to its card */
+  .roadmap-card { position: relative; }
+  .roadmap-card::before { content: ""; position: absolute; top: 39px; width: 28px; height: 2px; background: var(--line-strong); }
+  .roadmap-item:nth-child(odd) .roadmap-card::before { right: -29px; }
+  .roadmap-item:nth-child(even) .roadmap-card::before { left: -29px; }
+  .roadmap-item--done .roadmap-card::before, .roadmap-item--now .roadmap-card::before { background: var(--orange); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .roadmap-item--now .roadmap-node { animation: roadmap-pulse 2.4s ease-in-out infinite; }
+  @keyframes roadmap-pulse { 50% { box-shadow: 0 0 0 11px rgb(232 93 12 / .08); } }
 }
 
 /* Features */

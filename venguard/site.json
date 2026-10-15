@@ -90,8 +90,18 @@
     }
   ],
   "roadmap": {
-    "_readme": "About page roadmap (dot line). Source: VenGuard pitch deck (Team Dibyo Drishty) + delivery plan on this site. state: done | now | next.",
+    "_readme": "About page roadmap (\"Our journey\" timeline). Source: VenGuard pitch deck (Team Dibyo Drishty), delivery plan on this site and real achievements. Oldest first. state: done | now | next. icon: a name from partials/macros.html icon().",
     "items": [
+      {
+        "period_en": "Jul 2026",
+        "period_bn": "জুলাই ২০২৬",
+        "state": "done",
+        "icon": "award",
+        "title_en": "1st place, KOICA Idea Competition",
+        "title_bn": "KOICA আইডিয়া কম্পিটিশনে প্রথম",
+        "text_en": "Won first prize at the KOICA Bangladesh Idea Competition (CREATIVE Bangladesh Project) and joined its Entrepreneurship Education Program.",
+        "text_bn": "KOICA বাংলাদেশের আইডিয়া কম্পিটিশনে (CREATIVE Bangladesh প্রকল্প) প্রথম পুরস্কার এবং উদ্যোক্তা শিক্ষা প্রোগ্রামে যোগদান।"
+      },
       {
         "period_en": "Aug 2026",
         "period_bn": "আগস্ট ২০২৬",
@@ -99,7 +109,18 @@
         "title_en": "MVP and pre-orders",
         "title_bn": "MVP ও প্রি-অর্ডার",
         "text_en": "Working prototype built; pre-orders open for homes and restaurants online.",
-        "text_bn": "কার্যকর প্রোটোটাইপ তৈরি; বাসা ও রেস্তোরাঁর জন্য অনলাইনে প্রি-অর্ডার চালু।"
+        "text_bn": "কার্যকর প্রোটোটাইপ তৈরি; বাসা ও রেস্তোরাঁর জন্য অনলাইনে প্রি-অর্ডার চালু।",
+        "icon": "tools"
+      },
+      {
+        "period_en": "Sep 2026",
+        "period_bn": "সেপ্টেম্বর ২০২৬",
+        "state": "done",
+        "icon": "users",
+        "title_en": "Bangladesh Innovation Fair",
+        "title_bn": "বাংলাদেশ উদ্ভাবন মেলা",
+        "text_en": "Top 50 innovators; live demos at our own stall in the Security, Cyber and Frontier Technology zone.",
+        "text_bn": "শীর্ষ ৫০ উদ্ভাবক; ‘সিকিউরিটি, সাইবার ও ফ্রন্টিয়ার টেকনোলজি’ অংশে নিজস্ব স্টলে লাইভ ডেমো।"
       },
       {
         "period_en": "Late 2026",
@@ -108,7 +129,8 @@
         "title_en": "Testing, regulation and awareness",
         "title_bn": "পরীক্ষা, নিয়ন্ত্রক ও সচেতনতা",
         "text_en": "Independent testing at BUET BRTC, regulatory alignment including BERC, and a national gas-safety awareness campaign.",
-        "text_bn": "বুয়েট BRTC-তে স্বাধীন পরীক্ষা, BERC-সহ নিয়ন্ত্রক সমন্বয় এবং জাতীয় গ্যাস-নিরাপত্তা সচেতনতা প্রচার।"
+        "text_bn": "বুয়েট BRTC-তে স্বাধীন পরীক্ষা, BERC-সহ নিয়ন্ত্রক সমন্বয় এবং জাতীয় গ্যাস-নিরাপত্তা সচেতনতা প্রচার।",
+        "icon": "shield"
       },
       {
         "period_en": "Dec 2026",
@@ -117,7 +139,8 @@
         "title_en": "Fire Service integration",
         "title_bn": "ফায়ার সার্ভিসের সাথে সংযোগ",
         "text_en": "Planned: alerts from Connected kits sent straight to the nearest fire station.",
-        "text_bn": "পরিকল্পিত: কানেক্টেড কিট থেকে সতর্কতা সরাসরি নিকটতম ফায়ার স্টেশনে।"
+        "text_bn": "পরিকল্পিত: কানেক্টেড কিট থেকে সতর্কতা সরাসরি নিকটতম ফায়ার স্টেশনে।",
+        "icon": "bell"
       },
       {
         "period_en": "Early 2027",
@@ -126,7 +149,8 @@
         "title_en": "First deliveries and real-estate partners",
         "title_bn": "প্রথম ডেলিভারি ও আবাসন অংশীদার",
         "text_en": "Deliveries begin once testing and certification are complete; supply agreements with property developers.",
-        "text_bn": "পরীক্ষা ও সার্টিফিকেশন শেষ হলে ডেলিভারি শুরু; আবাসন কোম্পানির সাথে সরবরাহ চুক্তি।"
+        "text_bn": "পরীক্ষা ও সার্টিফিকেশন শেষ হলে ডেলিভারি শুরু; আবাসন কোম্পানির সাথে সরবরাহ চুক্তি।",
+        "icon": "home"
       },
       {
         "period_en": "Mid 2027",
@@ -135,7 +159,8 @@
         "title_en": "International expansion",
         "title_bn": "আন্তর্জাতিক সম্প্রসারণ",
         "text_en": "High-density LPG cylinder markets: India, Nepal and Brazil.",
-        "text_bn": "ঘন এলপিজি সিলিন্ডার বাজার: ভারত, নেপাল ও ব্রাজিল।"
+        "text_bn": "ঘন এলপিজি সিলিন্ডার বাজার: ভারত, নেপাল ও ব্রাজিল।",
+        "icon": "globe"
       },
       {
         "period_en": "Late 2027",
@@ -144,7 +169,8 @@
         "title_en": "Next-generation valve",
         "title_bn": "পরবর্তী প্রজন্মের ভালভ",
         "text_en": "An ultra-low-energy solenoid valve for industrial gas lines.",
-        "text_bn": "শিল্প গ্যাস লাইনের জন্য অতি-কম শক্তির সোলেনয়েড ভালভ।"
+        "text_bn": "শিল্প গ্যাস লাইনের জন্য অতি-কম শক্তির সোলেনয়েড ভালভ।",
+        "icon": "valve"
       }
     ]
   },

@@ -36,17 +36,23 @@
   <div class="wrap">
     <div class="section-head">
       <p class="label">{{ t("রোডম্যাপ", "Roadmap") }}</p>
-      <h2 id="roadmap-title">{{ t("প্রোটোটাইপ থেকে প্রতিটি রান্নাঘরে।", "From prototype to every kitchen.") }}</h2>
+      <h2 id="roadmap-title">{{ t("আমাদের যাত্রা: প্রোটোটাইপ থেকে প্রতিটি রান্নাঘরে।", "Our journey: from prototype to every kitchen.") }}</h2>
       <p>{{ t("পরিকল্পিত তারিখগুলো পরীক্ষা ও অনুমোদনের ওপর নির্ভর করে।", "Planned dates depend on testing and approvals.") }}</p>
     </div>
-    <ol class="roadmap">
+    {#- Timeline: a centre line with an icon node per step and cards on alternating sides
+        (one column with the line on the left on small screens). Data: site.json → roadmap. -#}
+    {%- set rm = site.roadmap["items"] -%}
+    {%- set reached = rm | selectattr("state", "ne", "next") | list | length -%}
+    <ol class="roadmap" style="--done-to: {{ ((reached - 0.5) / rm | length * 100) | round(1) }}%">
       {% for r in site.roadmap["items"] %}
       <li class="roadmap-item roadmap-item--{{ r.state }}">
-        <span class="roadmap-dot" aria-hidden="true"></span>
-        <span class="roadmap-period">{{ t(r.period_bn, r.period_en) }}</span>
-        <h3>{{ t(r.title_bn, r.title_en) }}</h3>
-        <p>{{ t(r.text_bn, r.text_en) }}</p>
-        <span class="status status--{{ {'done': 'done', 'now': 'now', 'next': 'next'}[r.state] }}">{{ {'done': t("সম্পন্ন", "Done"), 'now': t("চলছে", "In progress"), 'next': t("পরিকল্পিত", "Planned")}[r.state] }}</span>
+        <span class="roadmap-node" aria-hidden="true">{{ icon(r.get("icon", "dot")) }}</span>
+        <div class="roadmap-card">
+          <span class="roadmap-period">{{ t(r.period_bn, r.period_en) }}</span>
+          <h3>{{ t(r.title_bn, r.title_en) }}</h3>
+          <p>{{ t(r.text_bn, r.text_en) }}</p>
+          <span class="status status--{{ r.state }}">{{ {'done': t("সম্পন্ন", "Done"), 'now': t("চলছে", "In progress"), 'next': t("পরিকল্পিত", "Planned")}[r.state] }}</span>
+        </div>
       </li>
       {% endfor %}
     </ol>
