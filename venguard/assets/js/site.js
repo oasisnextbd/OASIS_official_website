@@ -399,3 +399,63 @@
     else track("preorder_submitted_unpaid", {});
   }
 })();
+
+/* Home page: previous / next buttons of the achievements row. */
+(function () {
+  "use strict";
+  document.addEventListener("DOMContentLoaded", function () {
+    var row = document.getElementById("ach-row");
+    function step(dir) {
+      if (!row) return;
+      var card = row.querySelector("li");
+      var by = card ? card.getBoundingClientRect().width + 16 : row.clientWidth * 0.8;
+      row.scrollBy({ left: dir * by, behavior: "smooth" });
+    }
+    var prev = document.querySelector("[data-carousel-prev]"), next = document.querySelector("[data-carousel-next]");
+    if (prev) prev.addEventListener("click", function () { step(-1); });
+    if (next) next.addEventListener("click", function () { step(1); });
+  });
+})();
+
+/* System animation (partials/system-animation.html): the step being read sets the scene's
+ * data-step; the Play button steps through 1–5 on its own (for demos and small screens). */
+(function () {
+  "use strict";
+  document.addEventListener("DOMContentLoaded", function () {
+    var root = document.querySelector("[data-sys]");
+    if (!root) return;
+    var scene = root.querySelector("[data-sys-scene]");
+    var steps = root.querySelectorAll("[data-sys-step]");
+    var dots = root.querySelectorAll("[data-sys-goto]");
+    var playBtn = root.querySelector("[data-sys-play]");
+    var label = root.querySelector("[data-sys-play-label]");
+    var timer = null, current = 0;
+    function show(n) {
+      current = n;
+      scene.setAttribute("data-step", String(n));
+      Array.prototype.forEach.call(steps, function (li) { li.classList.toggle("is-active", li.getAttribute("data-sys-step") === String(n)); });
+      Array.prototype.forEach.call(dots, function (d) { if (d.getAttribute("data-sys-goto") === String(n)) d.setAttribute("aria-current", "step"); else d.removeAttribute("aria-current"); });
+    }
+    function stop() {
+      if (!timer) return;
+      clearInterval(timer); timer = null;
+      playBtn.setAttribute("aria-pressed", "false");
+      label.textContent = label.getAttribute("data-play");
+    }
+    function play() {
+      playBtn.setAttribute("aria-pressed", "true");
+      label.textContent = label.getAttribute("data-pause");
+      show(current >= 5 || current < 1 ? 1 : current + 1);
+      timer = setInterval(function () { show(current >= 5 ? 1 : current + 1); }, 3200);
+    }
+    if (playBtn) playBtn.addEventListener("click", function () { if (timer) stop(); else play(); });
+    Array.prototype.forEach.call(dots, function (d) { d.addEventListener("click", function () { stop(); show(Number(d.getAttribute("data-sys-goto"))); }); });
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (timer) return;
+        entries.forEach(function (e) { if (e.isIntersecting) show(Number(e.target.getAttribute("data-sys-step"))); });
+      }, { rootMargin: "-50% 0px -40% 0px" });
+      Array.prototype.forEach.call(steps, function (li) { io.observe(li); });
+    } else { show(1); }
+  });
+})();
