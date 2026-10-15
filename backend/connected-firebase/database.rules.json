@@ -2,33 +2,87 @@
   "rules": {
     ".read": false,
     ".write": false,
+
+    "admins": {
+      "$uid": { ".read": "auth != null && auth.uid === $uid" }
+    },
+
+    "deviceAuth": { ".read": false, ".write": false },
+    "claimCodes": { ".read": false, ".write": false },
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "devices": {
+          "$id": {
+            ".validate": "root.child('devices').child($id).child('owners').child($uid).exists() || newData.parent().parent().parent().parent().child('devices').child($id).child('owners').child($uid).exists()",
+            "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40" },
+            "area": { ".validate": "newData.isString() && newData.val().length <= 40" },
+            "kind": { ".validate": "newData.val() === 'home' || newData.val() === 'restaurant' || newData.val() === 'building'" },
+            "$other": { ".validate": false }
+          }
+        },
+        "family": {
+          "$i": {
+            ".validate": "newData.hasChildren(['name', 'phone']) && newData.child('name').isString() && newData.child('name').val().length <= 40 && newData.child('phone').isString() && newData.child('phone').val().matches(/^01[3-9][0-9]{8}$/)"
+          }
+        },
+        "lang": { ".validate": "newData.val() === 'bn' || newData.val() === 'en'" },
+        "$other": { ".validate": false }
+      }
+    },
+
     "devices": {
       "$id": {
-        "cmd": {
-          ".read": "auth != null && auth.uid === 'dev_' + $id",
-          ".write": false
+        ".read": "auth != null && (data.child('owners').child(auth.uid).exists() || root.child('admins').child(auth.uid).val() === true)",
+
+        "meta": {
+          ".read": "auth != null && root.child('deviceAuth').child($id).val() === auth.uid",
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+          ".validate": "newData.child('kit').val() === 'complete' || newData.child('kit').val() === 'detector_relay'"
         },
+
+        "owners": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && (!newData.exists() || (root.child('claimCodes').child($id).exists() && newData.val() === root.child('claimCodes').child($id).val()))"
+          }
+        },
+
+        "cmd": {
+          ".read": "auth != null && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id)",
+          "$cid": {
+            ".write": "auth != null && ((!data.exists() && root.child('devices').child($id).child('owners').child(auth.uid).exists()) || (data.exists() && !newData.exists() && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id)))",
+            ".validate": "newData.hasChildren(['type', 'exp', 'by']) && newData.child('type').val() === 'close' && newData.child('by').val() === auth.uid && newData.child('exp').isNumber() && newData.child('exp').val() > now && newData.child('exp').val() <= now + 1800000"
+          }
+        },
+
         "ack": {
           "$cid": {
-            ".write": "auth != null && auth.uid === 'dev_' + $id && !data.exists() && root.child('devices').child($id).child('cmd').child($cid).exists()",
+            ".write": "auth != null && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id) && !data.exists()",
             ".validate": "newData.hasChildren(['result']) && newData.child('result').isString() && newData.child('result').val().matches(/^(closed|already_closed|failed)$/)"
           }
         },
+
         "state": {
-          ".write": "auth != null && auth.uid === 'dev_' + $id",
-          ".validate": "newData.hasChildren(['valve', 'gasLEL', 'alarm']) && newData.child('valve').val().matches(/^(open|closed)$/) && newData.child('gasLEL').isNumber() && newData.child('alarm').isBoolean()"
+          ".write": "auth != null && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id)",
+          ".validate": "newData.hasChildren(['valve', 'gasLEL', 'alarm']) && newData.child('valve').val().matches(/^(open|closed|none)$/) && newData.child('gasLEL').isNumber() && newData.child('gasLEL').val() >= 0 && newData.child('gasLEL').val() <= 100 && newData.child('alarm').isBoolean() && (!newData.child('fan').exists() || newData.child('fan').isBoolean())"
         },
+
         "events": {
+          ".indexOn": ["at"],
           "$eid": {
-            ".write": "auth != null && auth.uid === 'dev_' + $id && !data.exists()",
-            ".validate": "newData.child('type').isString() && newData.child('type').val().matches(/^(test|battery_low|tamper)$/)"
+            ".write": "auth != null && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id) && !data.exists()",
+            ".validate": "newData.child('type').isString() && newData.child('type').val().matches(/^(test|battery_low|tamper|leak_confirmed|valve_closed|fan_on|fan_off|air_clear|reset|remote_close)$/) && newData.child('at').val() === now"
           }
         }
       }
     },
+
     "hb": {
       "$id": {
-        ".write": "auth != null && auth.uid === 'dev_' + $id",
+        ".read": "auth != null && root.child('devices').child($id).child('owners').child(auth.uid).exists()",
+        ".write": "auth != null && (root.child('deviceAuth').child($id).val() === auth.uid || auth.uid === 'dev_' + $id)",
         ".validate": "newData.val() === now"
       }
     }

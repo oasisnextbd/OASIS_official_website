@@ -56,6 +56,26 @@ Total time: about 1–1.5 hours. Send Claude the three things marked **📨 SEND
 
 ---
 
+## Part C (free plan) · Firebase on the Spark plan — current setup
+
+The project `venguard-connected` stays on the free **Spark** plan for now. Spark has no Cloud Functions,
+so skip "C4 · Deploy the backend" below; the database security rules do the work instead.
+
+1. **Sign-in for customers:** Authentication → Sign-in method → **Phone** → Enable. Under
+   *Phone numbers for testing* add the numbers you demo with (fixed codes, no SMS cost) → Save.
+   Settings → Authorized domains → add `oasisnextbd.github.io`.
+2. **Sign-in for devices:** Authentication → Sign-in method → **Email/Password** → Enable → Save.
+3. **Database:** Realtime Database → Create Database → **Singapore** → locked mode → Enable.
+4. **Rules:** Realtime Database → **Rules** tab → replace everything with the contents of
+   `backend/connected-firebase/database.rules.json` → **Publish**.
+5. **You as admin:** after signing in to the VenGuard app once, Authentication → Users → copy your UID →
+   Realtime Database → Data → add `admins/<your UID>` = `true`.
+6. **Each device:** `node backend/connected-firebase/tools/provision-spark.mjs VG-XXXX` prints the three
+   console steps and what to flash.
+
+Moving to Blaze later adds SMS to family, notifications when the app is closed and online payments
+(the `functions/` folder, steps C1–C4 below).
+
 ## Part C · Firebase for the VenGuard app (45 min)
 
 ### C1 · Create the project (console)

@@ -58,6 +58,15 @@ flowchart LR
    ```
 6. Generate device secrets and sticker codes with `functions/tools/provision.js` during flashing.
 
+## Free plan (Spark), current
+
+The project runs on the free Spark plan for now: no Cloud Functions, so `database.rules.json` alone
+protects the data (owners claim a device with its sticker code; the app may only send `close`).
+Setup: `docs/venguard/setup-guide.md` → "Part C (free plan)". Device side: `DEVICE_API.md` →
+"Free plan (Spark) edition". Provision a device: `node tools/provision-spark.mjs VG-XXXX`.
+
+Rules tests (need Java): `cd rules-test && npm install && npm test`.
+
 ## Test without hardware
 
 ```
