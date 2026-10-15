@@ -93,6 +93,26 @@
     "_readme": "About page roadmap (\"Our journey\" timeline). Source: VenGuard pitch deck (Team Dibyo Drishty), delivery plan on this site and real achievements. Oldest first. state: done | now | next. icon: a name from partials/macros.html icon().",
     "items": [
       {
+        "period_en": "Aug 2025",
+        "period_bn": "আগস্ট ২০২৫",
+        "state": "done",
+        "icon": "award",
+        "title_en": "Pre-seed grant, UIHP BUET IC-3",
+        "title_bn": "প্রি-সিড অনুদান, UIHP বুয়েট IC-3",
+        "text_en": "2nd runner-up in the University Innovation Hub Program's BUET IC-3 cohort; BDT 50,000 pre-seed grant to build the prototype.",
+        "text_bn": "ইউনিভার্সিটি ইনোভেশন হাব প্রোগ্রামের বুয়েট IC-3 কোহর্টে দ্বিতীয় রানার-আপ; প্রোটোটাইপ তৈরিতে ৫০,০০০ টাকা প্রি-সিড অনুদান।"
+      },
+      {
+        "period_en": "Jun 2026",
+        "period_bn": "জুন ২০২৬",
+        "state": "done",
+        "icon": "award",
+        "title_en": "Seed funding, National Innovation Challenge",
+        "title_bn": "সিড ফান্ডিং, ন্যাশনাল ইনোভেশন চ্যালেঞ্জ",
+        "text_en": "BDT 80,000 seed funding at the UIHP National Innovation Challenge (ICT Division, BHTPA, World Bank).",
+        "text_bn": "UIHP ন্যাশনাল ইনোভেশন চ্যালেঞ্জে ৮০,০০০ টাকা সিড ফান্ডিং (আইসিটি বিভাগ, BHTPA, বিশ্বব্যাংক)।"
+      },
+      {
         "period_en": "Jul 2026",
         "period_bn": "জুলাই ২০২৬",
         "state": "done",
@@ -111,6 +131,16 @@
         "text_en": "Working prototype built; pre-orders open for homes and restaurants online.",
         "text_bn": "কার্যকর প্রোটোটাইপ তৈরি; বাসা ও রেস্তোরাঁর জন্য অনলাইনে প্রি-অর্ডার চালু।",
         "icon": "tools"
+      },
+      {
+        "period_en": "Aug 2026",
+        "period_bn": "আগস্ট ২০২৬",
+        "state": "done",
+        "icon": "award",
+        "title_en": "1st runner-up, Innovation Cohort 2026",
+        "title_bn": "প্রথম রানার-আপ, ইনোভেশন কোহর্ট ২০২৬",
+        "text_en": "BUET RISE × GPH Ispat Innovation Cohort; BDT 30,000.",
+        "text_bn": "বুয়েট RISE × GPH ইস্পাত ইনোভেশন কোহর্ট; ৩০,০০০ টাকা।"
       },
       {
         "period_en": "Sep 2026",
@@ -191,11 +221,25 @@
         "text_bn": "বিজ্ঞান ও প্রযুক্তি মন্ত্রণালয় আয়োজিত মেলায় (“Innovate to Market”) শীর্ষ ৫০ উদ্ভাবনের একটি হিসেবে নির্বাচিত। ‘সিকিউরিটি, সাইবার ও ফ্রন্টিয়ার টেকনোলজি’ অংশে নিজস্ব স্টলে লাইভ ডেমোসহ VenGuard প্রদর্শিত হয় এবং দর্শনার্থীদের ব্যাপক সাড়া পায়।",
         "highlight_en": "Top 50, Bangladesh Innovation Fair 2026",
         "highlight_bn": "বাংলাদেশ উদ্ভাবন মেলা ২০২৬-এ শীর্ষ ৫০",
-        "image": "innovation-fair-2026",
-        "image_w": 900,
-        "image_h": 1069,
-        "alt_en": "The VenGuard stall at Bangladesh Innovation Fair 2026, with the kit, a live app demo and the OASIS banner",
-        "alt_bn": "বাংলাদেশ উদ্ভাবন মেলা ২০২৬-এ VenGuard স্টল: কিট, অ্যাপের লাইভ ডেমো ও OASIS ব্যানার"
+        "image": "innovation-fair-2026-team",
+        "image_w": 1200,
+        "image_h": 675,
+        "alt_en": "Team Dibyo Drishty at the VenGuard stall, Bangladesh Innovation Fair 2026",
+        "alt_bn": "বাংলাদেশ উদ্ভাবন মেলা ২০২৬-এ VenGuard স্টলে টিম দিব্য দৃষ্টি"
+      },
+      {
+        "year": 2026,
+        "date_en": "13 August 2026",
+        "date_bn": "১৩ আগস্ট ২০২৬",
+        "title_en": "1st runner-up, Innovation Cohort 2026",
+        "title_bn": "প্রথম রানার-আপ, ইনোভেশন কোহর্ট ২০২৬",
+        "text_en": "Team Dibyo Drishty finished 1st runner-up in the BUET RISE × GPH Ispat Innovation Cohort (“Ignite. Invent. Impact.”) and received BDT 30,000.",
+        "text_bn": "বুয়েট RISE ও GPH ইস্পাতের ইনোভেশন কোহর্টে (“Ignite. Invent. Impact.”) টিম দিব্য দৃষ্টি প্রথম রানার-আপ হয়ে ৩০,০০০ টাকা পেয়েছে।",
+        "image": "innovation-cohort-2026",
+        "image_w": 1200,
+        "image_h": 783,
+        "alt_en": "Award ceremony of the BUET RISE × GPH Ispat Innovation Cohort 2026 with Team Dibyo Drishty",
+        "alt_bn": "বুয়েট RISE × GPH ইস্পাত ইনোভেশন কোহর্ট ২০২৬-এর পুরস্কার বিতরণীতে টিম দিব্য দৃষ্টি"
       },
       {
         "year": 2026,
@@ -212,6 +256,36 @@
         "alt_bn": "পুরস্কারের চেক: আইডিয়া কম্পিটিশন ২০২৬, প্রথম বিজয়ী টিম দিব্য দৃষ্টি, ১,০০০ মার্কিন ডলার",
         "image_w": 1200,
         "image_h": 642
+      },
+      {
+        "year": 2026,
+        "date_en": "June 2026",
+        "date_bn": "জুন ২০২৬",
+        "title_en": "Seed funding, UIHP National Innovation Challenge",
+        "title_bn": "সিড ফান্ডিং, UIHP ন্যাশনাল ইনোভেশন চ্যালেঞ্জ",
+        "text_en": "Awarded BDT 80,000 in seed funding at the National Innovation Challenge held at the Senate Bhaban, University of Dhaka. Presented by the ICT Division under the University Innovation Hub Program (DEIED Project, Bangladesh Hi-Tech Park Authority, funded by the World Bank).",
+        "text_bn": "ঢাকা বিশ্ববিদ্যালয়ের সিনেট ভবনে ন্যাশনাল ইনোভেশন চ্যালেঞ্জে ৮০,০০০ টাকা সিড ফান্ডিং। আয়োজনে আইসিটি বিভাগ, ইউনিভার্সিটি ইনোভেশন হাব প্রোগ্রাম (বাংলাদেশ হাই-টেক পার্ক কর্তৃপক্ষের DEIED প্রকল্প, বিশ্বব্যাংকের অর্থায়নে)।",
+        "highlight_en": "BDT 80,000 seed funding, UIHP",
+        "highlight_bn": "UIHP থেকে ৮০,০০০ টাকা সিড ফান্ডিং",
+        "image": "uihp-national-challenge-2026",
+        "image_w": 1200,
+        "image_h": 861,
+        "alt_en": "Team Dibyo Drishty at the UIHP National Innovation Challenge banner",
+        "alt_bn": "UIHP ন্যাশনাল ইনোভেশন চ্যালেঞ্জের ব্যানারের পাশে টিম দিব্য দৃষ্টি"
+      },
+      {
+        "year": 2025,
+        "date_en": "August 2025",
+        "date_bn": "আগস্ট ২০২৫",
+        "title_en": "2nd runner-up and pre-seed grant, UIHP BUET IC-3",
+        "title_bn": "দ্বিতীয় রানার-আপ ও প্রি-সিড অনুদান, UIHP বুয়েট IC-3",
+        "text_en": "Team Dibyo Drishty placed 2nd runner-up in the BUET IC-3 cohort of the University Innovation Hub Program and received a BDT 50,000 pre-seed grant (Bangladesh Hi-Tech Park Authority, funded by the World Bank).",
+        "text_bn": "ইউনিভার্সিটি ইনোভেশন হাব প্রোগ্রামের বুয়েট IC-3 কোহর্টে টিম দিব্য দৃষ্টি দ্বিতীয় রানার-আপ হয়ে ৫০,০০০ টাকা প্রি-সিড অনুদান পেয়েছে (বাংলাদেশ হাই-টেক পার্ক কর্তৃপক্ষ, বিশ্বব্যাংকের অর্থায়নে)।",
+        "image": "uihp-ic3-2025",
+        "image_w": 1200,
+        "image_h": 675,
+        "alt_en": "Team Dibyo Drishty with the BDT 50,000 pre-seed cheque at the BUET University Innovation Hub",
+        "alt_bn": "বুয়েট ইউনিভার্সিটি ইনোভেশন হাবে ৫০,০০০ টাকার প্রি-সিড চেকসহ টিম দিব্য দৃষ্টি"
       }
     ]
   },
