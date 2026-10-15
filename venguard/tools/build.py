@@ -149,7 +149,7 @@ def write_js_config():
 
 def write_app_redirect():
     """Keep the old /VENGuard/app/ address working: send visitors to the VenGuard app (its own repository)."""
-    target = SITE["app"]["web_url"]
+    target = SITE["app"]["web_url"] + "#/welcome"
     out = OUT / "app"
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(
