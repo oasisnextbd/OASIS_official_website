@@ -3,6 +3,35 @@
 For: CTO / firmware. Status: v1 draft, tested against the Firebase emulators
 (`functions/test/emulator.e2e.js` plays the device's side).
 
+## Free plan (Spark) edition — what is different
+
+The Firebase project currently runs on the free **Spark** plan, which has no Cloud Functions.
+Everything below still applies, with these differences (the security rules in
+`database.rules.json` enforce them; tests in `rules-test/`):
+
+| | Spark (now) | Blaze (later, with `functions/`) |
+|---|---|---|
+| Device sign-in | Email + password per device (see "Spark sign-in") | Signed request to `deviceToken` |
+| Who writes `cmd` | The owner's app, directly: `{"type":"close","exp":<ms>,"by":<uid>}`; rules allow only `close`, expiring within 30 min | A Cloud Function |
+| Removing a handled command | **The device** deletes `/devices/<id>/cmd/<commandId>` after writing its ack | The cloud |
+| History | **The device** POSTs events: `leak_confirmed`, `valve_closed`, `fan_on`, `fan_off`, `air_clear`, `reset`, `remote_close` (plus `test`, `battery_low`, `tamper`), each `{"type":…,"at":{".sv":"timestamp"}}` | The cloud derives them from state |
+| State fields | As below, plus `"fan": true/false` (ventilation relay) and `"valve":"none"` for Detector + Relay kits | Same |
+| Offline SMS / push | Not available (the app shows "offline" from the heartbeat age) | Cloud |
+
+### Spark sign-in
+
+Provision each device with `node tools/provision-spark.mjs VG-0001A3` (prints its login and the
+console steps). The device signs in with the Firebase Auth REST API:
+
+```
+POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=<WEB_API_KEY>
+{"email":"vg-0001a3@venguard-connected.firebaseapp.com","password":"<flashed password>","returnSecureToken":true}
+→ {"idToken":"…","refreshToken":"…","expiresIn":"3600","localId":"<uid>"}
+```
+
+Refresh as in section 3. The rules recognise the device because `/deviceAuth/<id>` holds its UID.
+Database URL (Singapore): `https://venguard-connected-default-rtdb.asia-southeast1.firebasedatabase.app`.
+
 ## 0. What must never change
 
 1. **The safety loop stays local.** Sensing, the 7-second check, the RF close and the buzzer work with
