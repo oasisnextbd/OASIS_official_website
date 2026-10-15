@@ -1,0 +1,6 @@
+{#- Achievements list (site.json → achievements.items). Shown only when there are real entries. -#}
+<ul class="achievements">
+  {% for a in site.achievements["items"] %}
+  <li><span class="achievement-year">{{ num(a.year) }}</span><strong>{{ t(a.title_bn, a.title_en) }}</strong>{% if a.text_en %}<span>{{ t(a.text_bn, a.text_en) }}</span>{% endif %}</li>
+  {% endfor %}
+</ul>

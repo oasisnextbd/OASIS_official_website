@@ -1,20 +1,49 @@
 {% from "partials/macros.html" import icon, preorder_btn, whatsapp %}
+{#- Main menu. Each entry: (slug, label, sub-items). Sub-items link to section ids on that page
+    (keep in sync with the ids in pages/home-kit.html and pages/about.html). -#}
+{% set about_items = [
+  ("story", t("আমাদের গল্প", "Our story")),
+  ("mission", t("আমাদের লক্ষ্য", "Our mission")),
+  ("vision", t("আমাদের স্বপ্ন", "Our vision")),
+  ("roadmap", t("রোডম্যাপ", "Roadmap")),
+  ("team", t("দল", "Team")),
+] + ([("advisors", t("উপদেষ্টা পর্ষদ", "Board of Advisors"))] if site.advisors else [])
+  + ([("partners", t("অংশীদার", "Partners"))] if site.partners["items"] else [])
+  + ([("achievements", t("অর্জন", "Achievements"))] if site.achievements["items"] else []) %}
 {% set nav = [
-  ("home-kit", t("হোম কিট", "Home kit")),
-  ("how-it-works", t("কীভাবে কাজ করে", "How it works")),
-  ("landlords-restaurants", t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants")),
-  ("dealers", t("ডিলার", "Dealers")),
-  ("guides", t("নিরাপত্তা গাইড", "Guides")),
-  ("about", t("আমাদের কথা", "About")),
+  ("home-kit", t("হোম কিট", "Home kit"), [
+    ("box-title", t("বাক্সে যা থাকে", "In the box")),
+    ("install-title", t("বসানো", "Installation")),
+    ("specs-title", t("স্পেসিফিকেশন", "Specifications")),
+    ("price-title", t("দাম ও প্যাকেজ", "Price and packages")),
+  ]),
+  ("how-it-works", t("কীভাবে কাজ করে", "How it works"), []),
+  ("landlords-restaurants", t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants"), []),
+  ("dealers", t("ডিলার", "Dealers"), []),
+  ("guides", t("নিরাপত্তা গাইড", "Guides"), []),
+  ("about", t("আমাদের কথা", "About"), about_items),
 ] %}
 <header class="site-header">
   <div class="wrap">
     <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
     <nav class="nav" id="site-nav" aria-label="{{ t('প্রধান মেনু', 'Main menu') }}">
       <ul>
-        {% for s, label in nav %}
+        {% for s, label, subs in nav %}
+        {% if subs %}
+        <li class="has-sub">
+          <a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a>
+          <button type="button" class="sub-toggle" aria-expanded="false" aria-controls="sub-{{ s }}" aria-label="{{ label }}: {{ t('আরও', 'more') }}">{{ icon("chevron-down") }}</button>
+          <ul class="sub-menu" id="sub-{{ s }}">
+            {% for anchor, sub in subs %}
+            <li><a href="{{ url(s) }}#{{ anchor }}">{{ sub }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% else %}
         <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a></li>
+        {% endif %}
         {% endfor %}
+        <li class="nav-app"><a href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="menu">{{ icon("download") }}{{ t("ডেমো অ্যাপ নিন", "Get Demo App") }}</a></li>
       </ul>
     </nav>
     <div class="header-actions">
@@ -24,6 +53,7 @@
       </div>
       <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="{{ t('রাতের থিম', 'Night theme') }}" title="{{ t('দিন / রাতের থিম', 'Day / night theme') }}">{{ icon("moon", "i-moon") }}{{ icon("sun", "i-sun") }}</button>
       {{ whatsapp(site, t, "header", "icon-btn wa-link", icon_only=true) }}
+      <a class="btn btn--secondary btn--sm app-btn" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="header">{{ icon("download") }}{{ t("ডেমো অ্যাপ নিন", "Get Demo App") }}</a>
       {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
       <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
     </div>

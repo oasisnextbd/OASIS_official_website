@@ -2,26 +2,58 @@
 {% from "partials/macros.html" import icon %}
 {% import "partials/forms.html" as f %}
 {% set page_title = t("আমাদের কথা — VenGuard কেন তৈরি হলো", "About VenGuard — why we exist") %}
-{% set page_desc = t("VenGuard-এর পাঁচ প্রতিষ্ঠাতা, আমাদের গবেষণা, BUET BRTC-তে স্বাধীন পরীক্ষার পরিকল্পনা ও আমাদের লক্ষ্য: রান্নাঘরের গ্যাসের জন্য একটি সার্কিট ব্রেকার।", "VenGuard's five founders, our field research, the plan for independent testing at BUET BRTC, and our mission: a circuit breaker for kitchen gas.") %}
+{% set page_desc = t("VenGuard-এর গল্প, লক্ষ্য, স্বপ্ন, রোডম্যাপ, দল ও উপদেষ্টা, আর BUET BRTC-তে স্বাধীন পরীক্ষার পরিকল্পনা।", "VenGuard's story, mission, vision, roadmap, team and advisors, and the plan for independent testing at BUET BRTC.") %}
+{#- Section ids are linked from the About menu in partials/header.html; keep them in sync. -#}
 {% block content %}
 {{ f.page_head(t, url, "আমাদের কথা", "Our story", "রান্নাঘরের গ্যাসের জন্য একটি সার্কিট ব্রেকার — যা কাউকে জেগে থাকতে বা দৌড়ে আসতে বাধ্য করে না।", "A circuit breaker for kitchen gas — one that never needs someone awake or running to the cylinder.") }}
 
-<section class="section" aria-labelledby="why-title">
-  <div class="wrap split">
-    <div class="prose">
-      <p class="label">{{ t("কেন আমরা আছি", "Why we exist") }}</p>
-      <h2 id="why-title" class="mt-0">{{ t("অ্যালার্মকে মানুষ নিরাপত্তা মনে করেন না।", "People don't see an alarm as safety.") }}</h2>
-      <p>{{ t("ঢাকার ২০টি বাসা ও ১০টি বাণিজ্যিক রান্নাঘর ঘুরে আমরা একটি প্রশ্ন বারবার শুনেছি: সবাই ঘুমিয়ে থাকলে বা বাসায় না থাকলে গ্যাসভর্তি ঘরে ঢুকে ভালভ বন্ধ করবে কে?", "Visiting 20 homes and 10 commercial kitchens in Dhaka, we heard one question again and again: if everyone is asleep or away, who walks into a gas-filled room to turn off the valve?") }}</p>
-      <p>{{ t("তাই VenGuard নিজেই ভালভ বন্ধ করে — সার্কিট ব্রেকারের মতো স্বয়ংক্রিয়, এয়ারব্যাগের মতো কারো কিছু করার দরকার নেই। পুরো সুরক্ষা-লুপ ব্যাটারিতে, ইন্টারনেট ছাড়াই চলার জন্য তৈরি, কারণ লোডশেডিং আর রাউটার বন্ধ হওয়া এখানে প্রতিদিনের ঘটনা।", "So VenGuard closes the valve itself — automatic like a circuit breaker, needing no one's action like an airbag. The whole safety loop is designed to run on batteries without the internet, because load-shedding and router outages are daily realities here.") }}</p>
-    </div>
-    <div class="stat-figure">
-      <span class="label">{{ t("আমাদের লক্ষ্য", "Our mission") }}</span>
-      <p class="lead">{{ t("রান্নাঘরের গ্যাস থেকে মৃত্যু, দগ্ধ হওয়া ও সম্পদের ক্ষতি বন্ধ করা — আর লুকানো লিকে নষ্ট হওয়া জ্বালানি বাঁচানো।", "End deaths, burns and property loss from kitchen gas fires — and stop the fuel wasted by undetected leaks.") }}</p>
+<section class="section" id="story" aria-labelledby="story-title">
+  <div class="wrap prose">
+    <p class="label">{{ t("আমাদের গল্প", "Our story") }}</p>
+    <h2 id="story-title" class="mt-0">{{ t("অ্যালার্মকে মানুষ নিরাপত্তা মনে করেন না।", "People don't see an alarm as safety.") }}</h2>
+    <p>{{ t("ঢাকার ২০টি বাসা ও ১০টি বাণিজ্যিক রান্নাঘর ঘুরে আমরা একটি প্রশ্ন বারবার শুনেছি: সবাই ঘুমিয়ে থাকলে বা বাসায় না থাকলে গ্যাসভর্তি ঘরে ঢুকে ভালভ বন্ধ করবে কে?", "Visiting 20 homes and 10 commercial kitchens in Dhaka, we heard one question again and again: if everyone is asleep or away, who walks into a gas-filled room to turn off the valve?") }}</p>
+    <p>{{ t("তাই VenGuard নিজেই ভালভ বন্ধ করে ও এগজস্ট ফ্যান চালু করে — সার্কিট ব্রেকারের মতো স্বয়ংক্রিয়, এয়ারব্যাগের মতো কারো কিছু করার দরকার নেই। গ্যাস বন্ধ করার পুরো ব্যবস্থা ব্যাটারিতে, ইন্টারনেট ছাড়াই চলার জন্য তৈরি, কারণ লোডশেডিং আর রাউটার বন্ধ হওয়া এখানে প্রতিদিনের ঘটনা।", "So VenGuard closes the valve and starts the exhaust fan by itself — automatic like a circuit breaker, needing no one's action like an airbag. Shutting off the gas is designed to run on batteries without the internet, because load-shedding and router outages are daily realities here.") }}</p>
+  </div>
+</section>
+
+<section class="section section--alt" aria-labelledby="purpose-title">
+  <div class="wrap">
+    <h2 id="purpose-title" class="visually-hidden">{{ t("লক্ষ্য ও স্বপ্ন", "Mission and vision") }}</h2>
+    <div class="grid grid--2">
+      <article class="statement" id="mission">
+        <p class="label">{{ t("আমাদের লক্ষ্য", "Our mission") }}</p>
+        <p class="statement-text">{{ t("রান্নাঘরের গ্যাস থেকে মৃত্যু, দগ্ধ হওয়া ও সম্পদের ক্ষতি বন্ধ করা — আর লুকানো লিকে নষ্ট হওয়া জ্বালানি বাঁচানো।", "End deaths, burns and property loss from kitchen gas fires — and stop the fuel wasted by undetected leaks.") }}</p>
+      </article>
+      <article class="statement statement--accent" id="vision">
+        <p class="label">{{ t("আমাদের স্বপ্ন", "Our vision") }}</p>
+        <p class="statement-text">{{ t(site.vision.bn, site.vision.en) }}</p>
+      </article>
     </div>
   </div>
 </section>
 
-<section class="section section--alt" aria-labelledby="team-title">
+<section class="section section--dark" id="roadmap" aria-labelledby="roadmap-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">{{ t("রোডম্যাপ", "Roadmap") }}</p>
+      <h2 id="roadmap-title">{{ t("প্রোটোটাইপ থেকে প্রতিটি রান্নাঘরে।", "From prototype to every kitchen.") }}</h2>
+      <p>{{ t("পরিকল্পিত তারিখগুলো পরীক্ষা ও অনুমোদনের ওপর নির্ভর করে।", "Planned dates depend on testing and approvals.") }}</p>
+    </div>
+    <ol class="roadmap">
+      {% for r in site.roadmap["items"] %}
+      <li class="roadmap-item roadmap-item--{{ r.state }}">
+        <span class="roadmap-dot" aria-hidden="true"></span>
+        <span class="roadmap-period">{{ t(r.period_bn, r.period_en) }}</span>
+        <h3>{{ t(r.title_bn, r.title_en) }}</h3>
+        <p>{{ t(r.text_bn, r.text_en) }}</p>
+        <span class="status status--{{ {'done': 'done', 'now': 'now', 'next': 'next'}[r.state] }}">{{ {'done': t("সম্পন্ন", "Done"), 'now': t("চলছে", "In progress"), 'next': t("পরিকল্পিত", "Planned")}[r.state] }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="section" id="team" aria-labelledby="team-title">
   <div class="wrap">
     <div class="section-head"><p class="label">{{ t("দল", "Team") }}</p><h2 id="team-title">{{ t("পাঁচ প্রতিষ্ঠাতা", "The five founders") }}</h2></div>
     <ul class="team">
@@ -29,18 +61,45 @@
       <li><span class="role">{{ m.role }}</span><strong>{{ m.name }}</strong><span>{{ t(m.owns_bn, m.owns_en) }}</span></li>
       {% endfor %}
     </ul>
-    {% if site.advisors %}
-    <h3 class="mt-3">{{ t("উপদেষ্টা", "Advisor") if site.advisors | length == 1 else t("উপদেষ্টা", "Advisors") }}</h3>
+  </div>
+</section>
+
+{% if site.advisors %}
+<section class="section section--alt" id="advisors" aria-labelledby="advisors-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("উপদেষ্টা পর্ষদ", "Board of Advisors") }}</p><h2 id="advisors-title">{{ t("যাঁরা আমাদের পথ দেখান", "The people who guide us") }}</h2></div>
     <ul class="team">
       {% for a in site.advisors %}
       <li><span class="role">{{ t("উপদেষ্টা", "ADVISOR") }}</span><strong>{{ a.name }}</strong><span>{{ t(a.role_bn, a.role_en) }}</span></li>
       {% endfor %}
     </ul>
-    {% endif %}
   </div>
 </section>
+{% endif %}
 
-<section class="section" aria-labelledby="test-title">
+{% if site.partners["items"] %}
+<section class="section" id="partners" aria-labelledby="partners-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("অংশীদার", "Partners") }}</p><h2 id="partners-title">{{ t("যাঁদের সাথে কাজ করছি", "Who we work with") }}</h2></div>
+    <ul class="team">
+      {% for p in site.partners["items"] %}
+      <li><strong>{% if p.url %}<a href="{{ p.url }}" rel="noopener">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</strong><span>{{ t(p.note_bn, p.note_en) }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+{% if site.achievements["items"] %}
+<section class="section section--alt" id="achievements" aria-labelledby="achievements-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("অর্জন", "Achievements") }}</p><h2 id="achievements-title">{{ t("স্বীকৃতি ও অর্জন", "Recognition so far") }}</h2></div>
+    {% include "partials/achievements.html" %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section" id="testing" aria-labelledby="test-title">
   <div class="wrap split">
     <div>
       <p class="label">{{ t("স্বাধীন পরীক্ষা", "Independent testing") }}</p>
@@ -54,12 +113,7 @@
       <li>{{ icon("tick") }}<span>{{ t("প্রত্যেক রাঁধুনি নিজে কারণ বুঝে লিভার রিসেট করতে পারেন", "Every test cook finds the cause and resets the lever unaided") }}</span></li>
     </ol>
   </div>
-</section>
-
-<section class="section section--alt" aria-labelledby="now-title">
   <div class="wrap">
-    <div class="section-head"><p class="label">{{ t("অগ্রগতি", "Progress") }}</p><h2 id="now-title">{{ t("আমরা এখন কোথায়", "Where we are today") }}</h2></div>
-    {% include "partials/timeline.html" %}
     <div class="notice notice--info mt-3">
       <p><strong>{{ t("সাংবাদিক, বিনিয়োগকারী ও নিয়ন্ত্রক সংস্থার জন্য", "For press, investors and regulators") }}</strong></p>
       <p>{{ t("ফ্যাক্ট শিট (ইংরেজি) ডাউনলোড করুন বা যোগাযোগ পাতা থেকে লিখুন।", "Download the fact sheet or write to us from the contact page.") }}</p>

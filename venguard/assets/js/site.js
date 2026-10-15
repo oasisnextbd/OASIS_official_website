@@ -45,6 +45,43 @@
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
+    /* ---------- Dropdown menus (chevron buttons; hover/focus opens them on wide screens via CSS) ---------- */
+    var subToggles = $$(".sub-toggle");
+    function closeSubs(except) {
+      subToggles.forEach(function (b) {
+        if (b === except) return;
+        b.setAttribute("aria-expanded", "false");
+        var m = document.getElementById(b.getAttribute("aria-controls"));
+        if (m) m.classList.remove("is-open");
+      });
+    }
+    subToggles.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var m = document.getElementById(b.getAttribute("aria-controls"));
+        var open = b.getAttribute("aria-expanded") !== "true";
+        closeSubs(b);
+        b.setAttribute("aria-expanded", open ? "true" : "false");
+        if (m) m.classList.toggle("is-open", open);
+      });
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSubs(); });
+    document.addEventListener("click", function (e) { if (!e.target.closest || !e.target.closest(".has-sub")) closeSubs(); });
+    // Following a section link inside the open mobile menu closes the menu.
+    $$(".sub-menu a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        closeSubs();
+        if (nav && nav.classList.contains("is-open")) { nav.classList.remove("is-open"); if (toggle) toggle.setAttribute("aria-expanded", "false"); }
+      });
+    });
+
+    /* ---------- Demo app: Android gets the APK; iPhone/iPad (which cannot install APKs) open the web app ---------- */
+    var cfg = window.VG_CONFIG || {};
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+      $$("[data-app-link]").forEach(function (a) {
+        if (cfg.app_web_url) { a.href = cfg.app_web_url; a.removeAttribute("download"); }
+      });
+    }
+
     /* ---------- Language memory ---------- */
     $$("[data-lang-switch]").forEach(function (a) {
       a.addEventListener("click", function () {

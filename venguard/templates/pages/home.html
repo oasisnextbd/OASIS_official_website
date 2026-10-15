@@ -100,6 +100,17 @@
   </div>
 </section>
 
+{# Features — trust: what it does, with honest "designed to" wording #}
+<section class="section" id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">{{ t("বৈশিষ্ট্য", "Features") }}</p>
+      <h2 id="features-title">{{ t("চার ধাপের সুরক্ষা, এক বাক্সে।", "Four stages of protection, one box.") }}</h2>
+    </div>
+    {% include "partials/features.html" %}
+  </div>
+</section>
+
 {# Product up close #}
 <section class="section" aria-labelledby="kit-title">
   <div class="wrap">
@@ -167,6 +178,15 @@
       <figure class="card"><blockquote><p>“{{ t(q.quote_bn, q.quote_en) }}”</p></blockquote><figcaption class="muted">{{ t(q.name_bn, q.name_en) }}, {{ num(q.age) }}, {{ t(q.area_bn, q.area_en) }}</figcaption></figure>
       {% endfor %}
     </div>
+  </div>
+</section>
+{% endif %}
+
+{% if site.achievements["items"] %}
+<section class="section" aria-labelledby="achievements-title">
+  <div class="wrap">
+    <div class="section-head"><p class="label">{{ t("অর্জন", "Achievements") }}</p><h2 id="achievements-title">{{ t("স্বীকৃতি ও অর্জন", "Recognition so far") }}</h2></div>
+    {% include "partials/achievements.html" %}
   </div>
 </section>
 {% endif %}
