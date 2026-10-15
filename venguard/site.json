@@ -329,7 +329,9 @@
     "hours_bn": "",
     "hours_en": "",
     "facebook": "",
-    "linkedin": ""
+    "instagram": "",
+    "linkedin": "",
+    "_social_note": "Footer shows Facebook, Instagram and LinkedIn icons; an empty link shows the icon greyed out as 'coming soon'."
   },
   "endpoints": {
     "_readme": "leads: URL of the Google Apps Script web app (backend/apps-script/Code.gs) or any server that accepts the lead JSON. Empty = forms run in demo mode and keep a copy in the browser only.",

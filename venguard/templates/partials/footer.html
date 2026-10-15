@@ -7,6 +7,14 @@
         <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
         <p class="mt-2 footer-tagline">{{ t("নিজেই রক্ষা করে।", "Safety that acts.") }}</p>
         <p class="small">{{ t("VenGuard ইন্টারনেট ছাড়াই কাজ করার জন্য তৈরি। এই ওয়েবসাইট কখনো আপনার ভালভ নিয়ন্ত্রণ করে না।", "VenGuard is designed to work with no internet. This website never controls your valve.") }}</p>
+        {#- Social icons: a link from site.json → contact, or greyed out as "coming soon" while it is empty. -#}
+        <ul class="social">
+          {% for key, label in [("facebook", "Facebook"), ("instagram", "Instagram"), ("linkedin", "LinkedIn")] %}
+          <li>{% if c.get(key) %}<a href="{{ c[key] }}" rel="noopener" data-track="social_click" data-position="footer" aria-label="{{ label }}">{{ icon(key) }}</a>{% else %}<span class="is-soon" title="{{ label }}: {{ t('শীঘ্রই', 'coming soon') }}">{{ icon(key) }}<span class="visually-hidden">{{ label }}: {{ t("শীঘ্রই", "coming soon") }}</span></span>{% endif %}</li>
+          {% endfor %}
+          {% if c.whatsapp_number %}<li><a href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="footer_icons" aria-label="WhatsApp">{{ icon("whatsapp") }}</a></li>{% endif %}
+          {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer_icons" aria-label="{{ t('ইমেইল', 'Email') }}">{{ icon("mail") }}</a></li>{% endif %}
+        </ul>
       </div>
       <nav aria-label="{{ t('পণ্য', 'Product') }}">
         <h2>{{ t("পণ্য", "Product") }}</h2>
@@ -39,8 +47,6 @@
           {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer">{{ c.email }}</a></li>{% endif %}
           {% if c.address_en %}<li>{{ t(c.address_bn or c.address_en, c.address_en) }}</li>{% endif %}
           {% if c.hours_en %}<li>{{ t(c.hours_bn or c.hours_en, c.hours_en) }}</li>{% endif %}
-          {% if c.facebook %}<li><a href="{{ c.facebook }}" rel="noopener" data-track="social_click" data-position="footer">Facebook</a></li>{% endif %}
-          {% if c.linkedin %}<li><a href="{{ c.linkedin }}" rel="noopener" data-track="social_click" data-position="footer">LinkedIn</a></li>{% endif %}
           <li><a href="{{ url('contact') }}">{{ t("বার্তা পাঠান", "Send us a message") }}</a></li>
         </ul>
       </div>
