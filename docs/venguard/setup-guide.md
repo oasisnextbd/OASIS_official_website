@@ -56,7 +56,7 @@ Total time: about 1–1.5 hours. Send Claude the three things marked **📨 SEND
 
 ---
 
-## Part C · Firebase for the VenGuard Connected app (45 min)
+## Part C · Firebase for the VenGuard app (45 min)
 
 ### C1 · Create the project (console)
 1. https://console.firebase.google.com → **Create a project** → name **venguard-connected** →
@@ -124,7 +124,7 @@ firebase deploy --only functions,firestore,database
 
 When the three 📨 items arrive, Claude:
 - connects the website's forms to the Sheet (orders appear in the Sheet + email alerts);
-- connects the Connected app to Firebase (real sign-in by SMS code);
+- connects the VenGuard app (repository oasisnextbd/venguard-app) to Firebase: real sign-in by SMS code, live device data;
 - rebuilds, tests and pushes. You merge one more pull request (Part 0 again).
 
 Then test together: place a pre-order on the website → a row appears in **VenGuard Leads**,

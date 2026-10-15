@@ -44,7 +44,7 @@ flowchart LR
 4. **Project settings → Your apps → Web app**: register "VenGuard app"; copy the `firebaseConfig`
    object into `venguard/site.json` → `connected.firebase`, commit, push (GitHub builds and publishes).
    The app at `/VENGuard/app/` switches from demo to live.
-5. On a computer with Node 20: `npm i -g firebase-tools`, `firebase login`, then in this folder:
+5. On a computer with Node 22: `npm i -g firebase-tools`, `firebase login`, then in this folder:
    ```
    firebase use --add            # pick the project
    firebase functions:secrets:set DEVICE_MASTER_KEY     # 64 random characters; keep a copy in the password manager

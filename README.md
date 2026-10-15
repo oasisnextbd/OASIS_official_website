@@ -37,7 +37,7 @@ python3 scripts/check_links.py           # fails on any broken internal link
 python3 -m http.server 8000 -d _site     # open http://localhost:8000/
 ```
 
-Requirements: Python 3.10+. Node 20 only for `backend/connected-firebase`.
+Requirements: Python 3.10+. Node 22 only for `backend/connected-firebase`.
 
 ## Publishing
 
