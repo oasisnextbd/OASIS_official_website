@@ -19,11 +19,22 @@ The product is a **4-stage system** (pitch deck, Team Dibyo Drishty):
 
 ## Logo
 
-- Symbol: the **wave** (always VenGuard Orange) and the **bar** (navy on light, white on dark), then the
-  wordmark "VenGuard". Bangla lockup: ভেনগার্ড. Tagline: "Safety that acts." / "নিজেই রক্ষা করে।"
-- Variants on the board: primary, all orange, white on orange, reversed (on navy), one colour black, brass etch.
-- Website copy of the logo: `venguard/templates/partials/logo.html` (redrawn from the board; replace with
-  the designer's master SVG when supplied). Icons: `venguard/assets/img/icon-orange.svg`, `icon-32.png`, `apple-touch-icon.png` (renamed from favicon.svg so browsers drop the cached old icon).
+Source of truth: **`docs/venguard/VenGuard_Logo_Guidelines.docx`** (Brand Identity Guidelines, Logo
+Usage Standards v1.0, October 2026). It replaces the earlier wave-and-bar logo.
+
+- The logo is a **navy shield with two Signal Orange guard stripes forming a "V"**, then the wordmark
+  "VenGuard" (artwork, never typed, always in English, no Bangla inside the lockup, no tagline attached).
+- Logo colours: Guardian Navy `#0C2F4E` (shield, wordmark), Signal Orange `#FA5806` (stripes),
+  Deep Navy `#07192C` (dark backgrounds).
+- Versions: **primary** on white and light; **reversed** (white shield and wordmark, orange stripes) on
+  Deep Navy, dark mode and the footer; **symbol only** for app icons, favicons and avatars (reversed symbol
+  on Deep Navy); one-colour versions for print and devices (see the guide).
+- Website header: primary, top-left, 36–40 px tall (31 px on phones, never under 120 px wide).
+  Clear space at least 1x (x = logo width ÷ 9).
+- Files: `venguard/assets/img/logo/` (named as in guide §14), `favicon.svg`, `favicon-32.png`,
+  `apple-touch-icon.png`, `og-image.jpg`. Markup: `venguard/templates/partials/logo.html`.
+  These SVGs are traced from the high-resolution artwork in the guide. **When the designer delivers the
+  vector master (guide §14), replace the files and keep the names**; nothing else needs to change.
 - **On the device the logo is one colour only** (navy or white). Orange never sits next to a status light.
 
 ## Colour palette
