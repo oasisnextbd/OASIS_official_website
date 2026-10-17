@@ -199,11 +199,17 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
 .site-header { position: sticky; top: 0; z-index: 50; background: var(--header-bg); color: var(--text); border-bottom: 1px solid var(--line); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); }
 .site-header .wrap { display: flex; align-items: center; gap: 16px; min-height: var(--header-h); }
 .site-header .wrap { max-width: 1440px; } /* the full menu needs more width than page content */
-.logo { display: inline-flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font: 800 1.35rem/1 var(--font); letter-spacing: -.02em; }
-.logo-mark { width: 38px; height: 32px; flex: none; }
-.logo-mark .wave { stroke: var(--orange); }
-.logo-word { white-space: nowrap; }
-.logo:hover { color: var(--text); }
+/* Logo (brand guidelines §09–10): primary on light, reversed on dark; 38 px tall in the header
+   (36–40 px), never under 120 px wide (31 px tall) on phones. */
+.logo { display: inline-flex; align-items: center; flex: none; text-decoration: none; }
+.logo-img { display: block; height: 38px; width: auto; }
+.logo-img--dark { display: none; }
+:root[data-theme="dark"] .logo-img--light, .site-footer .logo-img--light { display: none; }
+:root[data-theme="dark"] .logo-img--dark, .site-footer .logo-img--dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-img--light { display: none; }
+  :root:not([data-theme="light"]) .logo-img--dark { display: block; }
+}
 .nav { margin-left: auto; }
 .nav > ul { list-style: none; display: flex; align-items: center; gap: 2px; }
 .nav a { display: block; white-space: nowrap; padding: 8px 11px; border-radius: var(--r); color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: .95rem; }
@@ -255,8 +261,7 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
 }
 @media (max-width: 719px) {
   .header-actions .btn--primary, .header-actions .wa-link { display: none; }
-  .logo { font-size: 1.2rem; }
-  .logo-mark { width: 32px; height: 27px; }
+  .logo-img { height: 31px; }
 }
 .site-notice { background: var(--caution); color: var(--navy); font-weight: 600; font-size: .95rem; padding: 10px 0; }
 

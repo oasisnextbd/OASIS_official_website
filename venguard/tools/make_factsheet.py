@@ -19,10 +19,12 @@ def claim(ok, confirmed, designed):
 W, H = A4
 pdf = canvas.Canvas(str(OUT), pagesize=A4)
 pdf.setTitle("VenGuard fact sheet")
-pdf.setFillColor(CARBON); pdf.rect(0, H - 120, W, 120, stroke=0, fill=1)
+# Header: reversed logo on Deep Navy (logo guidelines §09); the wordmark is artwork, never typed.
+pdf.setFillColor(HexColor("#07192C")); pdf.rect(0, H - 120, W, 120, stroke=0, fill=1)
 pdf.setFillColor(HAZARD); pdf.rect(0, H - 124, W, 4, stroke=0, fill=1)
-pdf.setFillColor(HexColor("#FFFFFF")); pdf.setFont("Helvetica-Bold", 28); pdf.drawString(48, H - 70, "VenGuard")
-pdf.setFont("Helvetica", 13); pdf.drawString(48, H - 95, "Safety that acts.  Fact sheet, October 2026")
+LOGO = SRC / "assets/img/logo/VenGuard_Logo_Primary_Reversed_RGB_1200.png"
+pdf.drawImage(str(LOGO), 48, H - 72, width=150, height=150 * 410 / 1584, mask="auto")
+pdf.setFillColor(HexColor("#FFFFFF")); pdf.setFont("Helvetica", 13); pdf.drawString(48, H - 98, "Safety that acts.  Fact sheet, October 2026")
 
 y = H - 165
 def heading(t):
