@@ -26,6 +26,16 @@ var TABS = {
   settings: 'Settings',
   activity: 'Activity'
 };
+// Same columns, same order as ../leads-sheet/Code.gs, so the website and the dashboard share one Leads tab.
+var LEAD_COLS = [
+  'submitted_at', 'order_id', 'form_type', 'status', 'name', 'phone', 'email', 'organisation',
+  'area', 'district', 'kitchen_type', 'business_type', 'units', 'cylinder_brand', 'heard_from',
+  'dealer_code', 'qr_tag', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+  'referrer', 'landing_page', 'page_url', 'lang', 'message', 'consent',
+  'payment_status', 'payment_txn', 'payment_method', 'paid_at', 'team_notes',
+  'package'
+];
+var FORM_TYPES = ['preorder', 'enquiry', 'dealer', 'waitlist', 'contact'];
 var TEAM_COLS = ['email', 'name', 'role', 'active'];
 var DEALER_COLS = ['code', 'shop_name', 'owner_name', 'phone', 'area', 'district', 'status', 'created_at', 'notes'];
 var ACTIVITY_COLS = ['time', 'user', 'action', 'ref', 'detail'];
@@ -104,7 +114,7 @@ function getBootstrap() {
   var activity = rows_(tab_(TABS.activity, ACTIVITY_COLS)).slice(-200).reverse();
   return {
     user: user,
-    leads: rows_(ss_().getSheetByName(TABS.leads)),
+    leads: rows_(tab_(TABS.leads, LEAD_COLS)),
     dealers: rows_(tab_(TABS.dealers, DEALER_COLS)),
     settings: settings_(),
     team: user.role === 'founder' ? rows_(tab_(TABS.team, TEAM_COLS)) : [],
@@ -136,6 +146,47 @@ function updateLead(orderId, changes) {
   });
   log_(user, 'lead_update', orderId, done.join(', '));
   return true;
+}
+
+/**
+ * Records an order or enquiry that reached the team outside the website endpoint, e.g. a WhatsApp
+ * or email message from the website's hand-off, a phone call or a walk-in. Keeps the website's
+ * order number when there is one, so a message sent twice is caught.
+ */
+function addLead(d) {
+  var user = me_(); need_(user, 'editLead');
+  var name = String(d.name || '').trim(), phone = String(d.phone || '').replace(/[^\d+]/g, '');
+  if (!name || phone.replace(/\D/g, '').length < 10) throw new Error('A name and a phone number are needed.');
+  var type = FORM_TYPES.indexOf(d.form_type) >= 0 ? d.form_type : 'preorder';
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    var sh = tab_(TABS.leads, LEAD_COLS);
+    var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+    var id = String(d.order_id || '').trim().toUpperCase();
+    if (!/^VG-\d{6}-[A-Z0-9]{4}$/.test(id)) id = newOrderId_();
+    var taken = rows_(sh).some(function (r) { return String(r.order_id).toUpperCase() === id; });
+    if (taken) throw new Error('Order ' + id + ' is already in the list.');
+    var v = {
+      submitted_at: new Date(), order_id: id, form_type: type, status: 'new', name: name, phone: phone,
+      heard_from: d.heard_from || 'whatsapp', referrer: 'added by team', team_notes: 'Added by ' + user.email
+    };
+    ['email', 'organisation', 'area', 'district', 'kitchen_type', 'business_type', 'units', 'cylinder_brand',
+      'dealer_code', 'message', 'package'].forEach(function (k) { if (d[k]) v[k] = String(d[k]).trim().slice(0, 1000); });
+    if (d.heard_from) v.heard_from = String(d.heard_from).slice(0, 40);
+    // Phone as text keeps its leading 0; a cell that starts with = + - @ is stored as text, not a formula.
+    sh.getRange(sh.getLastRow() + 1, head.indexOf('phone') + 1).setNumberFormat('@');
+    sh.appendRow(head.map(function (h) {
+      var x = v[h] === undefined ? '' : v[h];
+      return typeof x === 'string' && /^[=+\-@]/.test(x) ? "'" + x : x;
+    }));
+    log_(user, 'lead_add', id, type + ' via ' + v.heard_from);
+    return id;
+  } finally { lock.releaseLock(); }
+}
+function newOrderId_() {
+  var d = Utilities.formatDate(new Date(), 'Asia/Dhaka', 'yyMMdd'), abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+  for (var i = 0; i < 4; i++) s += abc.charAt(Math.floor(Math.random() * abc.length));
+  return 'VG-' + d + '-' + s;
 }
 
 function saveDealer(d) {
