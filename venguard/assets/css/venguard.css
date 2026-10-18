@@ -458,6 +458,8 @@ html[lang="bn"] .breadcrumb { font: 500 .88rem/1.4 var(--font-bn); letter-spacin
 .field-error::before { content: "! "; }
 .field.has-error :is(input, select, textarea) { border-color: var(--error-text); border-width: 2px; }
 .field.has-error .field-error { display: block; }
+.field-note { display: block; margin-top: 6px; font-size: .9rem; font-weight: 600; color: var(--text); }   /* promo code accepted (neutral: orange is never a status colour) */
+.field-note:empty, .field.has-error .field-note { display: none; }
 .form-status { display: none; padding: 14px 16px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--text); }
 .form-status.is-visible { display: block; }
 .hp { position: absolute; left: -5000px; }

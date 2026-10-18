@@ -241,6 +241,51 @@
     return true;
   }
 
+  /* ================= Promo codes =================
+     Checks one code against the team dashboard's list (Firestore lets anyone read an ACTIVE code by
+     its exact name, never the list). The discount itself is applied by the team on the invoice. */
+  var promoCache = {};
+  function promoCode(v) { return toAscii(v).toUpperCase().replace(/[^A-Z0-9-]/g, ""); }
+  function checkPromo(raw) {
+    var code = promoCode(raw), pc = CFG.promo_check || {};
+    if (!code || !pc.project_id) return Promise.resolve({ code: code, ok: true, unchecked: true });
+    if (promoCache[code]) return promoCache[code];
+    var url = "https://firestore.googleapis.com/v1/projects/" + pc.project_id + "/databases/(default)/documents/promos/" + encodeURIComponent(code) + "?key=" + encodeURIComponent(pc.api_key || "");
+    promoCache[code] = fetch(url).then(function (r) {
+      if (!r.ok) return { code: code, ok: false, reason: "unknown" };   // 403 or 404: no active code by that name
+      return r.json().then(function (j) {
+        var f = j.fields || {};
+        var v = function (k) { var x = f[k] || {}; return "stringValue" in x ? x.stringValue : "integerValue" in x ? Number(x.integerValue) : "doubleValue" in x ? x.doubleValue : x.booleanValue; };
+        var today = new Date(Date.now() + 6 * 36e5).toISOString().slice(0, 10);   // Dhaka date
+        if (v("active") !== true) return { code: code, ok: false, reason: "unknown" };
+        if (v("starts") && today < v("starts")) return { code: code, ok: false, reason: "not_started" };
+        if (v("ends") && today > v("ends")) return { code: code, ok: false, reason: "ended" };
+        if (v("max_uses") && (v("used") || 0) >= v("max_uses")) return { code: code, ok: false, reason: "used_up" };
+        return { code: code, ok: true, type: v("type"), value: v("value") };
+      });
+    }).catch(function () { delete promoCache[code]; return { code: code, ok: true, unchecked: true }; });   // offline: the team checks it later
+    return promoCache[code];
+  }
+  function showPromo(el, r) {
+    var bn = document.documentElement.lang === "bn", box = fieldBox(el);
+    var note = $(".field-note", box);
+    if (!note) { note = document.createElement("span"); note.className = "field-note"; note.setAttribute("aria-live", "polite"); box.appendChild(note); }
+    note.textContent = "";
+    if (!r || !r.code) return setError(el, "");
+    if (!r.ok) {
+      var why = { unknown: ["এই কোডটি সঠিক নয় বা আর চালু নেই।", "This code isn't valid or is no longer running."],
+        not_started: ["এই কোডটি এখনো চালু হয়নি।", "This code hasn't started yet."], ended: ["এই কোডের মেয়াদ শেষ।", "This code has ended."],
+        used_up: ["এই কোডটি সর্বোচ্চ সংখ্যকবার ব্যবহার হয়ে গেছে।", "This code has been used up."] }[r.reason] || ["", ""];
+      return setError(el, why[bn ? 0 : 1] + (bn ? " ঠিক করুন বা মুছে দিন।" : " Check it or remove it."));
+    }
+    setError(el, "");
+    if (r.unchecked) return;
+    var n = Number(r.value) || 0;
+    var off = r.type === "percent" ? (bn ? toBn(n) + "% ছাড়" : n + "% off") : (bn ? "৳" + toBn(n.toLocaleString("en-US")) + " ছাড়" : "BDT " + n.toLocaleString("en-US") + " off");
+    note.textContent = bn ? "কোড " + r.code + ": কিটের দামে " + off + "। ছাড় আপনার ইনভয়েসে যোগ হবে।" : "Code " + r.code + ": " + off + " the kit price, applied on your invoice.";
+  }
+  function toBn(s) { return String(s).replace(/\d/g, function (d) { return BN[d]; }); }
+
   function setupForm(form) {
     var type = form.getAttribute("data-vg-form");
     var started = false, submitted = false, lastField = "";
@@ -279,6 +324,7 @@
     });
     form.addEventListener("change", function (e) {
       if (e.target.name) validateField(e.target);
+      if (e.target.name === "promo_code") checkPromo(e.target.value).then(function (r) { showPromo(e.target, r); });
       saveDraft();
     });
     form.addEventListener("focusout", function (e) {
@@ -315,6 +361,23 @@
       }
       if (form.elements.website && form.elements.website.value) return; // spam honeypot
 
+      // A promo code must be a running one before the order goes out.
+      var promoEl = form.elements.promo_code;
+      if (promoEl && promoEl.value.trim()) {
+        btn.disabled = true;
+        return checkPromo(promoEl.value).then(function (r) {
+          btn.disabled = false;
+          showPromo(promoEl, r);
+          if (!r.ok) { track("form_error", { form: type, field: "promo_code" }); promoEl.focus(); return; }
+          promoEl.value = r.code;
+          send();
+        });
+      }
+      send();
+    });
+
+    function send() {
+      var status = $(".form-status", form), btn = $("button[type=submit]", form);
       var data = {};
       $$("input,select,textarea", form).forEach(function (el) {
         if (!el.name || el.name === "website") return;
@@ -337,7 +400,7 @@
       sendLead(data).then(function (res) {
         try { localStorage.removeItem(draftKey); } catch (e2) {}
         // Analytics gets the type and position only — never the person's details.
-        track("lead_submit", { form: type, package: data.package || "", kitchen_type: data.kitchen_type || "", units_band: band(data.units), has_dealer_code: !!data.dealer_code });
+        track("lead_submit", { form: type, package: data.package || "", kitchen_type: data.kitchen_type || "", units_band: band(data.units), has_dealer_code: !!data.dealer_code, has_promo_code: !!data.promo_code });
         if (type === "preorder") {
           var id = (res && res.order_id) || data.order_id;
           ss("vg_last_order", id);
@@ -364,7 +427,7 @@
         status.classList.add("is-visible");
         btn.disabled = false; btn.textContent = label;
       });
-    });
+    }
   }
 
   function band(n) { n = parseInt(n, 10) || 0; return n <= 1 ? "1" : n <= 5 ? "2-5" : n <= 20 ? "6-20" : "21+"; }
@@ -392,15 +455,15 @@
   var LABELS = {
     en: { preorder: "VenGuard pre-order", enquiry: "VenGuard enquiry", dealer: "VenGuard dealer application", waitlist: "VenGuard waitlist", contact: "VenGuard message",
       order_id: "Order", ref: "Reference", name: "Name", phone: "Phone", email: "Email", organisation: "Organisation", area: "Area", district: "District", package: "Package",
-      kitchen_type: "Kitchen", business_type: "Business", units: "Units", cylinder_brand: "Cylinder", dealer_code: "Dealer code", message: "Message" },
+      kitchen_type: "Kitchen", business_type: "Business", units: "Units", cylinder_brand: "Cylinder", dealer_code: "Dealer code", promo_code: "Promo code", message: "Message" },
     bn: { preorder: "VenGuard প্রি-অর্ডার", enquiry: "VenGuard অনুসন্ধান", dealer: "VenGuard ডিলার আবেদন", waitlist: "VenGuard অপেক্ষা তালিকা", contact: "VenGuard বার্তা",
       order_id: "অর্ডার", ref: "রেফারেন্স", name: "নাম", phone: "ফোন", email: "ইমেইল", organisation: "প্রতিষ্ঠান", area: "এলাকা", district: "জেলা", package: "প্যাকেজ",
-      kitchen_type: "রান্নাঘর", business_type: "ব্যবসা", units: "ইউনিট", cylinder_brand: "সিলিন্ডার", dealer_code: "ডিলার কোড", message: "বার্তা" }
+      kitchen_type: "রান্নাঘর", business_type: "ব্যবসা", units: "ইউনিট", cylinder_brand: "সিলিন্ডার", dealer_code: "ডিলার কোড", promo_code: "প্রোমো কোড", message: "বার্তা" }
   };
   function leadMessage(d) {
     var L = LABELS[document.documentElement.lang === "bn" ? "bn" : "en"];
     var lines = [L[d.form_type] || L.contact];
-    ["order_id", "name", "phone", "email", "organisation", "area", "district", "package", "kitchen_type", "business_type", "units", "cylinder_brand", "dealer_code", "message"].forEach(function (k) {
+    ["order_id", "name", "phone", "email", "organisation", "area", "district", "package", "kitchen_type", "business_type", "units", "cylinder_brand", "dealer_code", "promo_code", "message"].forEach(function (k) {
       if (d[k]) lines.push((k === "order_id" && d.form_type !== "preorder" ? L.ref : L[k]) + ": " + d[k]);
     });
     return lines.join("\n");

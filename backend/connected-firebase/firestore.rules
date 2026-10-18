@@ -1,5 +1,12 @@
 rules_version = '2';
-// VenGuard Connected. Customers can READ only their own sites, devices, events and commands.
+// Two parts:
+//  1. VenGuard Connected (future, Blaze plan): customers can READ only their own sites, devices,
+//     events and commands.
+//  2. Team dashboard (team-dashboard/): the company's orders, invoices, stock, promo codes and
+//     marketing costs. Only Google sign-ins on the team list get in; only the company account
+//     manages the team. Tests: rules-test/firestore.test.mjs.
+//
+// 1. VenGuard Connected. Customers can READ only their own sites, devices, events and commands.
 // Every WRITE that matters (close commands, contacts, plans, device state) goes through Cloud Functions,
 // which check membership and the Connected plan. Nobody can write a command directly.
 service cloud.firestore {
@@ -33,5 +40,116 @@ service cloud.firestore {
     }
 
     match /payments/{id} { allow read, write: if false; }
+
+    // ---------------- 2. Team dashboard ----------------
+    // The company account. It is always a founder, is the only one who adds or removes people,
+    // and cannot be locked out. Keep in step with team-dashboard/config.json ("owner").
+    function ownerEmail() { return 'oasisnextbd@gmail.com'; }
+    function email() { return request.auth.token.email.lower(); }
+    function google() {
+      return signedIn() && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+    function isOwner() { return google() && email() == ownerEmail(); }
+    function member() { return get(/databases/$(database)/documents/team/$(email())).data; }
+    function isMember() {
+      return google() && exists(/databases/$(database)/documents/team/$(email())) && member().active == true;
+    }
+    function isTeam() { return isOwner() || isMember(); }
+    function role() { return isOwner() ? 'founder' : member().role; }
+    function hasRole(roles) { return isTeam() && role() in roles; }
+    function changes() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function smallText(d, k, n) { return !(k in d) || (d[k] is string && d[k].size() <= n); }
+
+    match /team/{who} {
+      allow read: if isTeam();
+      allow create, update: if isOwner() && who == who.lower()
+        && request.resource.data.keys().hasOnly(['email', 'name', 'role', 'active', 'updated_at', 'updated_by'])
+        && request.resource.data.email == who
+        && request.resource.data.role in ['founder', 'support', 'marketing']
+        && request.resource.data.active is bool
+        && smallText(request.resource.data, 'name', 80);
+      allow delete: if false;   // remove = active: false, so the history stays readable
+    }
+
+    match /orders/{id} {
+      allow read: if isTeam();
+      allow create, update: if hasRole(['founder', 'support'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 120
+        && request.resource.data.phone is string && request.resource.data.phone.size() <= 20
+        && request.resource.data.status in ['new', 'payment_pending', 'contacted', 'paid', 'refunded', 'installed', 'not_interested'];
+      allow delete: if hasRole(['founder']);
+    }
+
+    // Invoices are never deleted. Support can issue and revise; only founders can void one.
+    match /invoices/{id} {
+      allow read: if isTeam();
+      allow create: if hasRole(['founder', 'support']) && request.resource.data.status == 'issued';
+      allow update: if hasRole(['founder'])
+        || (hasRole(['support']) && resource.data.status == 'issued' && request.resource.data.status == 'issued');
+      allow delete: if false;
+    }
+    match /counters/{id} {
+      allow read: if isTeam();
+      allow write: if hasRole(['founder', 'support']) && request.resource.data.next is int;
+    }
+
+    match /inventory/{sku} {
+      allow read: if isTeam();
+      allow create, delete: if hasRole(['founder']);
+      allow update: if hasRole(['founder'])
+        || (hasRole(['support']) && changes().hasOnly(['stock', 'updated_at']));
+    }
+    match /stockMoves/{id} {
+      allow read: if isTeam();
+      allow create: if hasRole(['founder', 'support']) && request.resource.data.by == email()
+        && request.resource.data.qty is int;
+      allow update, delete: if false;
+    }
+    match /products/{id} {
+      allow read: if isTeam();
+      allow write: if hasRole(['founder']);
+    }
+
+    // The website may look up one active promo code at a time (no listing).
+    match /promos/{code} {
+      allow get: if (resource != null && resource.data.active == true) || isTeam();
+      allow list: if isTeam();
+      allow create, delete: if hasRole(['founder', 'marketing']) && code == code.upper();
+      allow update: if hasRole(['founder', 'marketing'])
+        || (hasRole(['support']) && changes().hasOnly(['used']));
+    }
+
+    match /marketing/{id} {
+      allow read: if isTeam();
+      allow write: if hasRole(['founder', 'marketing']);
+    }
+    match /dealers/{code} {
+      allow read: if isTeam();
+      allow write: if hasRole(['founder']);
+    }
+
+    // A signature image never changes once saved, so old invoices keep the signature they had.
+    match /signatories/{id} {
+      allow read: if isTeam();
+      allow create: if hasRole(['founder'])
+        && request.resource.data.signature is string && request.resource.data.signature.size() < 300000
+        && request.resource.data.signature.matches('data:image/(png|jpeg);base64,.*');
+      allow update: if hasRole(['founder']) && changes().hasOnly(['name', 'title', 'active']);
+      allow delete: if false;
+    }
+
+    // settings/website (pre-orders open, price, notice) is public for the website; the rest is team only.
+    match /settings/{id} {
+      allow get: if id == 'website' || isTeam();
+      allow list: if isTeam();
+      allow write: if hasRole(['founder']);
+    }
+
+    match /activity/{id} {
+      allow read: if isTeam();
+      allow create: if isTeam() && request.resource.data.user == email();
+      allow update, delete: if false;
+    }
   }
 }

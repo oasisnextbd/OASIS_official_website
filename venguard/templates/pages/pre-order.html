@@ -33,6 +33,7 @@
         {{ f.heard(t) }}
         {{ f.field(t, "dealer_code", "ডিলার কোড", "Dealer code", "text", false, "off", "ডিলার বা QR স্টিকার থেকে পেলে", "If a dealer or QR sticker gave you one") }}
       </div>
+      {{ f.field(t, "promo_code", "প্রোমো কোড", "Promo code", "text", false, "off", "থাকলে লিখুন; ছাড় আপনার ইনভয়েসে যোগ হবে", "If you have one; the discount is applied on your invoice", attrs='autocapitalize="characters" spellcheck="false" maxlength="24" data-promo') }}
       {{ f.consent(t, url) }}
 
       <div class="deposit-box">

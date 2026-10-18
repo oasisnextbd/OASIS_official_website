@@ -419,5 +419,10 @@
     "en": "Protecting lives before danger strikes: safer kitchens, resilient infrastructure and responsible production, from Bangladesh to the world.",
     "bn": "বিপদের আগেই জীবন রক্ষা: নিরাপদ রান্নাঘর, টেকসই অবকাঠামো ও দায়িত্বশীল উৎপাদন, বাংলাদেশ থেকে বিশ্বে।",
     "_source": "VenGuard pitch deck"
+  },
+  "promo_check": {
+    "_readme": "The pre-order form checks a promo code against the team dashboard's list (Firestore, project venguard-connected). Only an active code can be read, one at a time; these identifiers are public. Empty project_id = no check (the team checks the code on the invoice).",
+    "project_id": "venguard-connected",
+    "api_key": "AIzaSyBhorrXE1tw7IH1CqUpvOYNgQaKpW4xOoA"
   }
 }

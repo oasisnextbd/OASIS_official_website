@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>VenGuard Dashboard</title>
+<!-- scripts/build.py inserts window.VG_DASH (config.json) and preload hints here. -->
+<link rel="icon" href="../VENGuard/assets/img/favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="../VENGuard/assets/img/favicon-32.png?v=3" sizes="32x32">
+<link rel="apple-touch-icon" href="../VENGuard/assets/img/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/dashboard.css">
+<script>
+  /* Day / Night like the website: a saved choice wins, otherwise the computer's setting. */
+  try { var t = localStorage.getItem("vg_dash_theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<div class="app signed-out" id="app">
+  <aside class="rail">
+    <div class="brand">
+      <!-- VenGuard logo: reversed version on the navy rail, symbol only on phones (Logo Guidelines v1.0). -->
+      <img class="brand-logo" src="../VENGuard/assets/img/logo/VenGuard_Logo_Primary_Reversed_RGB.svg" alt="VenGuard" width="131" height="34">
+      <img class="brand-symbol" src="../VENGuard/assets/img/logo/VenGuard_Symbol_Reversed_RGB.svg" alt="VenGuard" width="32" height="32">
+      <small>Team dashboard</small>
+    </div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="me" id="me"></div>
+    <button class="theme-btn" type="button" id="signOutBtn" data-act="signout" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>
+    <button class="theme-btn" type="button" id="themeBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></svg><span>Night theme</span></button>
+  </aside>
+  <main id="main"><p class="sub">Loading&#x2026;</p></main>
+</div>
+<div id="drawerRoot"></div>
+<div id="printRoot" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

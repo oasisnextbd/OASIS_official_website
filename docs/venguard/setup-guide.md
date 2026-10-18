@@ -36,26 +36,20 @@ Total time: about 1–1.5 hours. Send Claude the three things marked **📨 SEND
 
 ---
 
-## Part B · Team dashboard (10 min)
+## Part B · Team dashboard (5 min)
 
-Signed in as the company account the whole time.
+The team dashboard keeps its data in Firestore, in the same Firebase project as the app.
 
-1. Go to https://script.google.com → **New project**. Rename it **VenGuard Dashboard**.
-2. Replace the code in `Code.gs` with
-   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/Dashboard.gs → **💾 Save**.
-3. **⚙️ Project Settings** (left) → tick **Show "appsscript.json" manifest file in editor**.
-   Back in the editor, open `appsscript.json` and replace it with
-   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/appsscript.json → **💾 Save**.
-4. **⚙️ Project Settings → Script properties → Add script property**: `SHEET_ID` = the Sheet ID from Part A step 10.
-5. In the editor choose **getBootstrap** in the function list → **▶ Run** → **Review permissions** → company
-   account → Advanced → Go to … → **Allow**. The company account is now the first founder.
-6. **Deploy → New deployment → Web app**:
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-   → **Deploy**, and copy the **Web app URL** (ends in `/exec`).
-7. Put that URL in `backend/team-dashboard/hosted.json` as `endpoint` and publish the website.
-8. Open https://oasisnextbd.github.io/OASIS_official_website/team/ → **Sign in with Google** → company
-   account. In **Settings & team**, add each team member's Google email and role. Only those accounts can sign in.
+1. https://console.firebase.google.com → project **venguard-connected** → **Firestore Database** →
+   **Create database** → location **asia-south1 (Mumbai)** → **Start in production mode** → **Create**.
+2. **Rules** tab → replace everything with
+   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/connected-firebase/firestore.rules
+   → **Publish**.
+3. Open https://oasisnextbd.github.io/OASIS_official_website/team/ → **Sign in with Google** → company account.
+4. Fill in Settings → Company details and the authorised signature, Inventory → Add the VenGuard devices,
+   then add the team in Settings → Team. Only the company account can add or remove people.
+
+Details: [`team-dashboard/README.md`](../../team-dashboard/README.md).
 
 ---
 
@@ -151,7 +145,7 @@ When the three 📨 items arrive, Claude:
 - rebuilds, tests and pushes. You merge one more pull request (Part 0 again).
 
 Then test together: place a pre-order on the website → a row appears in **VenGuard Leads**,
-an email arrives, and the order shows in the **team dashboard**.
+an email arrives. Orders from WhatsApp go into the **team dashboard** with Orders → Add order.
 
 ---
 

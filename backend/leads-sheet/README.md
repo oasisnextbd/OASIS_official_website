@@ -1,6 +1,8 @@
 # VenGuard leads backend (Google Sheet + Apps Script)
 
-> The team dashboard is in [`../team-dashboard/`](../team-dashboard/README.md); it works on the same Sheet, with or without this backend.
+> Not in use yet. The website currently hands orders to WhatsApp or email, and the team records them in the
+> team dashboard ([`../../team-dashboard/`](../../team-dashboard/README.md)), which keeps its data in Firestore.
+> This Sheet backend stays here for when the website should save orders by itself (with SSLCommerz payments).
 
 This is the company-owned database for every pre-order and enquiry (brief 8.3). It costs nothing,
 takes about 20 minutes to set up, and the founders own it from day one.
@@ -26,7 +28,7 @@ takes about 20 minutes to set up, and the founders own it from day one.
 
 ## Daily use
 
-Use the **team dashboard** (`../team-dashboard/`) for day-to-day work. The Sheet underneath stays usable directly:
+The Sheet is usable directly:
 
 - Every lead is one row. Use **Data → Create a filter** to search and filter.
 - Change the `status` dropdown: `contacted`, `paid`, `refunded`, `installed`, …

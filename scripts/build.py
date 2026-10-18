@@ -10,8 +10,8 @@ Layout of the published site (URLs are stable; do not change them casually):
     /VENGuard/           VenGuard website (bn)      ← venguard/  (built by venguard/tools/build.py)
     /VENGuard/en/        VenGuard website (en)
     /VENGuard/app/       redirect to the VenGuard app (repository oasisnextbd/venguard-app)
-    /team/               VenGuard team dashboard    ← backend/team-dashboard/ (not linked anywhere,
-                         not indexed; the data stays behind Google sign-in and the Team list)
+    /team/               VenGuard team dashboard    ← team-dashboard/ (not linked anywhere, not
+                         indexed; data in Firestore behind Google sign-in and the team list)
 """
 import json
 import pathlib
@@ -35,30 +35,25 @@ def main():
 
 
 def build_dashboard(dest):
-    """Wraps backend/team-dashboard/Index.html (also served as-is in demos) into a hosted page."""
-    src = REPO / "backend/team-dashboard"
-    cfg = json.loads((src / "hosted.json").read_text(encoding="utf-8"))
-    config = {"endpoint": cfg.get("endpoint", ""), "firebase": cfg["firebase"]}
-    icons = "../VENGuard/assets/img/"
+    """Copies team-dashboard/ to /team/ and puts its settings (config.json) into the page."""
+    src = REPO / "team-dashboard"
+    shutil.copytree(src, dest, ignore=shutil.ignore_patterns("README.md", "config.json", "tests"))
+    cfg = json.loads((src / "config.json").read_text(encoding="utf-8"))
+    cfg.pop("_readme", None)
+    fb = "https://www.gstatic.com/firebasejs/11.10.0/"
     head = (
-        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
-        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
-        "<meta name=\"robots\" content=\"noindex, nofollow\">\n"
-        f"<link rel=\"icon\" href=\"{icons}favicon.svg?v=3\" type=\"image/svg+xml\">\n"
-        f"<link rel=\"icon\" href=\"{icons}favicon-32.png?v=3\" sizes=\"32x32\">\n"
-        f"<link rel=\"apple-touch-icon\" href=\"{icons}apple-touch-icon.png?v=3\">\n"
-        f"<script>window.VG_DASH = {json.dumps(config)};</script>\n"
-        # Start the slow connections while the page is still loading.
-        "<link rel=\"modulepreload\" href=\"https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js\">\n"
-        "<link rel=\"modulepreload\" href=\"https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js\">\n"
-        "<link rel=\"preconnect\" href=\"https://script.google.com\">\n"
-        "<link rel=\"preconnect\" href=\"https://script.googleusercontent.com\">\n"
-        "<link rel=\"preconnect\" href=\"https://securetoken.googleapis.com\">\n"
-        "<link rel=\"preconnect\" href=\"https://identitytoolkit.googleapis.com\">\n"
+        f"<script>window.VG_DASH = {json.dumps(cfg)};</script>\n"
+        # Start the slow downloads and connections while the page is still loading.
+        + "".join(f'<link rel="modulepreload" href="{fb}firebase-{m}.js">\n' for m in ("app", "auth", "firestore"))
+        + '<link rel="preconnect" href="https://firestore.googleapis.com">\n'
+        + '<link rel="preconnect" href="https://securetoken.googleapis.com">\n'
+        + '<link rel="preconnect" href="https://identitytoolkit.googleapis.com">\n'
     )
-    body = (src / "Index.html").read_text(encoding="utf-8")
-    dest.mkdir(parents=True, exist_ok=True)
-    (dest / "index.html").write_text(head + body + "\n</html>\n", encoding="utf-8")
+    page = dest / "index.html"
+    marker = "<!-- scripts/build.py inserts window.VG_DASH (config.json) and preload hints here. -->\n"
+    html = page.read_text(encoding="utf-8")
+    assert marker in html, "team-dashboard/index.html lost its config marker"
+    page.write_text(html.replace(marker, head), encoding="utf-8")
 
 
 if __name__ == "__main__":
