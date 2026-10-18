@@ -15,7 +15,9 @@ The company-side web app: one place for the team to see and work every pre-order
 - **Settings & team** (founders): turn pre-orders on/off, set the kit price and a notice bar on the
   website; add or remove team members with a role; activity log of every change.
 
-Roles: **founder** (everything), **support** (update orders and notes), **marketing** (view and export).
+Roles: **founder** (everything except the team list), **support** (add and update orders, notes), **marketing** (view and export).
+Only the company account that owns the script (oasisnextbd@gmail.com) adds or removes team members, and it
+always stays on the team as founder, so nobody can lock the company out.
 
 **Where it lives:** <https://oasisnextbd.github.io/OASIS_official_website/team/>, a page built from
 `Index.html` by `scripts/build.py`. It is not linked from the website and asks search engines not to
@@ -26,7 +28,7 @@ chooser, so a browser with several Google accounts is fine and no Incognito wind
 goes through Firebase Auth in the `venguard-connected` project, the same one the app uses. Every request
 then goes to the Apps Script web app (`Dashboard.gs`) with a Firebase ID token. The script asks Google
 whether the token is genuine and lets the request through only if that email is on the **Team** tab
-with a role. A founder adds or removes people in **Settings & team**; nobody else can get in.
+with a role. The company account adds or removes people in **Settings & team**; nobody else can get in.
 
 **Data:** the script runs as the company account, so it is the only thing that reads or writes the
 **VenGuard Leads** Google Sheet. Team members never need access to the Sheet itself. Everything is free:

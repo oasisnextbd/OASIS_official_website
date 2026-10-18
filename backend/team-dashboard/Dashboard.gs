@@ -10,7 +10,9 @@
  *   Execute as: Me (the company account)   ·   Who has access: Anyone
  * so only this account touches the "VenGuard Leads" Sheet; team members never need the Sheet itself.
  * Roles (Team tab):
- *   founder   – everything, incl. dealers, site settings and team
+ *   founder   – everything, incl. dealers and site settings
+ * Only the owner (the company account this script runs as) adds or removes team members, and the
+ * owner always stays on the team as founder, so nobody can lock the company out.
  *   support   – leads: add orders, change status, add notes, export
  *   marketing – read-only view + export
  * Script properties (Project Settings), each overriding CONFIG below: SHEET_ID, SITE_URL.
@@ -143,9 +145,13 @@ function rows_(sh) {
     return o;
   });
 }
+/** The company account: the script's owner, which it runs as. */
+function owner_() {
+  return (Session.getEffectiveUser().getEmail() || '').toLowerCase();
+}
 function me_() {
   // A web request carries a verified email; running a function from the editor uses the owner.
-  var owner = (Session.getEffectiveUser().getEmail() || '').toLowerCase();
+  var owner = owner_();
   var email = CALLER_ || owner;
   if (!email) throw new Error('Please sign in with your Google account.');
   var sh = tab_(TABS.team, TEAM_COLS);
@@ -154,11 +160,15 @@ function me_() {
     // Empty team list: only the account that owns this script can become the first founder.
     if (email !== owner) throw new Error('The dashboard has no team yet. Open it first with ' + owner + '.');
     sh.appendRow([email, '', 'founder', true]);
-    return { email: email, name: '', role: 'founder' };
+    return { email: email, name: '', role: 'founder', owner: true };
+  }
+  if (email === owner) {
+    var row = team.filter(function (t) { return String(t.email).toLowerCase() === owner; })[0];
+    return { email: email, name: (row && row.name) || '', role: 'founder', owner: true };
   }
   var m = team.filter(function (t) { return String(t.email).toLowerCase() === email && t.active !== false; })[0];
-  if (!m) throw new Error('Your account (' + email + ') is not on the VenGuard team list. Ask a founder to add you.');
-  return { email: email, name: m.name || '', role: ROLES.indexOf(m.role) >= 0 ? m.role : 'marketing' };
+  if (!m) throw new Error('Your account (' + email + ') is not on the VenGuard team list. Ask ' + owner + ' to add you.');
+  return { email: email, name: m.name || '', role: ROLES.indexOf(m.role) >= 0 ? m.role : 'marketing', owner: false };
 }
 function need_(user, what) {
   if (CAN[what].indexOf(user.role) < 0) throw new Error('Your role (' + user.role + ') cannot do this.');
@@ -183,6 +193,7 @@ function getBootstrap() {
     settings: settings_(),
     team: user.role === 'founder' ? rows_(tab_(TABS.team, TEAM_COLS)) : [],
     activity: activity,
+    owner: owner_(),
     siteUrl: prop_('SITE_URL'),
     statuses: LEAD_STATUSES,
     generatedAt: new Date().toISOString()
@@ -285,9 +296,11 @@ function saveSettings(s) {
 }
 
 function saveTeamMember(m) {
-  var user = me_(); need_(user, 'team');
+  var user = me_();
+  if (!user.owner) throw new Error('Only ' + owner_() + ' can add or remove team members.');
   var email = String(m.email || '').trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
+  if (email === owner_()) throw new Error('The company account always stays on the team as founder.');
   if (ROLES.indexOf(m.role) < 0) throw new Error('Choose a role.');
   var sh = tab_(TABS.team, TEAM_COLS);
   var r = rows_(sh).filter(function (x) { return String(x.email).toLowerCase() === email; })[0];
