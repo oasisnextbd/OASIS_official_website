@@ -79,3 +79,11 @@ the site applies them within about 10 minutes (cached per visit). The endpoint a
 pre-orders while `preorder_open` is off.
 These settings reach the website only once the website backend is connected (`endpoints.leads` in
 `venguard/content/site.json`); before that, saving them changes the Sheet but not the site.
+
+## Speed
+
+Each request opens the Sheet once, the team list is cached for 10 minutes (cleared whenever the team is
+changed in the dashboard), a sign-in check is remembered until the token expires, and status and note
+changes appear at once and save in the background. Editing the **Team** tab directly in the Sheet can take
+up to 10 minutes to apply; use **Settings & team** instead. The first request after a quiet period is
+still a few seconds slower while Google starts the script.

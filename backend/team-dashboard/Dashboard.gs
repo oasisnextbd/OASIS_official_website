@@ -106,13 +106,14 @@ function verifiedEmail_(token) {
   if (!u || !u.email) throw new Error('Your sign-in has expired. Please sign in again.');
   if (!u.emailVerified) throw new Error('Please sign in with Google.');
   var email = String(u.email).toLowerCase();
-  // Remember the answer for up to 5 minutes, never past the token's own expiry.
+  // Remember the answer until shortly before the token expires (Firebase tokens last an hour).
+  // Being on the team is still checked on every request, so removing someone takes effect at once.
   var exp = 0;
   try {
     var part = token.split('.')[1];
     exp = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(part + '==='.slice((part.length + 3) % 4))).getDataAsString()).exp || 0;
   } catch (x) {}
-  var ttl = Math.min(300, Math.floor(exp - Date.now() / 1000) - 30);
+  var ttl = Math.min(21600, Math.floor(exp - Date.now() / 1000) - 60);
   if (ttl > 0) cache.put(key, email, ttl);
   return email;
 }
@@ -121,10 +122,12 @@ function verifiedEmail_(token) {
 function prop_(k) {
   return PropertiesService.getScriptProperties().getProperty(k) || CONFIG[k] || '';
 }
+var SS_ = null;   // the Sheet, opened once per request (opening it is the slowest step)
 function ss_() {
+  if (SS_) return SS_;
   var id = prop_('SHEET_ID');
   if (!id || /PASTE/.test(id)) throw new Error('The dashboard is not connected to its Sheet yet: add SHEET_ID in Project Settings → Script properties.');
-  return SpreadsheetApp.openById(id);
+  return (SS_ = SpreadsheetApp.openById(id));
 }
 function tab_(name, cols) {
   var ss = ss_(), sh = ss.getSheetByName(name);
@@ -154,12 +157,13 @@ function me_() {
   var owner = owner_();
   var email = CALLER_ || owner;
   if (!email) throw new Error('Please sign in with your Google account.');
-  var sh = tab_(TABS.team, TEAM_COLS);
-  var team = rows_(sh);
+  var team = team_();
   if (!team.length) {
+    var sh = tab_(TABS.team, TEAM_COLS);
     // Empty team list: only the account that owns this script can become the first founder.
     if (email !== owner) throw new Error('The dashboard has no team yet. Open it first with ' + owner + '.');
     sh.appendRow([email, '', 'founder', true]);
+    CacheService.getScriptCache().remove('team');
     return { email: email, name: '', role: 'founder', owner: true };
   }
   if (email === owner) {
@@ -169,6 +173,25 @@ function me_() {
   var m = team.filter(function (t) { return String(t.email).toLowerCase() === email && t.active !== false; })[0];
   if (!m) throw new Error('Your account (' + email + ') is not on the VenGuard team list. Ask ' + owner + ' to add you.');
   return { email: email, name: m.name || '', role: ROLES.indexOf(m.role) >= 0 ? m.role : 'marketing', owner: false };
+}
+/** Team tab, cached for 10 minutes; saveTeamMember clears the cache, so changes apply at once. */
+function team_() {
+  var cache = CacheService.getScriptCache(), hit = cache.get('team');
+  if (hit) return JSON.parse(hit);
+  var team = rows_(tab_(TABS.team, TEAM_COLS));
+  try { cache.put('team', JSON.stringify(team), 600); } catch (e) {}
+  return team;
+}
+/** Only the newest rows of a long tab (the activity log grows forever). */
+function lastRows_(sh, n) {
+  if (!sh || sh.getLastRow() < 2) return [];
+  var last = sh.getLastRow(), cols = sh.getLastColumn(), from = Math.max(2, last - n + 1);
+  var head = sh.getRange(1, 1, 1, cols).getValues()[0];
+  return sh.getRange(from, 1, last - from + 1, cols).getValues().map(function (r, i) {
+    var o = { _row: from + i };
+    head.forEach(function (h, j) { o[h] = r[j] instanceof Date ? r[j].toISOString() : r[j]; });
+    return o;
+  });
 }
 function need_(user, what) {
   if (CAN[what].indexOf(user.role) < 0) throw new Error('Your role (' + user.role + ') cannot do this.');
@@ -185,13 +208,13 @@ function settings_() {
 /* ---------------- API used by Index.html ---------------- */
 function getBootstrap() {
   var user = me_();
-  var activity = rows_(tab_(TABS.activity, ACTIVITY_COLS)).slice(-200).reverse();
+  var activity = lastRows_(tab_(TABS.activity, ACTIVITY_COLS), 200).reverse();
   return {
     user: user,
     leads: rows_(tab_(TABS.leads, LEAD_COLS)),
     dealers: rows_(tab_(TABS.dealers, DEALER_COLS)),
     settings: settings_(),
-    team: user.role === 'founder' ? rows_(tab_(TABS.team, TEAM_COLS)) : [],
+    team: user.role === 'founder' ? team_() : [],
     activity: activity,
     owner: owner_(),
     siteUrl: prop_('SITE_URL'),
@@ -307,6 +330,7 @@ function saveTeamMember(m) {
   var vals = [email, m.name || '', m.role, m.active !== false];
   if (r) sh.getRange(r._row, 1, 1, 4).setValues([vals]); else sh.appendRow(vals);
   // No Sheet sharing needed: the dashboard reads and writes the Sheet as the company account.
+  CacheService.getScriptCache().remove('team');
   log_(user, 'team_update', email, m.role + (m.active === false ? ' (removed)' : ''));
   return rows_(sh);
 }
