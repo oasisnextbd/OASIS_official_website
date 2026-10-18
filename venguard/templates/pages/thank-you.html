@@ -10,6 +10,8 @@
     <h1 class="mt-1" data-state="pending" hidden>{{ t("ধন্যবাদ! আপনার তথ্য আমরা পেয়েছি।", "Thank you! We have your details.") }}</h1>
     <h1 class="mt-1" data-state="failed" hidden>{{ t("পেমেন্ট সম্পূর্ণ হয়নি, তবে আপনার তথ্য সংরক্ষিত আছে।", "The payment did not go through, but your details are saved.") }}</h1>
     <p class="lead">{{ t("অর্ডার নম্বর:", "Order number:") }} <strong data-order-id>—</strong></p>
+    {#- Filled by site.js while there is no order database: send the order on WhatsApp / email. -#}
+    <div data-handoff hidden></div>
     <div data-state="paid">
       <p>{{ t("আপনার ফোনে বাংলায় SMS/WhatsApp এবং ইমেইল দিলে ইমেইলে নিশ্চিতকরণ যাবে।", "A confirmation is on its way by SMS/WhatsApp in Bangla, and by email if you gave one.") }}</p>
     </div>
