@@ -29,9 +29,22 @@ def main():
     shutil.copytree(REPO / "oasis-site", OUT)
     subprocess.run([sys.executable, str(REPO / "venguard/tools/build.py"), str(OUT / "VENGuard")], check=True)
     build_dashboard(OUT / "team")
+    write_sitemap_index()
     (OUT / ".nojekyll").write_text("")  # serve files as-is (no Jekyll processing)
     files = sum(1 for p in OUT.rglob("*") if p.is_file())
     print(f"Site assembled in {OUT.relative_to(REPO)}/ ({files} files)")
+
+
+def write_sitemap_index():
+    """/sitemap.xml lists the OASIS page and the VenGuard sitemap, so Search Console needs one address."""
+    base = "https://oasisnextbd.github.io/OASIS_official_website"
+    (OUT / "sitemap-oasis.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <url><loc>{base}/</loc></url>\n</urlset>\n", encoding="utf-8")
+    (OUT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <sitemap><loc>{base}/sitemap-oasis.xml</loc></sitemap>\n"
+        f"  <sitemap><loc>{base}/VENGuard/sitemap.xml</loc></sitemap>\n</sitemapindex>\n", encoding="utf-8")
 
 
 def build_dashboard(dest):
