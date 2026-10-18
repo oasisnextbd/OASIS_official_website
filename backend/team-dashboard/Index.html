@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
   /* Day / Night like the website: a saved choice wins, otherwise the computer's setting. */
   try { var t = localStorage.getItem("vg_dash_theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
@@ -272,7 +272,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     Promise.all([import(FIREBASE_JS + "firebase-app.js"), import(FIREBASE_JS + "firebase-auth.js")]).then(function (m) {
       AUTH = { auth: m[1].getAuth(m[0].initializeApp(CFG.firebase)), mod: m[1] };
       m[1].onAuthStateChanged(AUTH.auth, function (u) {
-        if (u) { $("#app").classList.remove("signed-out"); $("#main").innerHTML = '<p class="sub">Loading\u2026</p>'; load(); }
+        if (u) { $("#app").classList.remove("signed-out"); $("#main").innerHTML = '<p class="sub">Loading orders\u2026</p>'; load(); }
         else showSignIn();
       });
     }).catch(function () { showSignIn("Google sign-in didn't load. Check the internet connection, then reload the page."); });
@@ -556,10 +556,12 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     var f = $("#leadForm");
     if (f) f.addEventListener("submit", function (e) {
       e.preventDefault();
+      // Shown at once; saved in the background, and put back if the save fails.
       var ch = { status: $("#lStatus").value, team_notes: $("#lNotes").value };
-      var b = f.querySelector("button"); b.disabled = true; b.textContent = "Saving\u2026";
-      api("updateLead", id, ch).then(function () { Object.assign(l, ch); toast("Saved " + id); closeDrawer(); renderMe(); render(); })
-        .catch(function (err) { b.disabled = false; b.textContent = "Save changes"; toast(err); });
+      var before = { status: l.status, team_notes: l.team_notes };
+      Object.assign(l, ch); closeDrawer(); renderMe(); render(); toast("Saving " + id + "\u2026");
+      api("updateLead", id, ch).then(function () { toast("Saved " + id); })
+        .catch(function (err) { Object.assign(l, before); renderMe(); render(); toast("Not saved: " + err); });
     });
     var x = $(".drawer .x"); if (x) x.focus();
   }

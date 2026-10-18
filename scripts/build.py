@@ -48,6 +48,13 @@ def build_dashboard(dest):
         f"<link rel=\"icon\" href=\"{icons}favicon-32.png?v=3\" sizes=\"32x32\">\n"
         f"<link rel=\"apple-touch-icon\" href=\"{icons}apple-touch-icon.png?v=3\">\n"
         f"<script>window.VG_DASH = {json.dumps(config)};</script>\n"
+        # Start the slow connections while the page is still loading.
+        "<link rel=\"modulepreload\" href=\"https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js\">\n"
+        "<link rel=\"modulepreload\" href=\"https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js\">\n"
+        "<link rel=\"preconnect\" href=\"https://script.google.com\">\n"
+        "<link rel=\"preconnect\" href=\"https://script.googleusercontent.com\">\n"
+        "<link rel=\"preconnect\" href=\"https://securetoken.googleapis.com\">\n"
+        "<link rel=\"preconnect\" href=\"https://identitytoolkit.googleapis.com\">\n"
     )
     body = (src / "Index.html").read_text(encoding="utf-8")
     dest.mkdir(parents=True, exist_ok=True)
