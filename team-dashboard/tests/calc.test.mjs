@@ -47,3 +47,19 @@ test("invoice numbers and marketing channels", () => {
   assert.equal(channelOf({ heard_from: "fair" }), "fair");
   assert.equal(channelOf({}), "");
 });
+
+import { daysUntil, nextRenewal, monthlyCost, renewalState } from "../js/calc.js";
+test("subscriptions: renewal dates, reminders and monthly cost", () => {
+  assert.equal(daysUntil("2026-11-01", "2026-10-18"), 14);
+  assert.equal(daysUntil("2026-10-01", "2026-10-18"), -17);
+  assert.equal(nextRenewal("2026-01-31", "monthly"), "2026-02-28");
+  assert.equal(nextRenewal("2024-02-29", "yearly"), "2025-02-28");
+  assert.equal(nextRenewal("2026-10-18", "quarterly"), "2027-01-18");
+  assert.equal(nextRenewal("2026-10-18", "free"), "");
+  assert.equal(monthlyCost({ cost: 2400, cycle: "yearly" }), 200);
+  assert.equal(monthlyCost({ cost: 500, cycle: "once" }), 0);
+  assert.equal(renewalState({ renews_on: "2026-11-01", cycle: "yearly" }, "2026-10-18"), "soon");
+  assert.equal(renewalState({ renews_on: "2026-11-01", cycle: "yearly", remind_days: 7 }, "2026-10-18"), "ok");
+  assert.equal(renewalState({ renews_on: "2026-10-01", cycle: "monthly" }, "2026-10-18"), "overdue");
+  assert.equal(renewalState({ cycle: "free" }, "2026-10-18"), "none");
+});

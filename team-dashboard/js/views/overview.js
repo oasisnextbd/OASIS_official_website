@@ -5,12 +5,13 @@ import { S, STATUS, TYPE } from "../store.js";
 import { CHANNELS, channelOf } from "../calc.js";
 import { R } from "../redraw.js";
 import { openOrder } from "./orders.js";
+import { renewalsDue } from "./subscriptions.js";
 
 let range = 30;
 const inRange = (iso) => !range || (Date.now() - new Date(iso)) / 864e5 <= range;
 
 export default {
-  id: "overview", label: "Overview", icon: "overview", deps: ["orders", "invoices", "inventory", "marketing"],
+  id: "overview", label: "Overview", icon: "overview", deps: ["orders", "invoices", "inventory", "marketing", "subscriptions"],
   render() {
     const all = S.data.orders, L = all.filter((o) => inRange(o.submitted_at));
     const inv = S.data.invoices.filter((i) => i.status === "issued");
@@ -23,7 +24,9 @@ export default {
       .sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at)).slice(0, 8);
     const label = range ? `last ${range} days` : "all time";
     const seg = [[7, "7 days"], [30, "30 days"], [90, "90 days"], [0, "All time"]].map(([v, l]) => `<button type="button" data-act="ov:range" data-v="${v}" aria-pressed="${range === v}">${l}</button>`).join("");
-    return `<div class="topline"><div><h1>Overview</h1><div class="sub">${fmtN(L.length)} orders and leads, ${label}</div></div><div class="seg" role="group" aria-label="Period">${seg}</div></div>
+    const due = renewalsDue();
+    const renewals = due.length ? `<div class="banner">${ICON.info}<div><strong>Renewal${due.length > 1 ? "s" : ""} coming up:</strong> ${due.map((s) => esc(s.name) + (s.renews_on ? " (" + esc(s.renews_on) + ")" : "")).join(", ")}. <button class="linkish" data-act="nav" data-view="subscriptions">Open Subscriptions</button></div></div>` : "";
+    return `${renewals}<div class="topline"><div><h1>Overview</h1><div class="sub">${fmtN(L.length)} orders and leads, ${label}</div></div><div class="seg" role="group" aria-label="Period">${seg}</div></div>
       <div class="kpis">${kpi("Invoiced sales", money(invR.reduce((s, i) => s + i.total, 0)), fmtN(invR.length) + " invoices", true)}
         ${kpi("Collected", money(invR.reduce((s, i) => s + (i.paid || 0), 0)), money(inv.reduce((s, i) => s + Math.max(0, i.due || 0), 0)) + " still to collect (all invoices)")}
         ${kpi("Orders & leads", fmtN(L.length), fmtN(L.filter((o) => o.form_type === "preorder").length) + " pre-orders")}

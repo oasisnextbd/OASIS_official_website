@@ -109,6 +109,11 @@ function sample() {
       company: { legal_name: "", address: "", phone: "", email: "", bin: "", trade_license: "", vat_rate: 0, invoice_prefix: "INV", terms: "" },
       website: { preorder_open: true, kit_price_bdt: "", notice_bn: "", notice_en: "" },
     },
+    subscriptions: {
+      s1: { name: "GitHub (website hosting, code)", category: "Hosting", cycle: "free", cost: 0, currency: "BDT", active: true, remind_days: 30, history: [] },
+      s2: { name: "Example domain (made up)", category: "Domain", cycle: "yearly", cost: 1800, currency: "BDT", renews_on: day(-12), auto_renew: false, paid_by: "Founder", remind_days: 30, active: true, history: [] },
+      s3: { name: "Example design tool (made up)", category: "Design & office", cycle: "monthly", cost: 12, currency: "USD", renews_on: day(-25), auto_renew: true, remind_days: 7, active: true, history: [] },
+    },
     signatories: {}, invoices: {}, stockMoves: {}, counters: {},
     activity: { a1: { at: iso(0.1), user: "support@example.com", action: "order_update", ref: Object.keys(orders)[0], detail: "status → contacted" } },
   };

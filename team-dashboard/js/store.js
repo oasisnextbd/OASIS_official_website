@@ -2,14 +2,14 @@
    functions below; nothing else writes to the database. Live updates come in through watch(),
    so a change made by one person shows up for everyone straight away. */
 
-import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo } from "./calc.js";
+import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo, nextRenewal, CYCLES } from "./calc.js";
 import { nowIso, today } from "./ui.js";
 
 export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], settings: { company: {}, website: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], settings: { company: {}, website: {} },
   },
   loaded: new Set(),
 };
@@ -23,7 +23,7 @@ export const ROLES = { founder: "Founder", support: "Support", marketing: "Marke
 /* ---------- who may do what (the same rules are enforced in firestore.rules) ---------- */
 const CAN = {
   orders: ["founder", "support"], invoices: ["founder", "support"], void: ["founder"], stock: ["founder", "support"],
-  items: ["founder"], promos: ["founder", "marketing"], marketing: ["founder", "marketing"], dealers: ["founder"], settings: ["founder"],
+  items: ["founder"], promos: ["founder", "marketing"], marketing: ["founder", "marketing"], dealers: ["founder"], settings: ["founder"], subscriptions: ["founder"],
 };
 export function can(what) {
   if (!S.me) return false;
@@ -48,7 +48,7 @@ export async function whoAmI(user) {
 const WATCH = {
   orders: { orderBy: "submitted_at", desc: true }, invoices: { orderBy: "issued_at", desc: true },
   inventory: {}, products: {}, promos: {}, marketing: { orderBy: "date", desc: true }, dealers: {}, team: {}, signatories: {},
-  activity: { orderBy: "at", desc: true, limit: 200 }, stockMoves: { orderBy: "at", desc: true, limit: 300 },
+  activity: { orderBy: "at", desc: true, limit: 200 }, stockMoves: { orderBy: "at", desc: true, limit: 300 }, subscriptions: {},
 };
 let stops = [];
 export function start(onChange, onError) {
@@ -368,4 +368,46 @@ export async function saveMember(m) {
   if (!ROLES[m.role]) throw new Error("Choose a role.");
   await S.db.set("team", email, { email, name: m.name || "", role: m.role, active: m.active !== false, updated_at: nowIso(), updated_by: by() });
   log("team_update", email, m.role + (m.active === false ? " (removed)" : ""));
+}
+
+/* ---------- subscriptions & renewals ---------- */
+const SUB_FIELDS = ["name", "category", "currency", "cycle", "renews_on", "paid_by", "payment_method", "account", "url", "notes"];
+export async function saveSub(id, v) {
+  if (!v.name) throw new Error("Give the service a name.");
+  if (!CYCLES[v.cycle]) throw new Error("Choose how often it is paid.");
+  const cost = Math.max(0, Number(v.cost) || 0);
+  if (v.cycle !== "free" && v.cycle !== "once" && !v.renews_on) throw new Error("Enter the next renewal date.");
+  const o = { cost: v.cycle === "free" ? 0 : cost, auto_renew: !!v.auto_renew, remind_days: Math.max(1, Math.min(120, Math.round(Number(v.remind_days) || 30))),
+    active: v.active !== false, updated_at: nowIso(), updated_by: by() };
+  for (const k of SUB_FIELDS) o[k] = String(v[k] || "").trim().slice(0, k === "notes" ? 1000 : 200);
+  if (o.url && !/^https?:\/\//i.test(o.url)) o.url = "https://" + o.url;
+  if (!o.currency) o.currency = "BDT";
+  if (id) await S.db.update("subscriptions", id, clean(o));
+  else id = await S.db.add("subscriptions", clean({ ...o, history: [], created_at: nowIso() }));
+  log("subscription_save", id, o.name);
+  return id;
+}
+/** Records a renewal payment and moves the date on by one billing cycle. */
+export async function renewSub(id, amount, note) {
+  await S.db.tx(async (t) => {
+    const s = await t.get("subscriptions", id);
+    if (!s) throw new Error("Unknown subscription.");
+    const next = nextRenewal(s.renews_on, s.cycle);
+    if (!next) throw new Error("This one has no renewal date.");
+    const paid = amount === "" || amount == null ? s.cost : Math.max(0, Number(amount) || 0);
+    t.update("subscriptions", id, { renews_on: next, updated_at: nowIso(), updated_by: by(),
+      history: [...(s.history || []), { at: nowIso(), period_from: s.renews_on, amount: paid, currency: s.currency || "BDT", note: String(note || "").slice(0, 200), by: by() }] });
+  });
+  log("subscription_renew", id, "");
+}
+export async function setSubActive(id, active) { await S.db.update("subscriptions", id, { active, updated_at: nowIso(), updated_by: by() }); log("subscription_" + (active ? "on" : "off"), id, ""); }
+/** The services VenGuard uses today, all free (no invented prices or dates). */
+export async function addCurrentServices() {
+  const have = new Set(S.data.subscriptions.map((x) => x.name));
+  const list = [
+    ["GitHub (website hosting, code)", "Hosting", "https://github.com/oasisnextbd", "Website and dashboard are published by GitHub Pages."],
+    ["Firebase, Spark plan (dashboard data, app, sign-in)", "Hosting", "https://console.firebase.google.com/project/venguard-connected", "Free plan. Blaze (pay as you go) is only needed for Cloud Functions or backups."],
+    ["Google account oasisnextbd@gmail.com", "Accounts", "https://myaccount.google.com", "Owns Firebase, Search Console and the dashboard. Keep 2-step verification on."],
+  ];
+  for (const [name, category, url, notes] of list) if (!have.has(name)) await saveSub(null, { name, category, cycle: "free", currency: "BDT", url, notes, remind_days: 30 });
 }

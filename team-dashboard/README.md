@@ -57,6 +57,11 @@ nothing until they sign in.
   - Orders, paying customers and invoiced sales per channel, cost per order, cost per paying customer,
     and taka back per taka spent.
 - **Dealers**: dealer list, QR sticker and link per dealer, applications from the website.
+- **Subscriptions & renewals**: every service the company uses (domain, hosting, SMS, design tools…) with
+  its cost, billing cycle, next renewal date, who pays and with what. A warning shows on Overview and in
+  the menu before each renewal (30 days by default, set per service). **Mark as renewed** records the
+  payment and moves the date on. Totals per month and per year. Founders edit; everyone can see it.
+  Never store passwords here, only which account is used.
 - **Settings & team**: company details for invoices, authorised signatures, website switches (pre-orders
   on or off, price shown, notice bar: the website reads them within 10 minutes), the team
   list, and an activity log of every change.
@@ -83,7 +88,7 @@ folder to `_site/team/` and puts `config.json` into the page.
 | `tests/calc.test.mjs` | `node --test team-dashboard/tests/calc.test.mjs` |
 
 Collections in Firestore: `team`, `orders`, `invoices`, `counters`, `inventory`, `stockMoves`, `products`,
-`promos`, `marketing`, `dealers`, `signatories`, `settings` (`company`, `website`) and `activity`.
+`promos`, `marketing`, `dealers`, `subscriptions`, `signatories`, `settings` (`company`, `website`) and `activity`.
 
 To add a section, write `js/views/name.js` and add it to `VIEWS` in `js/app.js`. Put any new database write
 in `store.js`, and give it a rule in `firestore.rules` with a test.

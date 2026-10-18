@@ -98,7 +98,7 @@ export async function busy(f, fn, label = "Saving…") {
 
 /* ---------- small building blocks ---------- */
 export function kpi(label, value, hint, lead) {
-  return `<div class="kpi${lead ? " lead" : ""}"><div class="label">${esc(label)}</div><div class="value num">${esc(value)}</div><div class="hint">${esc(hint)}</div></div>`;
+  return `<div class="kpi${lead ? " lead" : ""}"><div class="label">${esc(label)}</div><div class="value num${String(value).length > 12 ? " long" : ""}">${esc(value)}</div><div class="hint">${esc(hint)}</div></div>`;
 }
 export function countBy(list, fn, weight) {
   const o = {};
@@ -173,6 +173,7 @@ export const ICON = {
   marketing: sv('<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14"/>'),
   dealers: sv('<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v9h14v-9"/>'),
   settings: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'),
+  subscriptions: sv('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 14v3l2 1"/>'),
   plus: sv('<path d="M12 5v14M5 12h14"/>'),
   copy: sv('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/>'),
   down: sv('<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>'),
