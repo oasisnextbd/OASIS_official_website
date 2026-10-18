@@ -280,7 +280,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
   function showSignIn(msg) {
     S.data = null; closeDrawer();
     $("#app").classList.add("signed-out"); $("#signOutBtn").hidden = true;
-    $("#main").innerHTML = '<section class="signin"><h1>Team sign-in</h1><p class="sub">Sign in with the Google account a founder added to the VenGuard team. If this browser has several Google accounts, you choose which one to use.</p>' +
+    $("#main").innerHTML = '<section class="signin"><h1>Team sign-in</h1><p class="sub">Sign in with the Google account that was added to the VenGuard team. If this browser has several Google accounts, you choose which one to use.</p>' +
       (msg ? '<div class="banner error">' + ICON.info + "<div>" + esc(msg) + "</div></div>" : "") +
       '<button class="btn primary" type="button" data-act="signin">Sign in with Google</button></section>';
   }
@@ -351,7 +351,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     function log(a, r, d) { activity.unshift({ time: new Date().toISOString(), user: team[0].email, action: a, ref: r, detail: d }); }
     return {
       getBootstrap: function () {
-        return { user: { email: team[0].email, name: team[0].name, role: "founder" }, leads: leads, dealers: dealers, settings: settings, team: team, activity: activity, siteUrl: "https://oasisnextbd.github.io/OASIS_official_website/VENGuard", statuses: ["new", "payment_pending", "contacted", "paid", "refunded", "installed", "not_interested"], generatedAt: new Date().toISOString() };
+        return { user: { email: team[0].email, name: team[0].name, role: "founder", owner: true }, owner: team[0].email, leads: leads, dealers: dealers, settings: settings, team: team, activity: activity, siteUrl: "https://oasisnextbd.github.io/OASIS_official_website/VENGuard", statuses: ["new", "payment_pending", "contacted", "paid", "refunded", "installed", "not_interested"], generatedAt: new Date().toISOString() };
       },
       updateLead: function (id, c) { var l = leads.filter(function (x) { return x.order_id === id; })[0]; Object.keys(c).forEach(function (k) { l[k] = c[k]; }); log("lead_update", id, Object.keys(c).join(", ")); return true; },
       saveDealer: function (d) { var code = String(d.code || "").toUpperCase(); if (!code) throw new Error("A dealer code is needed, e.g. DH-042."); var e = dealers.filter(function (x) { return x.code === code; })[0]; if (e) Object.assign(e, d, { code: code }); else dealers.push(Object.assign({ created_at: new Date().toISOString() }, d, { code: code })); log(e ? "dealer_update" : "dealer_add", code, d.shop_name || ""); return code; },
@@ -685,13 +685,13 @@ label.fl textarea { min-height: 90px; resize: vertical; }
 
   /* ============ Settings & team ============ */
   function viewSettings() {
-    var founder = can("founder"), s = S.data.settings || {};
+    var founder = can("founder"), manage = !!S.data.user.owner, s = S.data.settings || {};
     var open = !(s.preorder_open === false || s.preorder_open === "FALSE" || s.preorder_open === "false");
     var log = '<section class="panel log"><h2>Activity</h2>' + (S.data.activity.length ? "<ul>" + S.data.activity.slice(0, 100).map(function (a) {
       return '<li><span class="num muted">' + when(a.time) + "</span><span><strong>" + esc(a.user) + "</strong> " + esc(String(a.action).replace(/_/g, " ")) + " " + (a.ref ? '<span class="mono">' + esc(a.ref) + "</span> " : "") + '<span class="muted">' + esc(a.detail) + "</span></span></li>";
     }).join("") + "</ul>" : '<p class="muted">No changes yet.</p>') + "</section>";
     if (!founder) return '<div class="topline"><h1>Activity</h1></div>' + log;
-    return '<div class="topline"><div><h1>Settings &amp; team</h1><div class="sub">Changes here reach the website within a minute.</div></div></div>' +
+    return '<div class="topline"><div><h1>Settings &amp; team</h1><div class="sub">Website settings reach the site once the website\u2019s order form is connected to the Sheet.</div></div></div>' +
       '<div class="grid2"><section class="panel"><h2>Website</h2><form id="setForm" class="stack">' +
       '<div class="switch"><input type="checkbox" id="sOpen" role="switch"' + (open ? " checked" : "") + '><label for="sOpen"><strong>Pre-orders open</strong><br><span class="sub">When off, every Pre-order button becomes \u201CGet notified\u201D.</span></label></div>' +
       '<label class="fl" for="sPrice">Kit price shown on the site (BDT)<input id="sPrice" inputmode="numeric" placeholder="Leave empty for \u201CFinal price to be announced\u201D" value="' + esc(s.kit_price_bdt) + '"></label>' +
@@ -699,9 +699,14 @@ label.fl textarea { min-height: 90px; resize: vertical; }
       '<label class="fl" for="sNoticeEn">Notice bar, English<input id="sNoticeEn" placeholder="e.g. Deliveries pause for Eid" value="' + esc(s.notice_en) + '"></label>' +
       '<div><button class="btn primary" type="submit">Save website settings</button></div></form></section>' +
       '<section class="panel"><h2>Team</h2><div class="table-wrap" style="margin-bottom:12px"><table><thead><tr><th>Person</th><th>Role</th><th></th></tr></thead><tbody>' + S.data.team.map(function (m) {
-        return "<tr><td class=\"name\"><strong>" + esc(m.name || m.email) + '</strong><br><span class="type">' + esc(m.email) + "</span></td><td>" + esc(cap(m.role)) + (m.active === false || m.active === "FALSE" ? " (removed)" : "") + "</td><td>" + (m.email !== S.data.user.email ? '<button class="btn" data-act="rmTeam" data-email="' + esc(m.email) + '">Remove</button>' : '<span class="type">You</span>') + "</td></tr>";
+        // Only the company account (owner) adds or removes people, and it can never be removed.
+        var email = String(m.email).toLowerCase(), isOwner = email === S.data.owner, removed = m.active === false || m.active === "FALSE";
+        var cell = email === S.data.user.email ? '<span class="type">You</span>' : isOwner ? ""
+          : manage && !removed ? '<button class="btn" data-act="rmTeam" data-email="' + esc(m.email) + '">Remove</button>' : "";
+        return "<tr><td class=\"name\"><strong>" + esc(m.name || m.email) + '</strong><br><span class="type">' + esc(m.email) + "</span></td><td>" + (isOwner ? "Owner" : esc(cap(m.role))) + (removed ? " (removed)" : "") + "</td><td>" + cell + "</td></tr>";
       }).join("") + "</tbody></table></div>" +
-      '<form id="teamForm" class="stack"><div class="form-grid"><label class="fl" for="tEmail">Google account email<input id="tEmail" type="email" required placeholder="name@company.com"></label><label class="fl" for="tName">Name<input id="tName"></label></div><label class="fl" for="tRole">Role<select id="tRole"><option value="support">Support: update orders and notes</option><option value="marketing">Marketing: view and export only</option><option value="founder">Founder: everything</option></select></label><div><button class="btn" type="submit">' + ICON.plus + "Add to team</button></div><p class=\"sub\" style=\"margin:0\">They'll also get access to the VenGuard Leads Sheet. Ask everyone to switch on 2-step verification in their Google account.</p></form></section></div>" + log;
+      (!manage ? '<p class="sub" style="margin:0">Only ' + esc(S.data.owner) + " can add or remove team members.</p></section></div>" + log :
+      '<form id="teamForm" class="stack"><div class="form-grid"><label class="fl" for="tEmail">Google account email<input id="tEmail" type="email" required placeholder="name@company.com"></label><label class="fl" for="tName">Name<input id="tName"></label></div><label class="fl" for="tRole">Role<select id="tRole"><option value="support">Support: update orders and notes</option><option value="marketing">Marketing: view and export only</option><option value="founder">Founder: everything except adding or removing people</option></select></label><div><button class="btn" type="submit">' + ICON.plus + "Add to team</button></div><p class=\"sub\" style=\"margin:0\">They sign in with this Google account. Ask everyone to switch on 2-step verification in their Google account.</p></form></section></div>" + log);
   }
 
   /* ============ Events ============ */
