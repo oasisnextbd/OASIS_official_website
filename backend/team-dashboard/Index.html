@@ -307,6 +307,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
       },
       updateLead: function (id, c) { var l = leads.filter(function (x) { return x.order_id === id; })[0]; Object.keys(c).forEach(function (k) { l[k] = c[k]; }); log("lead_update", id, Object.keys(c).join(", ")); return true; },
       saveDealer: function (d) { var code = String(d.code || "").toUpperCase(); if (!code) throw new Error("A dealer code is needed, e.g. DH-042."); var e = dealers.filter(function (x) { return x.code === code; })[0]; if (e) Object.assign(e, d, { code: code }); else dealers.push(Object.assign({ created_at: new Date().toISOString() }, d, { code: code })); log(e ? "dealer_update" : "dealer_add", code, d.shop_name || ""); return code; },
+      addLead: function (d) { var id = /^VG-\d{6}-[A-Z0-9]{4}$/.test(d.order_id || "") ? d.order_id : "VG-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase(); if (leads.some(function (x) { return x.order_id === id; })) throw new Error("Order " + id + " is already in the list."); leads.push(Object.assign({}, d, { order_id: id, submitted_at: new Date().toISOString(), status: "new" })); log("lead_add", id, d.form_type); return id; },
       saveSettings: function (s) { Object.assign(settings, s); log("settings_update", "", JSON.stringify(s)); return settings; },
       saveTeamMember: function (m) { var e = team.filter(function (x) { return x.email === m.email; })[0]; if (e) Object.assign(e, m); else team.push(m); log("team_update", m.email, m.role); return team; }
     };
@@ -475,7 +476,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     var rows = filtered();
     var districts = countBy(S.data.leads, function (l) { return l.district; }).map(function (d) { return [d[0], d[0]]; });
     var th = function (k, label) { return '<th><button data-sort="' + k + '">' + label + (S.sort === k ? (S.dir < 0 ? " \u2193" : " \u2191") : "") + "</button></th>"; };
-    return '<div class="topline"><div><h1>Orders &amp; leads</h1><div class="sub">' + fmtN(rows.length) + " of " + fmtN(S.data.leads.length) + ' shown</div></div><div class="actions"><button class="btn" data-act="copycsv">' + ICON.copy + 'Copy as CSV</button><button class="btn primary" data-act="csv">' + ICON.down + "Export CSV</button></div></div>" +
+    return '<div class="topline"><div><h1>Orders &amp; leads</h1><div class="sub">' + fmtN(rows.length) + " of " + fmtN(S.data.leads.length) + ' shown</div></div><div class="actions">' + (can("edit") ? '<button class="btn primary" data-act="addLead">' + ICON.plus + "Add order</button>" : "") + '<button class="btn" data-act="copycsv">' + ICON.copy + 'Copy as CSV</button><button class="btn" data-act="csv">' + ICON.down + "Export CSV</button></div></div>" +
       '<div class="toolbar"><label class="search">' + ICON.search + '<span hidden>Search</span><input id="q" type="search" placeholder="Search name, phone, order no., area, dealer code" value="' + esc(S.q) + '"></label>' +
       '<select class="f" id="fType" aria-label="Type">' + opts(Object.keys(TYPE).map(function (k) { return [k, TYPE[k]]; }), S.fType, "All types") + "</select>" +
       '<select class="f" id="fStatus" aria-label="Status">' + opts(S.data.statuses.map(function (k) { return [k, STATUS[k]]; }), S.fStatus, "All statuses") + "</select>" +
@@ -483,7 +484,7 @@ label.fl textarea { min-height: 90px; resize: vertical; }
       '<div class="table-wrap"><table><thead><tr>' + th("submitted_at", "Received") + th("order_id", "Order") + th("name", "Name") + "<th>Phone</th>" + th("form_type", "Type") + th("units", "Units") + th("district", "Area") + "<th>Source</th>" + th("status", "Status") + "</tr></thead><tbody>" +
       (rows.length ? rows.slice(0, 500).map(function (l) {
         return '<tr data-open="' + esc(l.order_id) + '" tabindex="0"><td class="num">' + when(l.submitted_at) + '</td><td class="mono">' + esc(l.order_id) + '</td><td class="name"><strong>' + esc(l.name) + "</strong>" + (l.organisation ? '<br><span class="type">' + esc(l.organisation) + "</span>" : "") + '</td><td class="num">' + esc(l.phone) + "</td><td>" + esc(TYPE[l.form_type] || l.form_type) + (l.kitchen_type ? '<br><span class="type">' + esc(cap(l.kitchen_type)) + "</span>" : "") + '</td><td class="num">' + esc(l.units) + "</td><td>" + esc(l.area) + '<br><span class="type">' + esc(l.district) + "</span></td><td>" + esc(source(l)) + (l.dealer_code ? '<br><span class="type mono">' + esc(l.dealer_code) + "</span>" : "") + "</td><td>" + pill(l.status) + "</td></tr>";
-      }).join("") : '<tr><td colspan="9" class="empty">No orders match these filters.</td></tr>') +
+      }).join("") : '<tr><td colspan="9" class="empty">' + (S.data.leads.length ? "No orders match these filters." : "No orders yet. Use Add order to record one from WhatsApp, email or a call.") + "</td></tr>") +
       "</tbody></table></div>" + (rows.length > 500 ? '<p class="sub">Showing the first 500. Narrow the search or export to see all.</p>' : "");
   }
   function openLead(id) {
@@ -508,6 +509,58 @@ label.fl textarea { min-height: 90px; resize: vertical; }
         .catch(function (err) { b.disabled = false; b.textContent = "Save changes"; toast(err); });
     });
     var x = $(".drawer .x"); if (x) x.focus();
+  }
+  /* ---- Add an order that came by WhatsApp, email, phone or in person ----
+     The website's WhatsApp / email hand-off sends lines like "Name: Rahim" (English or Bangla labels),
+     so pasting the message fills the form. Everything stays editable before saving. */
+  var MSG_TYPES = { "pre-order": "preorder", "প্রি-অর্ডার": "preorder", "enquiry": "enquiry", "অনুসন্ধান": "enquiry", "dealer": "dealer", "ডিলার": "dealer", "waitlist": "waitlist", "অপেক্ষা": "waitlist", "message": "contact", "বার্তা": "contact" };
+  var MSG_LABELS = { order: "order_id", reference: "order_id", "অর্ডার": "order_id", "রেফারেন্স": "order_id", name: "name", "নাম": "name", phone: "phone", "ফোন": "phone", email: "email", "ইমেইল": "email",
+    organisation: "organisation", "প্রতিষ্ঠান": "organisation", area: "area", "এলাকা": "area", district: "district", "জেলা": "district", package: "package", "প্যাকেজ": "package",
+    kitchen: "kitchen_type", "রান্নাঘর": "kitchen_type", business: "business_type", "ব্যবসা": "business_type", units: "units", "ইউনিট": "units", cylinder: "cylinder_brand", "সিলিন্ডার": "cylinder_brand",
+    "dealer code": "dealer_code", "ডিলার কোড": "dealer_code", message: "message", "বার্তা": "message" };
+  var ADD_FIELDS = [["name", "Name"], ["phone", "Phone"], ["order_id", "Order number (if they have one)"], ["email", "Email"], ["area", "Area"], ["district", "District"],
+    ["organisation", "Organisation"], ["units", "Units"], ["kitchen_type", "Kitchen"], ["business_type", "Business"], ["cylinder_brand", "Cylinder"], ["dealer_code", "Dealer code"]];
+  function parseMessage(text) {
+    var o = {}, lines = String(text || "").split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean);
+    if (lines.length) { var head = lines[0].toLowerCase(); Object.keys(MSG_TYPES).forEach(function (k) { if (!o.form_type && head.indexOf("venguard") >= 0 && head.indexOf(k) >= 0) o.form_type = MSG_TYPES[k]; }); }
+    lines.forEach(function (ln) {
+      var m = ln.match(/^([^:：]{2,24})\s*[:：]\s*(.+)$/); if (!m) return;
+      var key = MSG_LABELS[m[1].trim().toLowerCase()]; if (key && !o[key]) o[key] = m[2].trim();
+    });
+    // Bangla digits in a phone number or order number become ASCII.
+    ["phone", "units", "order_id"].forEach(function (k) { if (o[k]) o[k] = o[k].replace(/[\u09E6-\u09EF]/g, function (c) { return String(c.charCodeAt(0) - 0x09E6); }); });
+    if (o.phone) o.phone = o.phone.replace(/[\s-]/g, "").replace(/^\+?88(?=01)/, "");
+    return o;
+  }
+  function fillFromMessage(text) {
+    var o = parseMessage(text), n = 0;
+    Object.keys(o).forEach(function (k) { var el = $("#a_" + k); if (el && o[k]) { el.value = o[k]; n++; } });
+    toast(n ? "Filled " + n + " field" + (n > 1 ? "s" : "") + ". Check them, then save." : "Nothing recognised. Fill the form by hand.");
+  }
+  function addLeadForm() {
+    var types = Object.keys(TYPE).map(function (k) { return '<option value="' + k + '">' + esc(TYPE[k]) + "</option>"; }).join("");
+    var via = [["whatsapp", "WhatsApp"], ["email", "Email"], ["phone_call", "Phone call"], ["walk_in", "In person / fair"]].map(function (v) { return '<option value="' + v[0] + '">' + v[1] + "</option>"; }).join("");
+    var pkg = '<option value="">Not said</option>' + Object.keys(PACKAGE).map(function (k) { return '<option value="' + k + '">' + esc(PACKAGE[k]) + "</option>"; }).join("");
+    $("#drawerRoot").innerHTML = '<div class="drawer-bg" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="aT"><header><h1 id="aT" style="font-size:1.35rem">Add order</h1><button class="x" data-act="close" aria-label="Close">\u2715</button></header>' +
+      '<label class="fl" for="a_msg">Paste the WhatsApp or email message<textarea id="a_msg" placeholder="VenGuard pre-order&#10;Order: VG-261018-9B1O&#10;Name: &#8230;&#10;Phone: 01&#8230;"></textarea></label>' +
+      '<div><button class="btn" type="button" data-act="parseMsg">Fill in from message</button></div>' +
+      '<form id="addForm" class="stack" novalidate><div class="form-grid">' +
+      '<label class="fl" for="a_form_type">Type<select id="a_form_type" name="form_type">' + types + "</select></label>" +
+      '<label class="fl" for="a_heard_from">Came by<select id="a_heard_from" name="heard_from">' + via + "</select></label>" +
+      ADD_FIELDS.map(function (f) { return '<label class="fl" for="a_' + f[0] + '">' + f[1] + '<input id="a_' + f[0] + '" name="' + f[0] + '"' + (f[0] === "phone" ? ' inputmode="tel"' : f[0] === "order_id" ? ' class="mono"' : "") + "></label>"; }).join("") +
+      '<label class="fl" for="a_package">Package<select id="a_package" name="package">' + pkg + "</select></label></div>" +
+      '<label class="fl" for="a_message">Message<textarea id="a_message" name="message"></textarea></label>' +
+      '<div><button class="btn primary" type="submit">Save order</button></div></form></aside>';
+    $("#addForm").addEventListener("submit", function (e) {
+      e.preventDefault(); var o = {}; [].forEach.call(e.target.elements, function (el) { if (el.name) o[el.name] = el.value.trim(); });
+      if (!o.name || o.phone.replace(/\D/g, "").length < 10) { toast("A name and a phone number are needed."); return; }
+      var b = e.target.querySelector('button[type="submit"]'); b.disabled = true; b.textContent = "Saving\u2026";
+      api("addLead", o).then(function (id) {
+        S.data.leads.push(Object.assign({}, o, { order_id: id, submitted_at: new Date().toISOString(), status: "new" }));
+        toast("Saved " + id); closeDrawer(); renderMe(); render();
+      }).catch(function (err) { b.disabled = false; b.textContent = "Save order"; toast(err); });
+    });
+    $("#a_msg").focus();
   }
   function closeDrawer() { $("#drawerRoot").innerHTML = ""; S.open = null; }
   document.addEventListener("keydown", function (e) {
@@ -640,6 +693,8 @@ label.fl textarea { min-height: 90px; resize: vertical; }
     else if (act === "copyphone") copyText($(".drawer .num").textContent, "Number copied");
     else if (act === "copylink") copyText($("#qrLink").value, "Link copied");
     else if (act === "newDealer") dealerForm();
+    else if (act === "addLead") addLeadForm();
+    else if (act === "parseMsg") fillFromMessage($("#a_msg").value);
     else if (act === "qr") showQR(t.getAttribute("data-code"));
     else if (act === "approve") {
       var l = S.data.leads.filter(function (x) { return x.order_id === t.getAttribute("data-id"); })[0];
