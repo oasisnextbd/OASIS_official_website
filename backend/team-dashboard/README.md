@@ -17,9 +17,20 @@ The company-side web app: one place for the team to see and work every pre-order
 
 Roles: **founder** (everything), **support** (update orders and notes), **marketing** (view and export).
 
-It runs on Google Apps Script on top of the same **VenGuard Leads** Google Sheet as the website
-backend, so it is free, there is no server to maintain, sign-in is the team's own Google accounts
-(with 2-step verification), and the Sheet stays the single source of truth.
+**Where it lives:** <https://oasisnextbd.github.io/OASIS_official_website/team/>, a page built from
+`Index.html` by `scripts/build.py`. It is not linked from the website and asks search engines not to
+index it. Anyone can load the page, but it shows nothing until they sign in.
+
+**Who gets in:** a person clicks **Sign in with Google** and picks an account in Google's account
+chooser, so a browser with several Google accounts is fine and no Incognito window is needed. Sign-in
+goes through Firebase Auth in the `venguard-connected` project, the same one the app uses. Every request
+then goes to the Apps Script web app (`Dashboard.gs`) with a Firebase ID token. The script asks Google
+whether the token is genuine and lets the request through only if that email is on the **Team** tab
+with a role. A founder adds or removes people in **Settings & team**; nobody else can get in.
+
+**Data:** the script runs as the company account, so it is the only thing that reads or writes the
+**VenGuard Leads** Google Sheet. Team members never need access to the Sheet itself. Everything is free:
+Apps Script, the Sheet and Firebase Auth on the Spark plan.
 
 `Index.html` also opens on its own in a browser with example data, for demos and design changes.
 
@@ -29,26 +40,24 @@ The browser-tab icon is the website's favicon. Keep it in step with `venguard/as
 
 ## Set up (once, about 10 minutes, on a computer)
 
-Use the **company** Google account for every step, so the company owns the Sheet and the dashboard.
-The dashboard works with an empty Sheet; the website backend (`../leads-sheet/README.md`) can be
-connected to the same Sheet later.
+Do every step signed in as the **company** Google account, so the company owns the Sheet and the script.
 
 1. Go to <https://sheets.new>, name the new spreadsheet **VenGuard Leads**, and copy its ID:
    the long part of its address between `/d/` and `/edit`.
 2. Go to <https://script.google.com> → **New project**. Name it `VenGuard Dashboard`.
-3. Replace everything in `Code.gs` with the contents of `Dashboard.gs`. In the `CONFIG` block at the top,
-   put the Sheet ID in place of `PASTE-THE-SHEET-ID-HERE`. Save.
-4. **+ → HTML**, name it `Index`, and paste the contents of `Index.html`. Save.
-5. **Project Settings** → tick *Show "appsscript.json"*; open it in the editor and paste `appsscript.json`. Save.
-6. **Deploy → New deployment → ⚙ → Web app**: *Execute as: User accessing the web app*,
-   *Who has access: Anyone with Google account*. Deploy, then **Authorise access** and allow.
-7. Open the Web app URL. The first person to open it becomes a **founder**. Bookmark it.
-   Don't put this link on the website; only people on the team list can open it anyway.
-8. In **Settings & team**, add each team member's Google email and role. The dashboard gives them
-   access to the Sheet automatically.
+3. Replace everything in `Code.gs` with `Dashboard.gs`. (`Index.html` is not needed in the project; the
+   page is hosted with the website.) In **Project Settings**, tick *Show "appsscript.json"*, then paste `appsscript.json` into it.
+4. In **Project Settings → Script properties**, add the property `SHEET_ID` with the ID from step 1.
+5. In the editor, choose `getBootstrap` in the function list and click **Run**. Allow the permissions:
+   *Advanced → Go to VenGuard Dashboard*. This makes the company account the first **founder**.
+6. **Deploy → New deployment → Web app**: *Execute as: **Me***, *Who has access: **Anyone***. Deploy,
+   then copy the Web app URL (it ends in `/exec`).
+7. Put that URL in `hosted.json` as `endpoint`, then build and publish the website (`scripts/build.py`).
+8. Open <https://oasisnextbd.github.io/OASIS_official_website/team/>, sign in with the company account,
+   and add each team member's Google email and role in **Settings & team**.
 
-(Instead of editing `CONFIG`, the Sheet ID can go in **Project Settings → Script properties** as `SHEET_ID`,
-with `SITE_URL` alongside; a property wins over `CONFIG`.)
+Firebase needs nothing extra. The Google sign-in method is on in the `venguard-connected` project, and
+`oasisnextbd.github.io` is in its authorised domains (Authentication → Settings).
 
 ## Orders that arrive by WhatsApp or email
 
@@ -57,8 +66,8 @@ with a ready-made message. In **Orders & leads → Add order**, paste that messa
 **Fill in from message**: the form fills itself (English or Bangla), keeps the website's order number,
 and refuses the same order number twice. Orders taken by phone or at a fair go in the same way, by hand.
 
-Updating later: paste the new files, then **Deploy → Manage deployments → Edit → Version: New version**.
-The URL stays the same.
+Updating later: paste the new files, then **Deploy → Manage deployments → ✏ Edit → Version: New version →
+Deploy**. The URL stays the same. The Sheet ID is a script property, so pasting a newer `Dashboard.gs` keeps it.
 
 ## What the website reads from it
 

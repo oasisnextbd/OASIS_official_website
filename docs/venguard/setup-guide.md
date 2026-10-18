@@ -38,21 +38,24 @@ Total time: about 1–1.5 hours. Send Claude the three things marked **📨 SEND
 
 ## Part B · Team dashboard (10 min)
 
+Signed in as the company account the whole time.
+
 1. Go to https://script.google.com → **New project**. Rename it **VenGuard Dashboard**.
 2. Replace the code in `Code.gs` with
-   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/Dashboard.gs
-3. At the top, replace `PASTE-THE-SHEET-ID-HERE` with the Sheet ID from Part A step 10. **💾 Save**.
-4. Next to **Files** click **+ → HTML**, name it `Index` (no `.html`), and replace its content with
-   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/Index.html → **💾 Save**.
-5. **⚙️ Project Settings** (left) → tick **Show "appsscript.json" manifest file in editor**.
+   https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/Dashboard.gs → **💾 Save**.
+3. **⚙️ Project Settings** (left) → tick **Show "appsscript.json" manifest file in editor**.
    Back in the editor, open `appsscript.json` and replace it with
    https://github.com/oasisnextbd/OASIS_official_website/blob/main/backend/team-dashboard/appsscript.json → **💾 Save**.
+4. **⚙️ Project Settings → Script properties → Add script property**: `SHEET_ID` = the Sheet ID from Part A step 10.
+5. In the editor choose **getBootstrap** in the function list → **▶ Run** → **Review permissions** → company
+   account → Advanced → Go to … → **Allow**. The company account is now the first founder.
 6. **Deploy → New deployment → Web app**:
-   - Execute as: **User accessing the web app**
-   - Who has access: **Anyone with Google account**
-   → **Deploy** → **Authorize access** → company account → Advanced → Go to … → **Allow**.
-7. Open the **Web app URL** and bookmark it. You are the first founder.
-8. In **Settings & team**, add each team member's Google email and role.
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+   → **Deploy**, and copy the **Web app URL** (ends in `/exec`).
+7. Put that URL in `backend/team-dashboard/hosted.json` as `endpoint` and publish the website.
+8. Open https://oasisnextbd.github.io/OASIS_official_website/team/ → **Sign in with Google** → company
+   account. In **Settings & team**, add each team member's Google email and role. Only those accounts can sign in.
 
 ---
 

@@ -1,22 +1,30 @@
 /**
  * VenGuard team dashboard — server side (Google Apps Script web app).
  *
- * A separate Apps Script project from the website endpoint (Code.gs), deployed with
- *   Execute as: User accessing the web app   ·   Who has access: Anyone with a Google account
- * so every person signs in with their own Google account (2-step verification on) and can
- * only do what the shared "VenGuard Leads" Sheet already lets them do. On top of that,
- * the "Team" tab gives each person a role:
+ * The page people use is hosted with the website at  <site>/team/  (built from Index.html).
+ * It signs each person in with Google through Firebase Auth (they pick their account, so several
+ * Google accounts in one browser are fine) and POSTs every request here with a Firebase ID token.
+ * This script asks Google whether the token is valid, then checks the email against the Team tab.
+ *
+ * Deploy as a web app with
+ *   Execute as: Me (the company account)   ·   Who has access: Anyone
+ * so only this account touches the "VenGuard Leads" Sheet; team members never need the Sheet itself.
+ * Roles (Team tab):
  *   founder   – everything, incl. dealers, site settings and team
- *   support   – leads: change status, add notes, export
+ *   support   – leads: add orders, change status, add notes, export
  *   marketing – read-only view + export
- * Script property: SHEET_ID = the id of the VenGuard Leads spreadsheet (from its URL).
+ * Script properties (Project Settings), each overriding CONFIG below: SHEET_ID, SITE_URL.
  */
 
-/* ====== EDIT THIS LINE, then save: the ID of the "VenGuard Leads" Google Sheet ======
-   (the long part of the Sheet's address between /d/ and /edit) */
+/* The Sheet ID is best kept in Project Settings → Script properties as SHEET_ID, so pasting a newer
+   version of this file never loses it. It is the long part of the Sheet's address between /d/ and /edit. */
 var CONFIG = {
   SHEET_ID: 'PASTE-THE-SHEET-ID-HERE',
-  SITE_URL: 'https://oasisnextbd.github.io/OASIS_official_website/VENGuard'
+  SITE_URL: 'https://oasisnextbd.github.io/OASIS_official_website/VENGuard',
+  DASHBOARD_URL: 'https://oasisnextbd.github.io/OASIS_official_website/team/',
+  // Public web key of the venguard-connected Firebase project (the same one the app uses); it only
+  // lets this script ask Google whether a sign-in token is genuine.
+  FIREBASE_API_KEY: 'AIzaSyBhorrXE1tw7IH1CqUpvOYNgQaKpW4xOoA'
 };
 
 var TABS = {
@@ -48,19 +56,72 @@ var CAN = {
   team: ['founder']
 };
 
+/** Opening the script's own address points people to the dashboard page. */
 function doGet() {
-  return HtmlService.createTemplateFromFile('Index').evaluate()
+  var url = prop_('DASHBOARD_URL');
+  return HtmlService.createHtmlOutput(
+    '<p style="font:16px/1.5 system-ui,sans-serif;padding:24px">The VenGuard dashboard is at ' +
+    '<a href="' + url + '" target="_top">' + url + '</a>.</p>')
     .setTitle('VenGuard Dashboard')
-    // Browser-tab icon: the same VenGuard favicon as the website (Apps Script needs a PNG URL).
-    .setFaviconUrl('https://oasisnextbd.github.io/OASIS_official_website/VENGuard/assets/img/favicon-32.png')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
+    .setFaviconUrl('https://oasisnextbd.github.io/OASIS_official_website/VENGuard/assets/img/favicon-32.png');
+}
+
+/** Every dashboard request: { fn, args, token }. Answers { ok, result } or { ok: false, error }. */
+var API_ = {
+  getBootstrap: function () { return getBootstrap(); },
+  updateLead: function (id, ch) { return updateLead(id, ch); },
+  addLead: function (d) { return addLead(d); },
+  saveDealer: function (d) { return saveDealer(d); },
+  saveSettings: function (st) { return saveSettings(st); },
+  saveTeamMember: function (m) { return saveTeamMember(m); }
+};
+var CALLER_ = '';   // verified email of whoever made the current request
+function doPost(e) {
+  var out;
+  try {
+    var req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    if (!Object.prototype.hasOwnProperty.call(API_, req.fn)) throw new Error('Unknown request.');
+    CALLER_ = verifiedEmail_(req.token);
+    var args = Array.isArray(req.args) ? req.args : [];
+    out = { ok: true, result: API_[req.fn].apply(null, args) };
+  } catch (err) {
+    out = { ok: false, error: String((err && err.message) || err) };
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Asks Google (Identity Toolkit) whether the Firebase ID token is genuine; returns its email. */
+function verifiedEmail_(token) {
+  if (typeof token !== 'string' || token.length < 100 || token.length > 4096) throw new Error('Please sign in again.');
+  var cache = CacheService.getScriptCache();
+  var key = 'tok_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, token));
+  var hit = cache.get(key);
+  if (hit) return hit;
+  var res = UrlFetchApp.fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=' + encodeURIComponent(prop_('FIREBASE_API_KEY')), {
+    method: 'post', contentType: 'application/json', payload: JSON.stringify({ idToken: token }), muteHttpExceptions: true
+  });
+  var u = res.getResponseCode() === 200 ? (JSON.parse(res.getContentText()).users || [])[0] : null;
+  if (!u || !u.email) throw new Error('Your sign-in has expired. Please sign in again.');
+  if (!u.emailVerified) throw new Error('Please sign in with Google.');
+  var email = String(u.email).toLowerCase();
+  // Remember the answer for up to 5 minutes, never past the token's own expiry.
+  var exp = 0;
+  try {
+    var part = token.split('.')[1];
+    exp = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(part + '==='.slice((part.length + 3) % 4))).getDataAsString()).exp || 0;
+  } catch (x) {}
+  var ttl = Math.min(300, Math.floor(exp - Date.now() / 1000) - 30);
+  if (ttl > 0) cache.put(key, email, ttl);
+  return email;
 }
 
 /* ---------------- helpers ---------------- */
+function prop_(k) {
+  return PropertiesService.getScriptProperties().getProperty(k) || CONFIG[k] || '';
+}
 function ss_() {
-  var id = PropertiesService.getScriptProperties().getProperty('SHEET_ID') || CONFIG.SHEET_ID;
-  if (!id || /PASTE/.test(id)) throw new Error('Set CONFIG.SHEET_ID at the top of Dashboard.gs to the VenGuard Leads Sheet ID.');
+  var id = prop_('SHEET_ID');
+  if (!id || /PASTE/.test(id)) throw new Error('The dashboard is not connected to its Sheet yet: add SHEET_ID in Project Settings → Script properties.');
   return SpreadsheetApp.openById(id);
 }
 function tab_(name, cols) {
@@ -83,12 +144,15 @@ function rows_(sh) {
   });
 }
 function me_() {
-  var email = (Session.getActiveUser().getEmail() || '').toLowerCase();
+  // A web request carries a verified email; running a function from the editor uses the owner.
+  var owner = (Session.getEffectiveUser().getEmail() || '').toLowerCase();
+  var email = CALLER_ || owner;
   if (!email) throw new Error('Please sign in with your Google account.');
   var sh = tab_(TABS.team, TEAM_COLS);
   var team = rows_(sh);
   if (!team.length) {
-    // First visit: the first person in becomes the founder.
+    // Empty team list: only the account that owns this script can become the first founder.
+    if (email !== owner) throw new Error('The dashboard has no team yet. Open it first with ' + owner + '.');
     sh.appendRow([email, '', 'founder', true]);
     return { email: email, name: '', role: 'founder' };
   }
@@ -119,7 +183,7 @@ function getBootstrap() {
     settings: settings_(),
     team: user.role === 'founder' ? rows_(tab_(TABS.team, TEAM_COLS)) : [],
     activity: activity,
-    siteUrl: PropertiesService.getScriptProperties().getProperty('SITE_URL') || CONFIG.SITE_URL,
+    siteUrl: prop_('SITE_URL'),
     statuses: LEAD_STATUSES,
     generatedAt: new Date().toISOString()
   };
@@ -229,11 +293,7 @@ function saveTeamMember(m) {
   var r = rows_(sh).filter(function (x) { return String(x.email).toLowerCase() === email; })[0];
   var vals = [email, m.name || '', m.role, m.active !== false];
   if (r) sh.getRange(r._row, 1, 1, 4).setValues([vals]); else sh.appendRow(vals);
-  // Give them access to the Sheet itself (needed because the dashboard runs as them).
-  try {
-    if (m.active === false) { ss_().removeEditor(email); ss_().removeViewer(email); }
-    else if (m.role === 'marketing') ss_().addViewer(email); else ss_().addEditor(email);
-  } catch (e) { console.warn(e); }
+  // No Sheet sharing needed: the dashboard reads and writes the Sheet as the company account.
   log_(user, 'team_update', email, m.role + (m.active === false ? ' (removed)' : ''));
   return rows_(sh);
 }
