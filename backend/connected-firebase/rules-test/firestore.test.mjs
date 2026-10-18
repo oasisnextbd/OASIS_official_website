@@ -167,6 +167,14 @@ test("settings: website settings are public to read; company settings are not; f
   await assertSucceeds(setDoc(doc(founder(), "settings/company"), { legal_name: "Y" }));
 });
 
+test("subscriptions: founders keep the list, the team can read it", async () => {
+  await assertSucceeds(setDoc(doc(founder(), "subscriptions/s1"), { name: "Domain", cost: 1800, cycle: "yearly" }));
+  await assertSucceeds(getDoc(doc(support(), "subscriptions/s1")));
+  await assertFails(setDoc(doc(support(), "subscriptions/s2"), { name: "x" }));
+  await assertFails(updateDoc(doc(marketing(), "subscriptions/s1"), { cost: 1 }));
+  await assertFails(getDoc(doc(anon(), "subscriptions/s1")));
+});
+
 test("activity log: members add their own entries only, and nobody edits it", async () => {
   await assertSucceeds(setDoc(doc(support(), "activity/a1"), { user: "support@gmail.com", action: "x" }));
   await assertFails(setDoc(doc(support(), "activity/a2"), { user: OWNER, action: "x" }));

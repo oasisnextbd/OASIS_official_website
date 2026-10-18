@@ -172,6 +172,12 @@ service cloud.firestore {
       allow write: if hasRole(['founder']);
     }
 
+    // Paid services and their renewal dates; founders keep the list, everyone on the team can see it.
+    match /subscriptions/{id} {
+      allow read: if isTeam();
+      allow write: if hasRole(['founder']);
+    }
+
     match /activity/{id} {
       allow read: if isTeam();
       allow create: if isTeam() && request.resource.data.user == email();

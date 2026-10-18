@@ -91,3 +91,35 @@ export function channelOf(o) {
   if (s.includes("friend") || s.includes("word")) return "friend";
   return s ? "other" : "";
 }
+
+/* ---------- subscriptions & renewals ---------- */
+export const CYCLES = { monthly: "Monthly", quarterly: "Every 3 months", yearly: "Yearly", two_years: "Every 2 years", once: "One-time", free: "Free" };
+const MONTHS = { monthly: 1, quarterly: 3, yearly: 12, two_years: 24 };
+
+/** Days from `today` (YYYY-MM-DD) to `date`; negative when it has passed. */
+export function daysUntil(date, today = new Date().toISOString().slice(0, 10)) {
+  if (!date) return null;
+  return Math.round((Date.parse(date + "T00:00:00Z") - Date.parse(today + "T00:00:00Z")) / 864e5);
+}
+/** The renewal date after `date` for a billing cycle (31 Jan + 1 month = 28/29 Feb). */
+export function nextRenewal(date, cycle) {
+  const m = MONTHS[cycle];
+  if (!date || !m) return "";
+  const [y, mo, d] = date.split("-").map(Number);
+  const t = new Date(Date.UTC(y, mo - 1 + m, 1));
+  const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(d, last));
+  return t.toISOString().slice(0, 10);
+}
+/** What a subscription costs per month, in its own currency (0 for free or one-time). */
+export function monthlyCost(s) {
+  const m = MONTHS[s.cycle];
+  return m ? (Number(s.cost) || 0) / m : 0;
+}
+/** "overdue" | "soon" (within its reminder window, 30 days by default) | "ok" | "none" (no date). */
+export function renewalState(s, today) {
+  const n = daysUntil(s.renews_on, today);
+  if (n === null || s.cycle === "free" || s.cycle === "once") return "none";
+  if (n < 0) return "overdue";
+  return n <= (Number(s.remind_days) || 30) ? "soon" : "ok";
+}

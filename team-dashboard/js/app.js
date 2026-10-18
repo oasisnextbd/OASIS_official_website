@@ -11,9 +11,10 @@ import inventory from "./views/inventory.js";
 import promos from "./views/promos.js";
 import marketing from "./views/marketing.js";
 import dealers from "./views/dealers.js";
+import subscriptions from "./views/subscriptions.js";
 import settings from "./views/settings.js";
 
-const VIEWS = [overview, orders, invoices, inventory, promos, marketing, dealers, settings];
+const VIEWS = [overview, orders, invoices, inventory, promos, marketing, dealers, subscriptions, settings];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));
