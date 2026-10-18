@@ -1,6 +1,6 @@
 # VenGuard leads backend (Google Sheet + Apps Script)
 
-> The team dashboard web app is in [`../team-dashboard/`](../team-dashboard/README.md). Set this backend up first.
+> The team dashboard is in [`../team-dashboard/`](../team-dashboard/README.md); it works on the same Sheet, with or without this backend.
 
 This is the company-owned database for every pre-order and enquiry (brief 8.3). It costs nothing,
 takes about 20 minutes to set up, and the founders own it from day one.
