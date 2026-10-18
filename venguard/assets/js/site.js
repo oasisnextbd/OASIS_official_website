@@ -347,14 +347,11 @@
             location.href = payUrl;
             return;
           }
-          location.href = form.getAttribute("data-next") + "?order=" + encodeURIComponent(id) + "&payment=pending" + (res && res.handoff ? "&send=1" : "");
+          location.href = form.getAttribute("data-next") + "?order=" + encodeURIComponent(id) + "&payment=pending";
           return;
         }
         form.reset();
-        if (res && res.handoff) {
-          status.textContent = "";
-          status.appendChild(handOff(ss("vg_handoff") || "", type));
-        } else status.textContent = form.getAttribute("data-msg-ok");
+        status.textContent = form.getAttribute("data-msg-ok");
         status.classList.add("is-visible");
         btn.disabled = false; btn.textContent = label;
       }).catch(function () {
@@ -374,64 +371,18 @@
   function sendLead(data) {
     var url = CFG.endpoints && CFG.endpoints.leads;
     if (!url) {
-      // No order database yet (endpoints.leads empty): the visitor sends the details to the
-      // company on WhatsApp (or email) with one tap, so no order is lost. See handOff().
-      var msg = leadMessage(data);
-      ss("vg_handoff", msg);
-      return Promise.resolve({ ok: true, order_id: data.order_id, handoff: true });
+      // Demo mode: no backend configured yet. Keep a copy in this browser only.
+      try {
+        var all = JSON.parse(localStorage.getItem("vg_demo_leads") || "[]");
+        all.push(data); localStorage.setItem("vg_demo_leads", JSON.stringify(all));
+      } catch (e) {}
+      if (window.console) console.info("[VenGuard] Demo mode: set endpoints.leads in venguard/site.json to save leads.", data);
+      return Promise.resolve({ ok: true, order_id: data.order_id });
     }
     // text/plain avoids a CORS preflight, which Google Apps Script cannot answer.
     return fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) { if (!j || j.ok === false) throw new Error("rejected"); return j; });
-  }
-
-  /* ================= Hand-off while there is no order database =================
-     Builds a plain-text summary of the form and offers it on WhatsApp (prefilled) and by email.
-     Only used while endpoints.leads is empty; the visitor taps Send, so nothing is sent silently. */
-  var LABELS = {
-    en: { preorder: "VenGuard pre-order", enquiry: "VenGuard enquiry", dealer: "VenGuard dealer application", waitlist: "VenGuard waitlist", contact: "VenGuard message",
-      order_id: "Order", ref: "Reference", name: "Name", phone: "Phone", email: "Email", organisation: "Organisation", area: "Area", district: "District", package: "Package",
-      kitchen_type: "Kitchen", business_type: "Business", units: "Units", cylinder_brand: "Cylinder", dealer_code: "Dealer code", message: "Message" },
-    bn: { preorder: "VenGuard প্রি-অর্ডার", enquiry: "VenGuard অনুসন্ধান", dealer: "VenGuard ডিলার আবেদন", waitlist: "VenGuard অপেক্ষা তালিকা", contact: "VenGuard বার্তা",
-      order_id: "অর্ডার", ref: "রেফারেন্স", name: "নাম", phone: "ফোন", email: "ইমেইল", organisation: "প্রতিষ্ঠান", area: "এলাকা", district: "জেলা", package: "প্যাকেজ",
-      kitchen_type: "রান্নাঘর", business_type: "ব্যবসা", units: "ইউনিট", cylinder_brand: "সিলিন্ডার", dealer_code: "ডিলার কোড", message: "বার্তা" }
-  };
-  function leadMessage(d) {
-    var L = LABELS[document.documentElement.lang === "bn" ? "bn" : "en"];
-    var lines = [L[d.form_type] || L.contact];
-    ["order_id", "name", "phone", "email", "organisation", "area", "district", "package", "kitchen_type", "business_type", "units", "cylinder_brand", "dealer_code", "message"].forEach(function (k) {
-      if (d[k]) lines.push((k === "order_id" && d.form_type !== "preorder" ? L.ref : L[k]) + ": " + d[k]);
-    });
-    return lines.join("\n");
-  }
-  function handOff(msg, type) {
-    var bn = document.documentElement.lang === "bn";
-    var box = document.createElement("div");
-    box.className = "handoff";
-    var p = document.createElement("p");
-    p.innerHTML = bn ? "<strong>আর একটি ধাপ:</strong> নিচের বোতামে চাপ দিয়ে আপনার তথ্য WhatsApp-এ আমাদের পাঠান। বার্তাটি তৈরি করা আছে, শুধু Send চাপুন।"
-                     : "<strong>One more step:</strong> tap the button to send your details to us on WhatsApp. The message is ready, just press Send.";
-    box.appendChild(p);
-    var row = document.createElement("p"); row.className = "btn-row";
-    if (CFG.whatsapp_number) {
-      var wa = document.createElement("a");
-      wa.className = "btn btn--primary"; wa.target = "_blank"; wa.rel = "noopener";
-      wa.href = "https://wa.me/" + CFG.whatsapp_number + "?text=" + encodeURIComponent(msg);
-      wa.textContent = bn ? "WhatsApp-এ পাঠান" : "Send on WhatsApp";
-      wa.addEventListener("click", function () { track("lead_handoff", { form: type, channel: "whatsapp" }); });
-      row.appendChild(wa);
-    }
-    if (CFG.email) {
-      var em = document.createElement("a");
-      em.className = "btn btn--secondary";
-      em.href = "mailto:" + CFG.email + "?subject=" + encodeURIComponent(msg.split("\n")[0]) + "&body=" + encodeURIComponent(msg);
-      em.textContent = bn ? "ইমেইলে পাঠান" : "Send by email";
-      em.addEventListener("click", function () { track("lead_handoff", { form: type, channel: "email" }); });
-      row.appendChild(em);
-    }
-    box.appendChild(row);
-    return box;
   }
 
   /* ================= Thank-you page ================= */
@@ -442,12 +393,6 @@
     var state = q.get("payment") || "pending"; // paid | pending | failed (set by the payment callback)
     if (["paid", "pending", "failed"].indexOf(state) < 0) state = "pending";
     $$("[data-order-id]").forEach(function (el) { el.textContent = id; });
-    var slot = $("[data-handoff]", box), msg = ss("vg_handoff");
-    if (slot && q.get("send") === "1" && msg) {
-      slot.appendChild(handOff(msg, "preorder")); slot.hidden = false;
-      var h = $("h1[data-state='pending']", box);
-      if (h) h.textContent = document.documentElement.lang === "bn" ? "প্রায় শেষ! অর্ডারটি আমাদের পাঠান।" : "Almost done! Send us your order.";
-    }
     $$("[data-state]", box).forEach(function (el) { el.hidden = el.getAttribute("data-state") !== state; });
     if (state === "paid") track("deposit_paid", { value: CFG.deposit_bdt || 500, currency: "BDT" });
     else if (state === "failed") track("payment_fail", {});
