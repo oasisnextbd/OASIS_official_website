@@ -1,4 +1,5 @@
-/* Layout: navy rail on the left (top bar on phones), work surface on Mist, white panels.
+/* Layout: rail on the left (top bar on phones): white with the full-colour logo by day, navy with the
+   reversed logo at night, like the website's header. Work surface on Sand, white panels.
    Brand: VenGuard Brand Guidelines. Red/amber/green stay reserved for device safety states,
    so lead statuses are told apart by label + icon shape, not traffic-light colours. */
 :root {
@@ -14,9 +15,11 @@
   --ink: #0B2A4A;
   --muted: #4F6178;
   --line: #EDE3DA;
-  --rail: #0B2A4A;
-  --rail-ink: #A9BFD6;
-  --rail-active: #10345A;
+  --rail: #FFFFFF;
+  --rail-ink: #4F6178;
+  --rail-active: #FBF1EA;
+  --rail-strong: #0B2A4A;
+  --rail-line: #EDE3DA;
   --bar: #C94E0A;
   --bar-soft: #F3C6A8;
   --grid: #F1E8E0;
@@ -28,14 +31,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #07192C; --panel: #0E2742; --panel-2: #0B223A; --ink: #F3F6FA; --muted: #A9BFD6;
-    --line: #1B3A5C; --rail: #051426; --rail-ink: #A9BFD6; --rail-active: #10345A;
+    --line: #1B3A5C; --rail: #051426; --rail-ink: #A9BFD6; --rail-active: #10345A; --rail-strong: #FFFFFF; --rail-line: rgba(255,255,255,.14);
     --bar: #FF8A4C; --bar-soft: #6B3417; --grid: #16314F; --accent-ink: #FF8A4C; --navy: #F3F6FA;
     --shadow: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #07192C; --panel: #0E2742; --panel-2: #0B223A; --ink: #F3F6FA; --muted: #A9BFD6;
-  --line: #1B3A5C; --rail: #051426; --rail-ink: #A9BFD6; --rail-active: #10345A;
+  --line: #1B3A5C; --rail: #051426; --rail-ink: #A9BFD6; --rail-active: #10345A; --rail-strong: #FFFFFF; --rail-line: rgba(255,255,255,.14);
   --bar: #FF8A4C; --bar-soft: #6B3417; --grid: #16314F; --accent-ink: #FF8A4C; --navy: #F3F6FA;
   --shadow: none; color-scheme: dark;
 }
@@ -48,30 +51,39 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .mono { font-family: var(--mono); font-size: .9em; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
 
 .app { display: grid; grid-template-columns: 228px minmax(0, 1fr); min-height: 100%; }
-.rail { background: var(--rail); color: var(--rail-ink); padding: 20px 14px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; }
+.rail { background: var(--rail); color: var(--rail-ink); border-right: 1px solid var(--rail-line); padding: 20px 14px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: env(safe-area-inset-top, 0px); height: 100vh; }
 .brand { display: grid; gap: 6px; padding: 0 8px; }
-.brand-logo { display: block; height: 34px; width: auto; max-width: 100%; }
-.brand-symbol { display: none; width: 32px; height: 32px; }
+.brand-logo { height: 34px; width: auto; max-width: 100%; }
+.brand-symbol { width: 32px; height: 32px; }
+/* Logo follows the theme: full colour by day, reversed (white) at night; symbol only on phones (logo guide §03 D). */
+.brand img { display: none; }
+.brand .brand-logo.day { display: block; }
+:root[data-theme="dark"] .brand .brand-logo.day { display: none; }
+:root[data-theme="dark"] .brand .brand-logo.night { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brand .brand-logo.day { display: none; }
+  :root:not([data-theme="light"]) .brand .brand-logo.night { display: block; }
+}
 .brand small { display: block; font-weight: 600; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--rail-ink); }
-.theme-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin: 10px 8px 0; padding: 7px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); color: var(--rail-ink); font-size: .84rem; font-weight: 500; }
-.theme-btn:hover { color: #fff; border-color: rgba(255,255,255,.35); }
+.theme-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin: 10px 8px 0; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rail-line); color: var(--rail-ink); font-size: .84rem; font-weight: 500; }
+.theme-btn:hover { color: var(--rail-strong); border-color: var(--rail-ink); }
 .theme-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 .theme-btn svg { width: 16px; height: 16px; }
 .nav { display: flex; flex-direction: column; gap: 2px; }
 .nav button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: var(--rail-ink); font-weight: 500; }
 .nav button svg { width: 20px; height: 20px; flex: none; }
-.nav button:hover { background: var(--rail-active); color: #fff; }
-.nav button[aria-current="page"] { background: var(--rail-active); color: #fff; box-shadow: inset 3px 0 0 var(--orange); }
+.nav button:hover { background: var(--rail-active); color: var(--rail-strong); }
+.nav button[aria-current="page"] { background: var(--rail-active); color: var(--rail-strong); font-weight: 600; box-shadow: inset 3px 0 0 var(--orange); }
 .nav button:focus-visible { outline: 2px solid var(--orange); }
 .nav .count { margin-left: auto; font-size: .78rem; background: var(--orange); color: #fff; border-radius: 999px; padding: 0 7px; font-weight: 700; }
 .signed-out .nav, .signed-out .me, .signed-out #signOutBtn { display: none; }
 .signin { max-width: 460px; margin: 8vh auto 0; text-align: left; }
 .signin h1 { margin-bottom: 6px; }
 .signin .btn { margin-top: 14px; }
-.me { margin-top: auto; font-size: .82rem; padding: 10px 8px 0; border-top: 1px solid rgba(255,255,255,.1); }
-.me strong { color: #fff; display: block; font-weight: 600; overflow-wrap: anywhere; }
+.me { margin-top: auto; font-size: .82rem; padding: 10px 8px 0; border-top: 1px solid var(--rail-line); }
+.me strong { color: var(--rail-strong); display: block; font-weight: 600; overflow-wrap: anywhere; }
 .me .muted { color: var(--rail-ink); overflow-wrap: anywhere; }
-.role { display: inline-block; margin-top: 4px; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; border: 1px solid rgba(255,255,255,.25); padding: 1px 8px; border-radius: 999px; }
+.role { display: inline-block; margin-top: 4px; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--rail-line); padding: 1px 8px; border-radius: 999px; }
 
 main { min-width: 0; padding-block: 24px 48px; padding-inline: clamp(16px, 3vw, 36px); }
 .topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -187,8 +199,11 @@ label.fl textarea { min-height: 90px; resize: vertical; }
   .rail { position: sticky; top: env(safe-area-inset-top, 0px); height: auto; flex-direction: row; align-items: center; padding: 10px 12px; gap: 8px; z-index: 10; overflow-x: auto; }
   .brand small, .me { display: none; }
   .brand { padding: 0; flex: none; }
-  .brand-logo { display: none; }            /* small screens: symbol only (logo guide §03 D) */
-  .brand-symbol { display: block; }
+  .brand .brand-logo.day, .brand .brand-logo.night { display: none !important; }   /* phones: symbol only */
+  .brand .brand-symbol.day { display: block; }
+  :root[data-theme="dark"] .brand .brand-symbol.day { display: none; }
+  :root[data-theme="dark"] .brand .brand-symbol.night { display: block; }
+  .rail { border-right: 0; border-bottom: 1px solid var(--rail-line); }
   .theme-btn { margin: 0; padding: 8px; flex: none; }
   .theme-btn span { display: none; }
   .nav { flex-direction: row; gap: 2px; margin-left: auto; }
@@ -196,6 +211,10 @@ label.fl textarea { min-height: 90px; resize: vertical; }
   .nav button span.lbl { display: none; }
   .nav button[aria-current="page"] { box-shadow: inset 0 -3px 0 var(--orange); }
   main { padding-block: 16px 40px; }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brand .brand-symbol.day { display: none; }
+  :root:not([data-theme="light"]) .brand .brand-symbol.night { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
