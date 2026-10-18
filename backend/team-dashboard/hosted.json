@@ -1,6 +1,6 @@
 {
   "_readme": "Settings for the hosted dashboard page (<site>/team/), built by scripts/build.py. endpoint = the Apps Script web app URL (ends in /exec). firebase = the web config of the venguard-connected project, the same as the app's src/lib/firebase.ts.",
-  "endpoint": "",
+  "endpoint": "https://script.google.com/macros/s/AKfycbxgaNOELljplKweOu8b2Yb4pG9OpnTZuyKIkiFUFb34su2XWd3umfYlh2EVllEa02eN/exec",
   "firebase": {
     "apiKey": "AIzaSyBhorrXE1tw7IH1CqUpvOYNgQaKpW4xOoA",
     "authDomain": "venguard-connected.firebaseapp.com",
