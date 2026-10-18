@@ -51,7 +51,13 @@
   "@context": "https://schema.org",
   "@graph": [
     {"@type": "Organization", "@id": site.base_url ~ "/#org", "name": "VenGuard", "url": site.base_url ~ "/",
-     "logo": site.base_url ~ "/assets/img/logo/VenGuard_Symbol_FullColour_RGB_512.png"},
+     "alternateName": ["ভেনগার্ড", "VenGuard by OASIS", "VenGuard gas safety"],
+     "description": "Automatic LPG gas leak protection for Bangladeshi kitchens: a detector, an automatic cylinder valve and an exhaust fan relay.",
+     "logo": site.base_url ~ "/assets/img/logo/VenGuard_Symbol_FullColour_RGB_512.png",
+     "areaServed": {"@type": "Country", "name": "Bangladesh"},
+     "parentOrganization": {"@type": "Organization", "name": "OASIS", "url": site.base_url.rsplit("/VENGuard", 1)[0] ~ "/"},
+     "contactPoint": [{"@type": "ContactPoint", "contactType": "customer service", "telephone": site.contact.phone_tel, "email": site.contact.email, "availableLanguage": ["bn", "en"]}],
+     "sameAs": [site.contact.facebook, site.contact.instagram, site.contact.linkedin] | select | list},
     {"@type": "WebSite", "@id": site.base_url ~ "/#site", "name": "VenGuard", "url": site.base_url ~ "/",
      "inLanguage": ["bn-BD", "en"], "publisher": {"@id": site.base_url ~ "/#org"}}
   ] + (structured if structured is defined else [])

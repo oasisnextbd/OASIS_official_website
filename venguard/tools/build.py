@@ -18,7 +18,9 @@ Output:
     <out>/en/<page>/index.html   English
     <out>/sitemap.xml, <out>/assets/js/config.js (generated from site.json)
 """
+import datetime
 import json
+import subprocess
 import pathlib
 import shutil
 import sys
@@ -109,17 +111,28 @@ def render_all():
     return built
 
 
+def last_changed(slug):
+    """Date a page last changed (its template, or site.json for prices and contacts), for <lastmod>."""
+    paths = [str(SRC / "templates/pages" / PAGES[slug]), str(SRC / "site.json")]
+    try:
+        out = subprocess.run(["git", "log", "-1", "--format=%cs", "--", *paths], cwd=SRC, capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        out = ""
+    return out or datetime.date.today().isoformat()
+
+
 def write_sitemap():
     rows = []
     for slug in PAGES:
         if slug in NOINDEX:
             continue
+        changed = last_changed(slug)
         for lang in LANGS:
             loc = SITE["base_url"] + "/" + ("en/" if lang == "en" else "") + (slug + "/" if slug else "")
             bn = SITE["base_url"] + "/" + (slug + "/" if slug else "")
             en = SITE["base_url"] + "/en/" + (slug + "/" if slug else "")
             rows.append(
-                f"  <url><loc>{loc}</loc>"
+                f"  <url><loc>{loc}</loc><lastmod>{changed}</lastmod>"
                 f'<xhtml:link rel="alternate" hreflang="bn" href="{bn}"/>'
                 f'<xhtml:link rel="alternate" hreflang="en" href="{en}"/></url>'
             )
