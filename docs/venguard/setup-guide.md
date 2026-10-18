@@ -145,7 +145,7 @@ When the three 📨 items arrive, Claude:
 - rebuilds, tests and pushes. You merge one more pull request (Part 0 again).
 
 Then test together: place a pre-order on the website → a row appears in **VenGuard Leads**,
-an email arrives. Orders from WhatsApp go into the **team dashboard** with Orders → Add order.
+an email arrives. Website orders now go straight into the **team dashboard** (Firestore); orders by WhatsApp, phone or at a fair go in with Orders → Add order.
 
 ---
 

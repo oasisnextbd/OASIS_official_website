@@ -7,7 +7,7 @@ import { R } from "../redraw.js";
 import { newInvoice } from "./invoices.js";
 
 const F = { q: "", type: "", status: "", district: "", sort: "submitted_at", dir: -1 };
-export const sourceLabel = (o) => CHANNELS[channelOf(o)] || (o.referrer && o.referrer !== "direct" ? o.referrer : "Direct");
+export const sourceLabel = (o) => CHANNELS[channelOf(o)] || (o.source === "website" ? "Website" : o.referrer && o.referrer !== "direct" ? o.referrer : "Direct");
 
 function filtered() {
   const q = F.q.trim().toLowerCase().replace(/\s+/g, " ");

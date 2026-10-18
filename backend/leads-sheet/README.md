@@ -1,8 +1,8 @@
 # VenGuard leads backend (Google Sheet + Apps Script)
 
-> Not in use yet. The website currently hands orders to WhatsApp or email, and the team records them in the
-> team dashboard ([`../../team-dashboard/`](../../team-dashboard/README.md)), which keeps its data in Firestore.
-> This Sheet backend stays here for when the website should save orders by itself (with SSLCommerz payments).
+> Not in use. The website saves orders straight into the team dashboard's database (Firestore; see
+> [`../../team-dashboard/`](../../team-dashboard/README.md) and `venguard/site.json` → `firebase`).
+> This Sheet backend is kept as a reference for SSLCommerz payment handling, which needs a server.
 
 This is the company-owned database for every pre-order and enquiry (brief 8.3). It costs nothing,
 takes about 20 minutes to set up, and the founders own it from day one.

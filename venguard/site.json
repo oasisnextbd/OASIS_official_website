@@ -334,7 +334,7 @@
     "_social_note": "Footer shows Facebook, Instagram and LinkedIn icons; an empty link shows the icon greyed out as 'coming soon'."
   },
   "endpoints": {
-    "_readme": "leads: URL of the Google Apps Script web app (backend/leads-sheet/Code.gs) or any server that accepts the lead JSON. Empty = forms ask the visitor to send their details on WhatsApp / email (prefilled, one tap), so nothing is lost until the Sheet is connected.",
+    "_readme": "leads: URL of the optional Google Apps Script backend (backend/leads-sheet/Code.gs), used only when firebase.project_id is empty. Empty too = forms ask the visitor to send their details on WhatsApp / email (prefilled, one tap).",
     "leads": "",
     "payment_enabled": false
   },
@@ -420,8 +420,8 @@
     "bn": "বিপদের আগেই জীবন রক্ষা: নিরাপদ রান্নাঘর, টেকসই অবকাঠামো ও দায়িত্বশীল উৎপাদন, বাংলাদেশ থেকে বিশ্বে।",
     "_source": "VenGuard pitch deck"
   },
-  "promo_check": {
-    "_readme": "The pre-order form checks a promo code against the team dashboard's list (Firestore, project venguard-connected). Only an active code can be read, one at a time; these identifiers are public. Empty project_id = no check (the team checks the code on the invoice).",
+  "firebase": {
+    "_readme": "The website's forms save orders straight into the team dashboard's database (Firestore, project venguard-connected), check promo codes, and read the dashboard's website settings. firestore.rules lets a visitor only CREATE an order and read one active promo code or settings/website. These identifiers are public. Empty project_id = forms fall back to the WhatsApp / email hand-off.",
     "project_id": "venguard-connected",
     "api_key": "AIzaSyBhorrXE1tw7IH1CqUpvOYNgQaKpW4xOoA"
   }

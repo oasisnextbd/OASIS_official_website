@@ -24,8 +24,12 @@ nothing until they sign in.
 ## What it does
 
 - **Orders & leads**:
-  - Every pre-order and enquiry. **Add order** pastes the WhatsApp or email message from the website's
-    hand-off and fills the form by itself (English or Bangla).
+  - Every pre-order and enquiry. The website's forms save straight into this database (rules allow a
+    visitor to create one order and nothing else). A new website order shows a message, and the count
+    of new orders appears in the browser tab while the dashboard is open.
+  - If a customer's save fails (no internet), the website hands the order to WhatsApp or email instead.
+    **Add order** pastes that message, or one from a call or fair, and fills the form by itself
+    (English or Bangla).
   - Search, filter, change the status, add notes, export or import CSV (e.g. from the old Google Sheet).
 - **Invoices**:
   - **Create invoice** from an order (or **New invoice**), then print it or save it as a PDF (the Print
@@ -47,13 +51,14 @@ nothing until they sign in.
   - Percent or taka off, start and end dates, and a maximum number of uses.
   - A use is counted when an invoice with the code is issued, and given back if the invoice is cancelled.
   - The website's pre-order form checks a code is running before the order is sent (it can read one
-    active code, never the list).
+    active code, never the list). The code is saved on the order and filled in when you create its invoice.
 - **Marketing costs**:
   - What was spent per channel.
   - Orders, paying customers and invoiced sales per channel, cost per order, cost per paying customer,
     and taka back per taka spent.
 - **Dealers**: dealer list, QR sticker and link per dealer, applications from the website.
-- **Settings & team**: company details for invoices, authorised signatures, website switches, the team
+- **Settings & team**: company details for invoices, authorised signatures, website switches (pre-orders
+  on or off, price shown, notice bar: the website reads them within 10 minutes), the team
   list, and an activity log of every change.
 
 Everything updates live for everyone who is signed in. A copy is kept on each computer so the dashboard
