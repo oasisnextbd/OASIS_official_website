@@ -20,8 +20,9 @@ venguard/              VenGuard website source                  → published at
   tools/                 build.py (site), make_factsheet.py (PDF)
 backend/
   leads-sheet/           Google Apps Script: website orders → Google Sheet, email alerts
-  team-dashboard/        Google Apps Script: team dashboard on the same Sheet
-  connected-firebase/    Firebase: device API, remote close, alerts (+ DEVICE_API.md)
+  connected-firebase/    Firebase: device API, remote close, alerts (+ DEVICE_API.md);
+                         firestore.rules also guards the team dashboard
+team-dashboard/        company admin site (orders, invoices, stock, promo codes, costs) → /team/
 docs/                  project documents (brand rules, developer response, setup guide)
 archive/               retired files kept for reference (not published)
 scripts/               build.py (assembles _site/), check_links.py
@@ -63,6 +64,6 @@ One-time setting: **Settings → Pages → Build and deployment → Source: GitH
 | Firebase backend (for the VenGuard app, repo oasisnextbd/venguard-app) | [`backend/connected-firebase/README.md`](backend/connected-firebase/README.md) |
 | Firmware contract for devices | [`backend/connected-firebase/DEVICE_API.md`](backend/connected-firebase/DEVICE_API.md) |
 | Orders → Google Sheet | [`backend/leads-sheet/README.md`](backend/leads-sheet/README.md) |
-| Team dashboard | [`backend/team-dashboard/README.md`](backend/team-dashboard/README.md) |
+| Team dashboard (admin: orders, invoices, stock, promo codes, marketing costs) | [`team-dashboard/README.md`](team-dashboard/README.md) |
 | Answers to the founders' brief | [`docs/venguard/developer-response.md`](docs/venguard/developer-response.md) |
 | Switching on Google Sheet / Firebase | [`docs/venguard/setup-guide.md`](docs/venguard/setup-guide.md) |

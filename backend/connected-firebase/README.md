@@ -29,7 +29,7 @@ flowchart LR
 |---|---|
 | `functions/index.js` | Device sign-in, state/event/ack mirrors, `requestClose`, `claimDevice`, `saveContacts`, plan renewal (SSLCommerz) and its payment notification, presence sweep, SMS alerts |
 | `database.rules.json` | A device can only read its own commands and write its own state, events, acks and heartbeat. Nobody can write a command |
-| `firestore.rules` | Customers can read only their own homes, devices, events and commands, and can write none of them |
+| `firestore.rules` | Customers can read only their own homes, devices, events and commands, and can write none of them. Also guards the **team dashboard** (`team-dashboard/`): only team members signed in with Google, roles per collection, only the company account manages the team |
 | `DEVICE_API.md` | The contract for firmware |
 | `functions/tools/provision.js` | Factory tool: device secret to flash + sticker code |
 | `functions/test/` | Unit tests and an end-to-end emulator test that plays both the device and the customer |
@@ -94,5 +94,5 @@ device: open `/VENGuard/app/`.
 - **Push notifications** (Firebase Cloud Messaging + a service worker). SMS covers alerts for now.
 - **Inviting family members** to see a home in the app (today: the owner's account; alerts go by SMS to up to 3 people).
 - **Landlord onboarding** of many flats at once (today: support creates the building and pairs units).
-- **Team-side support view** (search a device, move it to another account): add to the team dashboard.
+- **Team-side support view** (search a device, move it to another account): add as a section of the team dashboard (`team-dashboard/js/views/`).
 - **Wi-Fi setup flow** for the hub (depends on the hardware choice in `DEVICE_API.md` §1).
