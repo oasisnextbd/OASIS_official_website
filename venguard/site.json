@@ -334,7 +334,7 @@
     "_social_note": "Footer shows Facebook, Instagram and LinkedIn icons; an empty link shows the icon greyed out as 'coming soon'."
   },
   "endpoints": {
-    "_readme": "leads: URL of the Google Apps Script web app (backend/leads-sheet/Code.gs) or any server that accepts the lead JSON. Empty = forms run in demo mode and keep a copy in the browser only.",
+    "_readme": "leads: URL of the Google Apps Script web app (backend/leads-sheet/Code.gs) or any server that accepts the lead JSON. Empty = forms ask the visitor to send their details on WhatsApp / email (prefilled, one tap), so nothing is lost until the Sheet is connected.",
     "leads": "",
     "payment_enabled": false
   },

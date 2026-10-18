@@ -138,6 +138,7 @@ def write_js_config():
         "endpoints": {k: v for k, v in SITE["endpoints"].items() if not k.startswith("_")},
         "tracking": {k: v for k, v in SITE["tracking"].items() if not k.startswith("_")},
         "whatsapp_number": SITE["contact"]["whatsapp_number"],
+        "email": SITE["contact"]["email"],
         "app_web_url": SITE["app"]["web_url"],
     }
     (OUT / "assets/js/config.js").write_text(
