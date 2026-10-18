@@ -92,6 +92,22 @@ test("orders: founders and support write, marketing only reads", async () => {
   await assertSucceeds(deleteDoc(doc(founder(), "orders/VG-261018-AAAA")));
 });
 
+test("website forms: a signed-out visitor can create a valid order and nothing else", async () => {
+  const web = { order_id: "VG-261018-WEB1", source: "website", form_type: "preorder", status: "payment_pending", submitted_at: "2026-10-18T10:00:00Z",
+    name: "Rahim", phone: "01712345678", area: "Mirpur", district: "Dhaka", package: "complete", units: "1", promo_code: "EID10", utm_source: "facebook" };
+  await assertSucceeds(setDoc(doc(anon(), "orders/VG-261018-WEB1"), web));
+  await assertFails(getDoc(doc(anon(), "orders/VG-261018-WEB1")));
+  await assertFails(updateDoc(doc(anon(), "orders/VG-261018-WEB1"), { status: "paid" }));
+  await assertFails(deleteDoc(doc(anon(), "orders/VG-261018-WEB1")));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-WEB2"), { ...web, order_id: "VG-261018-WEB2", status: "paid" }));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-WEB3"), { ...web, order_id: "VG-261018-WEB3", team_notes: "VIP" }));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-WEB4"), { ...web, order_id: "VG-261018-WEB4", phone: "12345" }));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-WEB5"), { ...web, order_id: "VG-261018-XXXX" }));
+  await assertFails(setDoc(doc(anon(), "orders/hello"), { ...web, order_id: "hello" }));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-WEB6"), { ...web, order_id: "VG-261018-WEB6", message: "x".repeat(2001) }));
+  await assertFails(setDoc(doc(anon(), "orders/VG-261018-AAAA"), { ...web, order_id: "VG-261018-AAAA" }));   // overwriting an order is an update
+});
+
 test("invoices: support issues and revises, only founders void, nobody deletes", async () => {
   await assertSucceeds(setDoc(doc(support(), "invoices/INV-2026-0002"), { status: "issued", total: 5 }));
   await assertFails(setDoc(doc(support(), "invoices/INV-2026-0003"), { status: "void" }));

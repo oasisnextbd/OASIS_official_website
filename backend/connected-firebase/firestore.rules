@@ -72,12 +72,38 @@ service cloud.firestore {
       allow delete: if false;   // remove = active: false, so the history stays readable
     }
 
-    match /orders/{id} {
-      allow read: if isTeam();
-      allow create, update: if hasRole(['founder', 'support'])
+    function teamOrder() {
+      return hasRole(['founder', 'support'])
         && request.resource.data.name is string && request.resource.data.name.size() <= 120
         && request.resource.data.phone is string && request.resource.data.phone.size() <= 20
         && request.resource.data.status in ['new', 'payment_pending', 'contacted', 'paid', 'refunded', 'installed', 'not_interested'];
+    }
+    // The website's forms (signed out) may CREATE a new order with exactly the form's fields,
+    // and never read, change or delete one. Keep the field list in step with venguard/assets/js/site.js.
+    function text(d, k, n) { return !(k in d) || (d[k] is string && d[k].size() <= n); }
+    function websiteOrder(id) {
+      let d = request.resource.data;
+      return id.matches('^VG-[0-9]{6}-[A-Z0-9]{4}$') && d.order_id == id && d.source == 'website'
+        && d.keys().hasOnly(['order_id', 'source', 'form_type', 'status', 'submitted_at', 'name', 'phone', 'email',
+             'organisation', 'area', 'district', 'kitchen_type', 'business_type', 'units', 'cylinder_brand', 'heard_from',
+             'dealer_code', 'promo_code', 'package', 'message', 'consent', 'lang', 'page_url', 'landing_page', 'referrer',
+             'qr_tag', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content'])
+        && d.form_type in ['preorder', 'enquiry', 'dealer', 'waitlist', 'contact']
+        && d.status in ['new', 'payment_pending']
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 120
+        && d.phone is string && d.phone.matches('^01[3-9][0-9]{8}$')
+        && d.submitted_at is string && d.submitted_at.size() <= 40
+        && text(d, 'message', 2000) && text(d, 'email', 120) && text(d, 'organisation', 160) && text(d, 'area', 120)
+        && text(d, 'district', 60) && text(d, 'units', 10) && text(d, 'promo_code', 24) && text(d, 'dealer_code', 24)
+        && text(d, 'page_url', 300) && text(d, 'landing_page', 300) && text(d, 'referrer', 300)
+        && text(d, 'kitchen_type', 40) && text(d, 'business_type', 40) && text(d, 'cylinder_brand', 40) && text(d, 'heard_from', 60)
+        && text(d, 'package', 40) && text(d, 'consent', 10) && text(d, 'lang', 5) && text(d, 'qr_tag', 60)
+        && text(d, 'utm_source', 100) && text(d, 'utm_medium', 100) && text(d, 'utm_campaign', 100) && text(d, 'utm_content', 100);
+    }
+    match /orders/{id} {
+      allow read: if isTeam();
+      allow create: if teamOrder() || websiteOrder(id);
+      allow update: if teamOrder();
       allow delete: if hasRole(['founder']);
     }
 

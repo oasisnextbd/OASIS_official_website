@@ -166,12 +166,20 @@
      Pre-order on/off, kit price and a notice bar. Cached for 10 minutes so
      pages stay fast; the static page is always complete without it. */
   function applyLiveSettings() {
-    var url = CFG.endpoints && CFG.endpoints.leads;
-    if (!url) return;
+    var url = CFG.endpoints && CFG.endpoints.leads, fb = CFG.firebase || {};
+    if (!fb.project_id && !url) return;
     var cached = null;
     try { cached = JSON.parse(sessionStorage.getItem("vg_settings") || "null"); } catch (e) {}
     if (cached && Date.now() - cached.t < 6e5) return apply(cached.s);
-    fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "settings=1").then(function (r) { return r.json(); }).then(function (s) {
+    // settings/website in the dashboard's database (or the older Apps Script endpoint).
+    var get = fb.project_id
+      ? fetch(fsUrl("settings/website")).then(function (r) { return r.ok ? r.json() : { fields: {} }; }).then(function (j) {
+          var o = { ok: true }, f = j.fields || {};
+          Object.keys(f).forEach(function (k) { o[k] = fsValue(f[k]); });
+          return o;
+        })
+      : fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "settings=1").then(function (r) { return r.json(); });
+    get.then(function (s) {
       try { sessionStorage.setItem("vg_settings", JSON.stringify({ t: Date.now(), s: s })); } catch (e) {}
       apply(s);
     }).catch(function () {});
@@ -241,21 +249,32 @@
     return true;
   }
 
+  /* ================= Firestore (team dashboard database) =================
+     Plain REST calls, no SDK. firestore.rules lets a visitor create an order and read one active
+     promo code or the public website settings, nothing else. */
+  function fsUrl(path, query) {
+    var fb = CFG.firebase || {};
+    return "https://firestore.googleapis.com/v1/projects/" + fb.project_id + "/databases/(default)/documents/" + path + "?" + (query ? query + "&" : "") + "key=" + encodeURIComponent(fb.api_key || "");
+  }
+  function fsValue(x) {
+    x = x || {};
+    return "stringValue" in x ? x.stringValue : "integerValue" in x ? Number(x.integerValue) : "doubleValue" in x ? x.doubleValue : "booleanValue" in x ? x.booleanValue : undefined;
+  }
+
   /* ================= Promo codes =================
      Checks one code against the team dashboard's list (Firestore lets anyone read an ACTIVE code by
      its exact name, never the list). The discount itself is applied by the team on the invoice. */
   var promoCache = {};
   function promoCode(v) { return toAscii(v).toUpperCase().replace(/[^A-Z0-9-]/g, ""); }
   function checkPromo(raw) {
-    var code = promoCode(raw), pc = CFG.promo_check || {};
+    var code = promoCode(raw), pc = CFG.firebase || {};
     if (!code || !pc.project_id) return Promise.resolve({ code: code, ok: true, unchecked: true });
     if (promoCache[code]) return promoCache[code];
-    var url = "https://firestore.googleapis.com/v1/projects/" + pc.project_id + "/databases/(default)/documents/promos/" + encodeURIComponent(code) + "?key=" + encodeURIComponent(pc.api_key || "");
-    promoCache[code] = fetch(url).then(function (r) {
+    promoCache[code] = fetch(fsUrl("promos/" + encodeURIComponent(code))).then(function (r) {
       if (!r.ok) return { code: code, ok: false, reason: "unknown" };   // 403 or 404: no active code by that name
       return r.json().then(function (j) {
         var f = j.fields || {};
-        var v = function (k) { var x = f[k] || {}; return "stringValue" in x ? x.stringValue : "integerValue" in x ? Number(x.integerValue) : "doubleValue" in x ? x.doubleValue : x.booleanValue; };
+        var v = function (k) { return fsValue(f[k]); };
         var today = new Date(Date.now() + 6 * 36e5).toISOString().slice(0, 10);   // Dhaka date
         if (v("active") !== true) return { code: code, ok: false, reason: "unknown" };
         if (v("starts") && today < v("starts")) return { code: code, ok: false, reason: "not_started" };
@@ -436,22 +455,41 @@
      or abandoned payment never loses it (brief Part 6). */
   function sendLead(data) {
     var url = CFG.endpoints && CFG.endpoints.leads;
-    if (!url) {
-      // No order database yet (endpoints.leads empty): the visitor sends the details to the
-      // company on WhatsApp (or email) with one tap, so no order is lost. See handOff().
-      var msg = leadMessage(data);
-      ss("vg_handoff", msg);
-      return Promise.resolve({ ok: true, order_id: data.order_id, handoff: true });
-    }
+    // Saved straight into the team dashboard. If that fails (no internet, database down), the visitor
+    // sends the details on WhatsApp or email instead, so no order is ever lost. See handOff().
+    if ((CFG.firebase || {}).project_id) return saveOrder(data).catch(function () { track("lead_save_fallback", { form: data.form_type }); return handoffResult(data); });
+    if (!url) return Promise.resolve(handoffResult(data));
     // text/plain avoids a CORS preflight, which Google Apps Script cannot answer.
     return fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (j) { if (!j || j.ok === false) throw new Error("rejected"); return j; });
   }
 
-  /* ================= Hand-off while there is no order database =================
+  // Exactly the fields firestore.rules (websiteOrder) accepts; everything is text.
+  var ORDER_FIELDS = ["order_id", "form_type", "status", "submitted_at", "name", "phone", "email", "organisation", "area", "district", "kitchen_type",
+    "business_type", "units", "cylinder_brand", "heard_from", "dealer_code", "promo_code", "package", "message", "consent", "lang", "page_url",
+    "landing_page", "referrer", "qr_tag", "utm_source", "utm_medium", "utm_campaign", "utm_content"];
+  function saveOrder(data, retried) {
+    var fields = { source: { stringValue: "website" } };
+    ORDER_FIELDS.forEach(function (k) {
+      if (data[k] != null && data[k] !== "") fields[k] = { stringValue: String(data[k]).slice(0, k === "message" ? 2000 : k === "name" ? 120 : 100) };
+    });
+    return fetch(fsUrl("orders", "documentId=" + encodeURIComponent(data.order_id)), {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields: fields })
+    }).then(function (r) {
+      if (r.status === 409 && !retried) { data.order_id = orderId(); return saveOrder(data, true); }   // same number already taken
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return { ok: true, order_id: data.order_id };
+    });
+  }
+  function handoffResult(data) {
+    ss("vg_handoff", leadMessage(data));
+    return { ok: true, order_id: data.order_id, handoff: true };
+  }
+
+  /* ================= Hand-off when the order can't be saved =================
      Builds a plain-text summary of the form and offers it on WhatsApp (prefilled) and by email.
-     Only used while endpoints.leads is empty; the visitor taps Send, so nothing is sent silently. */
+     Only used when saving fails (or no database is set); the visitor taps Send, so nothing is sent silently. */
   var LABELS = {
     en: { preorder: "VenGuard pre-order", enquiry: "VenGuard enquiry", dealer: "VenGuard dealer application", waitlist: "VenGuard waitlist", contact: "VenGuard message",
       order_id: "Order", ref: "Reference", name: "Name", phone: "Phone", email: "Email", organisation: "Organisation", area: "Area", district: "District", package: "Package",

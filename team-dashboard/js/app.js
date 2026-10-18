@@ -29,7 +29,7 @@ let view = VIEWS[0];
   }
   if (cfg.emulators && S.db.auth.testSignIn) window.__vgTestSignIn = S.db.auth.testSignIn;
   S.db.auth.onChange(async (u) => {
-    stop(); closeDrawer();
+    stop(); closeDrawer(); seenOrders = null;
     if (!u) return signInScreen();
     S.user = u;
     $("#main").innerHTML = '<p class="sub">Loading…</p>';
@@ -115,9 +115,22 @@ function schedule(col) {
       if (!S.me.owner && (!row || row.active !== true)) { stop(); return noAccess("You were removed from the VenGuard team list."); }
       if (row && !S.me.owner && row.role !== S.me.role) { S.me.role = row.role; renderMe(); }
     }
+    if (cols.has("orders")) announceNewOrders();
     renderNav();
     if (!view.deps || view.deps.some((d) => cols.has(d))) draw();
   });
+}
+/* A website order that arrives while the dashboard is open: a message, and the count in the tab title. */
+let seenOrders = null;
+function announceNewOrders() {
+  const ids = new Set(S.data.orders.map((o) => o.id));
+  if (seenOrders) {
+    const fresh = S.data.orders.filter((o) => !seenOrders.has(o.id) && o.source === "website");
+    if (fresh.length) toast(fresh.length === 1 ? `New order from the website: ${fresh[0].name}` : `${fresh.length} new orders from the website`);
+  }
+  seenOrders = ids;
+  const n = S.data.orders.filter((o) => o.status === "new" || o.status === "payment_pending").length;
+  document.title = (n ? `(${n}) ` : "") + "VenGuard Dashboard";
 }
 function draw() {
   if (!S.me) return;
