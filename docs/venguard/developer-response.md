@@ -53,7 +53,7 @@ product-in-pictures storytelling of hydra-bd.com, while keeping to the VenGuard 
 - Typical set-up: **1–3 weeks** for merchant approval (trade licence, TIN, bank account, website with
   refund/privacy/terms pages, which are already built). Ask SSLCommerz for the current set-up fee and
   per-transaction rate; aggregators in Bangladesh commonly charge about 2–3% per transaction.
-- The integration is already written (`backend/apps-script/Code.gs`). Payments are **verified with
+- The integration is already written (`backend/leads-sheet/Code.gs`). Payments are **verified with
   SSLCommerz's server** before an order is marked paid. We never touch card numbers or wallet PINs.
 - **Until the account is approved**, pre-orders still work: the lead is saved and the team collects
   the deposit by bKash/Nagad “Send Money/Payment” on a call. Nothing blocks launch.

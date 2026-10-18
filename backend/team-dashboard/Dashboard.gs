@@ -41,6 +41,8 @@ var CAN = {
 function doGet() {
   return HtmlService.createTemplateFromFile('Index').evaluate()
     .setTitle('VenGuard Dashboard')
+    // Browser-tab icon: the same VenGuard favicon as the website (Apps Script needs a PNG URL).
+    .setFaviconUrl('https://oasisnextbd.github.io/OASIS_official_website/VENGuard/assets/img/favicon-32.png')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }

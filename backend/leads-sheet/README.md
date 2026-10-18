@@ -1,6 +1,6 @@
 # VenGuard leads backend (Google Sheet + Apps Script)
 
-> The team dashboard web app is in [`dashboard/`](dashboard/README.md). Set this backend up first.
+> The team dashboard web app is in [`../team-dashboard/`](../team-dashboard/README.md). Set this backend up first.
 
 This is the company-owned database for every pre-order and enquiry (brief 8.3). It costs nothing,
 takes about 20 minutes to set up, and the founders own it from day one.
@@ -8,7 +8,7 @@ takes about 20 minutes to set up, and the founders own it from day one.
 ## Set up (once)
 
 1. Signed in as the **company** Google account, create a Google Sheet called `VenGuard Leads`.
-2. In the Sheet: **Extensions → Apps Script**. Delete the sample code and paste `apps-script/Code.gs`.
+2. In the Sheet: **Extensions → Apps Script**. Delete the sample code and paste `Code.gs` (this folder).
 3. **Project Settings → Script properties** → add:
    | Property | Example |
    |---|---|
@@ -26,7 +26,7 @@ takes about 20 minutes to set up, and the founders own it from day one.
 
 ## Daily use
 
-Use the **team dashboard** (`dashboard/`) for day-to-day work. The Sheet underneath stays usable directly:
+Use the **team dashboard** (`../team-dashboard/`) for day-to-day work. The Sheet underneath stays usable directly:
 
 - Every lead is one row. Use **Data → Create a filter** to search and filter.
 - Change the `status` dropdown: `contacted`, `paid`, `refunded`, `installed`, …

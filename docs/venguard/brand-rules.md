@@ -36,6 +36,10 @@ Usage Standards v1.0, October 2026). It replaces the earlier wave-and-bar logo.
   These SVGs are traced from the high-resolution artwork in the guide. **When the designer delivers the
   vector master (guide §14), replace the files and keep the names**; nothing else needs to change.
 - **On the device the logo is one colour only** (navy or white). Orange never sits next to a status light.
+- **Only the logo follows the guide.** The founders decided (October 2026) to keep the website and app
+  colours, fonts and themes below (VenGuard Orange `#E85D0C`, Guard Navy `#0B2A4A`, Inter and Noto Sans
+  Bengali). Do not switch them to the guide's Signal Orange / Guardian Navy or Poppins / Hind Siliguri;
+  those apply to the logo artwork itself, which keeps its own colours.
 
 ## Colour palette
 

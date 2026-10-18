@@ -22,9 +22,13 @@ backend, so it is free, there is no server to maintain, sign-in is the team's ow
 
 `Index.html` also opens on its own in a browser with example data, for demos and design changes.
 
+Look: the same palette, fonts (Inter, Noto Sans Bengali) and Day/Night themes as the customer website, with a
+Day/Night switch in the side rail, and the new VenGuard logo (reversed on the navy rail; symbol only on phones).
+The browser-tab icon is the website's favicon. Keep it in step with `venguard/assets/css/venguard.css`.
+
 ## Set up (once, about 10 minutes)
 
-Do the website backend first (`../README.md`), so the VenGuard Leads Sheet exists.
+Do the website backend first (`../leads-sheet/README.md`), so the VenGuard Leads Sheet exists.
 
 1. Copy the Sheet's ID: it is the long part of its URL between `/d/` and `/edit`.
 2. Go to <https://script.google.com> → **New project**. Name it `VenGuard Dashboard`.
@@ -45,6 +49,6 @@ The URL stays the same.
 ## What the website reads from it
 
 The **Settings** tab of the Sheet holds `preorder_open`, `kit_price_bdt`, `notice_bn`, `notice_en`.
-The website endpoint (`../apps-script/Code.gs`, `doGet?settings`) shares only these non-personal values;
+The website endpoint (`../leads-sheet/Code.gs`, `doGet?settings`) shares only these non-personal values;
 the site applies them within about 10 minutes (cached per visit). The endpoint also refuses new
 pre-orders while `preorder_open` is off.
