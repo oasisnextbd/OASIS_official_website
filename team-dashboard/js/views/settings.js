@@ -33,10 +33,10 @@ export default {
           ${w.notice_en || w.notice_bn ? `<dt>Notice bar</dt><dd>${esc(w.notice_en || "")}${w.notice_bn ? `<br><span lang="bn">${esc(w.notice_bn)}</span>` : ""}</dd>` : ""}</dl>
         <p class="sub">The website reads these within 10 minutes.</p></section>
       <section class="panel"><div class="panel-head"><h2>VenGuard app</h2>${founder ? `<button class="btn" data-act="set:app">${ICON.pen}Edit</button>` : ""}</div>
-        <dl class="dl"><dt>Notice</dt><dd>${a.notice_en || a.notice_bn ? `${esc(a.notice_en || "")}${a.notice_bn ? `<br><span lang="bn">${esc(a.notice_bn)}</span>` : ""}` : '<span class="muted">None</span>'}</dd>
+        <dl class="dl"><dt>Notice</dt><dd>${a.notice_en ? esc(a.notice_en) : '<span class="muted">None</span>'}</dd>
           <dt>Minimum version</dt><dd>${a.min_version ? esc(a.min_version) : '<span class="muted">None (no one is asked to reinstall)</span>'}</dd>
           <dt>Latest published</dt><dd id="appLatest" class="muted">Checking…</dd></dl>
-        <p class="sub">The Android app shows the notice under its top bar within 10 minutes (people can close it; a changed notice shows again). New screens reach installed apps by themselves the next time they open. Set a minimum version only when a release needs the new APK; older apps then show “Please install the new version” with the download link. The app keeps working either way.</p></section></div>
+        <p class="sub">The Android app shows the notice (in English, in both app languages) under its top bar within 10 minutes (people can close it; a changed notice shows again). New screens reach installed apps by themselves the next time they open. Set a minimum version only when a release needs the new APK; older apps then show “Please install the new version” with the download link. The app keeps working either way.</p></section></div>
       <div class="grid2">${teamPanel()}</div>
       <section class="panel log"><h2>Activity</h2>${S.data.activity.length ? `<ul>${S.data.activity.slice(0, 120).map((a) => `<li><span class="num muted">${when(a.at)}</span><span><strong>${esc(a.user)}</strong> ${esc(String(a.action).replace(/_/g, " "))} ${a.ref ? `<span class="mono">${esc(a.ref)}</span> ` : ""}<span class="muted">${esc(a.detail)}</span></span></li>`).join("")}</ul>` : '<p class="muted">No changes yet.</p>'}</section>`;
   },
@@ -127,13 +127,14 @@ async function showLatestApp() {
 on.act("set:app", () => {
   const a = S.data.settings.app || {};
   drawer("VenGuard app", `<form data-form="set:app" class="stack">
-    ${field("notice_bn", "Notice, Bangla", a.notice_bn, 'lang="bn" maxlength="300"')}${field("notice_en", "Notice, English", a.notice_en, 'maxlength="300" placeholder="e.g. Founders\u2019 test build: report anything odd on WhatsApp"')}
+    ${field("notice_en", "Notice (English)", a.notice_en, 'maxlength="300" placeholder="e.g. Service notice: SMS alerts are delayed today"')}
     ${field("min_version", "Minimum app version", a.min_version, 'inputmode="decimal" pattern="\\d+(\\.\\d+)*" placeholder="Leave empty, or e.g. 0.4.0"')}
-    <p class="sub">Leave both notice boxes empty to remove the notice.</p>
+    <p class="sub">Leave the notice empty to remove it.</p>
     <div><button class="btn primary" type="submit">Save</button></div></form>`);
 });
 on.form("set:app", (f, d) => busy(f, async () => {
   d.min_version = String(d.min_version || "").trim();
+  d.notice_bn = "";   // notices are English only; clears any Bangla text saved earlier
   if (d.min_version && !/^\d+(\.\d+)*$/.test(d.min_version)) { toast("Minimum version looks like 0.4.0"); return; }
   try { await saveSettings("app", d); toast("App settings saved"); closeDrawer(); } catch (e) { toast(e.message || String(e)); }
 }));

@@ -65,7 +65,7 @@ nothing until they sign in.
 - **Settings & team**: company details for invoices, authorised signatures, website switches (pre-orders
   on or off, price shown, notice bar: the website reads them within 10 minutes), the team
   list, and an activity log of every change.
-- **VenGuard app** (under Settings): a notice shown at the top of the Android app (Bangla and English),
+- **VenGuard app** (under Settings): a notice shown at the top of the Android app (English only, in both app languages),
   and a minimum app version. New screens reach installed apps by themselves (in-app updates, see the
   venguard-app README); set a minimum version only when a release needs the new APK, and older apps
   then ask people to install it. Shows the latest published app version. Stored in `settings/app`,
