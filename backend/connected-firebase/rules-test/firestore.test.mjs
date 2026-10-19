@@ -204,3 +204,21 @@ test("emulators: the company account manages them; a founder reads only their ow
   await assertFails(deleteDoc(doc(founder(), "emulators/VG-EMU01")));
   await assertSucceeds(deleteDoc(doc(owner(), "emulators/VG-EMU01")));
 });
+
+test("ratings: a signed-out visitor can give and change stars, never read them; the team reads; founders delete", async () => {
+  const id = "ratings/R-abcdefghij0123456789";
+  const r = { source: "website", website: 5, created_at: "2026-10-19T10:00:00Z", updated_at: "2026-10-19T10:00:00Z", lang: "en", page: "/VENGuard/" };
+  await assertSucceeds(setDoc(doc(anon(), id), r));
+  await assertSucceeds(setDoc(doc(anon(), id), { ...r, product: 4, service: 3, updated_at: "2026-10-19T10:05:00Z" }));
+  await assertFails(setDoc(doc(anon(), id), { ...r, created_at: "2020-01-01T00:00:00Z" }));          // created_at is fixed
+  await assertFails(getDoc(doc(anon(), id)));
+  await assertFails(getDocs(collection(anon(), "ratings")));
+  const bad = [{ ...r, website: 6 }, { ...r, website: 0 }, { ...r, website: "5" }, { ...r, website: 4.5 }, { ...r, name: "Rahim" },
+    { ...r, source: "team" }, { ...r, lang: "fr" }, { source: "website", created_at: r.created_at, updated_at: r.updated_at, lang: "en" }];
+  for (const b of bad) await assertFails(setDoc(doc(anon(), "ratings/R-zzzzzzzzzz0123456789"), b));
+  await assertFails(setDoc(doc(anon(), "ratings/anything"), r));                                     // ID shape
+  for (const db of [founder(), support(), marketing()]) await assertSucceeds(getDocs(collection(db, "ratings")));
+  for (const db of [stranger(), gone()]) await assertFails(getDocs(collection(db, "ratings")));
+  await assertFails(deleteDoc(doc(support(), id)));
+  await assertSucceeds(deleteDoc(doc(founder(), id)));
+});

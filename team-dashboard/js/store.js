@@ -9,7 +9,7 @@ export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], settings: { company: {}, website: {}, app: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], ratings: [], settings: { company: {}, website: {}, app: {} },
   },
   loaded: new Set(),
 };
@@ -24,6 +24,7 @@ export const ROLES = { founder: "Founder", support: "Support", marketing: "Marke
 const CAN = {
   orders: ["founder", "support"], invoices: ["founder", "support"], void: ["founder"], stock: ["founder", "support"],
   items: ["founder"], promos: ["founder", "marketing"], marketing: ["founder", "marketing"], dealers: ["founder"], settings: ["founder"], subscriptions: ["founder"],
+  ratings: ["founder", "support", "marketing"], "ratings:delete": ["founder"],
 };
 export function can(what) {
   if (!S.me) return false;
@@ -50,6 +51,7 @@ const WATCH = {
   orders: { orderBy: "submitted_at", desc: true }, invoices: { orderBy: "issued_at", desc: true },
   inventory: {}, products: {}, promos: {}, marketing: { orderBy: "date", desc: true }, dealers: {}, team: {}, signatories: {},
   activity: { orderBy: "at", desc: true, limit: 200 }, stockMoves: { orderBy: "at", desc: true, limit: 300 }, subscriptions: {},
+  ratings: { orderBy: "updated_at", desc: true, limit: 2000 },
 };
 let stops = [];
 export function start(onChange, onError) {
@@ -339,6 +341,8 @@ export async function saveSpend(id, e) {
   return id;
 }
 export async function deleteSpend(id) { await S.db.del("marketing", id); log("spend_delete", id, ""); }
+/** Website star ratings: founders remove spam (firestore.rules allows nobody else). */
+export async function deleteRating(id) { await S.db.del("ratings", id); log("rating_delete", id, ""); }
 
 /* ---------- dealers ---------- */
 export async function saveDealer(d) {

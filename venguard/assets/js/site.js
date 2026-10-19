@@ -161,6 +161,7 @@
     $$("form[data-vg-form]").forEach(setupForm);
     setupOrderSummary();
     setupThankYou();
+    setupRatings();
   });
 
   /* ================= Live settings from the team dashboard =================
@@ -260,6 +261,61 @@
   function fsValue(x) {
     x = x || {};
     return "stringValue" in x ? x.stringValue : "integerValue" in x ? Number(x.integerValue) : "doubleValue" in x ? x.doubleValue : "booleanValue" in x ? x.booleanValue : undefined;
+  }
+
+  /* ================= Star ratings (footer) =================
+     Up to three 1–5 star ratings (the device, the website, the service), saved on each tap: no form,
+     no name or phone. One ratings/<id> document per browser: the random id is kept in localStorage,
+     so a visitor can change their stars and the team dashboard (→ Ratings) counts them once.
+     firestore.rules lets a visitor write that document (exactly these fields) but never read it. */
+  var RATE_KEYS = ["product", "website", "service"];
+  function setupRatings() {
+    var box = $("[data-rate]"), fb = CFG.firebase || {};
+    if (!box) return;
+    if (!fb.project_id) { box.hidden = true; return; }
+    var mine = {}, msg = $(".rate-msg", box);
+    try { mine = JSON.parse(ls("vg_rating") || "{}") || {}; } catch (e) {}
+    function paint() {
+      $$("[data-rate-key]", box).forEach(function (g) {
+        var v = mine[g.getAttribute("data-rate-key")] || 0;
+        $$("[data-star]", g).forEach(function (b) {
+          var n = Number(b.getAttribute("data-star"));
+          b.classList.toggle("is-on", n <= v);
+          b.setAttribute("aria-pressed", n === v ? "true" : "false");
+        });
+      });
+    }
+    function save() {
+      var now = new Date().toISOString();
+      if (!mine.id) { mine.id = "R-" + randomId(20); mine.created_at = now; }
+      var f = { source: { stringValue: "website" }, created_at: { stringValue: mine.created_at }, updated_at: { stringValue: now },
+        lang: { stringValue: document.documentElement.lang === "bn" ? "bn" : "en" }, page: { stringValue: location.pathname.slice(0, 120) } };
+      RATE_KEYS.forEach(function (k) { if (mine[k]) f[k] = { integerValue: String(mine[k]) }; });
+      ls("vg_rating", JSON.stringify(mine));
+      // PATCH without a field mask writes the whole document: creates it the first time, replaces it after.
+      return fetch(fsUrl("ratings/" + mine.id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields: f }) })
+        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); });
+    }
+    paint();
+    box.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-star]");
+      if (!b) return;
+      var key = b.parentNode.getAttribute("data-rate-key"), n = Number(b.getAttribute("data-star"));
+      if (RATE_KEYS.indexOf(key) < 0) return;
+      mine[key] = n;
+      paint();
+      msg.textContent = "";
+      save().then(function () {
+        msg.textContent = box.getAttribute("data-msg-ok");
+        track("rating_given", { rating_for: key, stars: n });
+      }).catch(function () { msg.textContent = box.getAttribute("data-msg-fail"); });
+    });
+  }
+  function randomId(n) {
+    var abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", out = "", buf = new Uint8Array(n);
+    (window.crypto || window.msCrypto).getRandomValues(buf);
+    for (var i = 0; i < n; i++) out += abc[buf[i] % abc.length];
+    return out;
   }
 
   /* ================= Promo codes =================

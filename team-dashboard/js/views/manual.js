@@ -63,6 +63,15 @@ const SECTIONS = [
     ],
     pics: [[M + "12-marketing.webp", "Marketing costs"]] },
 
+  { id: "ratings", title: "Ratings from the website", who: ["founder", "support", "marketing"],
+    steps: [
+      "Visitors rate the VenGuard device, the website and our service and support with 1 to 5 stars at the bottom of every website page. One tap saves it; there is no form, name or phone number. They arrive in <b>Ratings</b> straight away.",
+      "Choose the period (picture 1, 1). The boxes (2) show how many people rated, and the average for each of the three with how many people gave it. Below them, how the stars are spread and which pages people rated from.",
+      "With fewer than ten ratings the page says so: read each rating (picture 2, 1) rather than the average. A visitor who changes their stars updates their own row; they are not counted twice.",
+      "Founders can <b>Delete</b> obvious spam (picture 2, 2). It cannot be undone, so keep honest low ratings: they show what to improve.",
+    ],
+    pics: [[M + "21-ratings.webp", "Ratings: period and the averages"], [M + "22-ratings-list.webp", "Each rating, with Delete for founders"]] },
+
   { id: "dealers", title: "Dealers", who: ["founder"],
     steps: [
       "<b>Add dealer</b> (1), or approve an application from the website further down.",

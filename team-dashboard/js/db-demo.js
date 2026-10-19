@@ -120,6 +120,15 @@ function sample() {
       s2: { name: "Example domain (made up)", category: "Domain", cycle: "yearly", cost: 1800, currency: "BDT", renews_on: day(-12), auto_renew: false, paid_by: "Founder", remind_days: 30, active: true, history: [] },
       s3: { name: "Example design tool (made up)", category: "Design & office", cycle: "monthly", cost: 12, currency: "USD", renews_on: day(-25), auto_renew: true, remind_days: 7, active: true, history: [] },
     },
+    ratings: Object.fromEntries(Array.from({ length: 23 }, (_, i) => {
+      const r = { source: "website", updated_at: iso(rnd() * 40), lang: rnd() < 0.6 ? "bn" : "en",
+        page: pick(["/VENGuard/", "/VENGuard/en/", "/VENGuard/how-it-works/", "/VENGuard/en/pre-order/", "/VENGuard/faq/"]) };
+      r.created_at = r.updated_at;
+      r.website = pick([5, 5, 4, 4, 4, 3, 2]);
+      if (rnd() < 0.35) r.product = pick([5, 5, 4, 4, 3]);
+      if (rnd() < 0.3) r.service = pick([5, 4, 4, 3, 1]);
+      return ["R-demo" + String(i).padStart(14, "0"), r];
+    })),
     signatories: {}, invoices: {}, stockMoves: {}, counters: {},
     activity: { a1: { at: iso(0.1), user: "support@example.com", action: "order_update", ref: Object.keys(orders)[0], detail: "status → contacted" } },
   };

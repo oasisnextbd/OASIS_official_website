@@ -12,12 +12,13 @@ import promos from "./views/promos.js";
 import marketing from "./views/marketing.js";
 import dealers from "./views/dealers.js";
 import subscriptions from "./views/subscriptions.js";
+import ratings from "./views/ratings.js";
 import settings from "./views/settings.js";
 import emulators from "./views/emulators.js";
 import manual from "./views/manual.js";
 import { stopAllEmulators } from "./emulator.js";
 
-const VIEWS = [overview, orders, invoices, inventory, promos, marketing, dealers, subscriptions, emulators, settings, manual];
+const VIEWS = [overview, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));
