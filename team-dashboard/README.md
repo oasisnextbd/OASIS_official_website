@@ -80,6 +80,10 @@ nothing until they sign in.
     and `devices/<id>/meta` in the Realtime Database (allowed for the company account and emulator IDs
     only, see `database.rules.json`) and keeps the sign-in in Firestore `emulators/<id>`, readable only by
     the company account and the assigned founder. **Remove** deletes all three.
+- **Manual**: how to use the dashboard, step by step with pictures (`manual/*.webp`, numbered rings
+  on what to press). Each person sees the edition for their role (company account, founder, support,
+  marketing); founders also get emulators, testing the app and the app settings. The customer guide to
+  the app is on the website (`/app-guide/`). How the pictures are made: `docs/venguard/manual-pictures/`.
 - **VenGuard app** (under Settings): a notice shown at the top of the Android app (English only, in both app languages),
   and a minimum app version. New screens reach installed apps by themselves (in-app updates, see the
   venguard-app README); set a minimum version only when a release needs the new APK, and older apps
