@@ -91,7 +91,7 @@ const SECTIONS = [
       "An emulator acts exactly like a real VenGuard (detector, valve, relay) through the same database and rules. Each founder has one; only you and the company account see it.",
       "Company account: <b>Create emulator</b> (picture 1, 1), then choose the founder in <b>Assigned to</b> (3).",
       "Your card shows its <b>device ID</b> and <b>sticker code</b> (2): add it in the app with those (see Testing the app).",
-      "Press <b>Start</b> (4). Keep this page open while you test; close it and the app shows the device offline within 3 minutes.",
+      "Press <b>Start</b> (4). Keep this page open while you test; <b>Stop</b> it or close the page and the app shows the device offline within seconds.",
       "<b>Start a leak</b> (5) and watch your phone: the app turns red, then shows Gas is mitigated. The card shows gas, valve, fan, alarm and battery (picture 2, 1), the state (2) and a log of everything it did, including \"Close the gas now\" from the app (3).",
       "Also: <b>Lift the reset lever</b> after a leak, <b>Low battery</b>, <b>Test button</b>, <b>Go offline</b>.",
     ],

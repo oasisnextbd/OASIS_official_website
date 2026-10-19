@@ -78,8 +78,10 @@ nothing until they sign in.
     Buttons: start a leak, turn the regulator off (detector + relay kit), lift the reset lever, low
     battery, test button, go offline.
   - It runs while that dashboard page is open (`js/emulator.js`; device model `js/emusim.js`, a copy of
-    the app's `sim.ts`, tested in `tests/emusim.test.mjs`). Close the page and the app shows it offline
-    within 3 minutes.
+    the app's `sim.ts`, tested in `tests/emusim.test.mjs`). Heartbeat every 20 s. **Stop** or closing the
+    page removes the heartbeat (a server-side clean-up on disconnect), so the app shows it offline within
+    seconds; **Go offline** sends nothing, like a power cut, and the app shows it offline within about a
+    minute.
   - Creating one makes a device sign-in (Firebase Auth, email/password), writes `deviceAuth`, `claimCodes`
     and `devices/<id>/meta` in the Realtime Database (allowed for the company account and emulator IDs
     only, see `database.rules.json`) and keeps the sign-in in Firestore `emulators/<id>`, readable only by
