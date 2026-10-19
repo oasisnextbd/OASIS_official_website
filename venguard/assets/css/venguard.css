@@ -958,9 +958,10 @@ html[lang="bn"] .ag-toc ol, html[lang="bn"] .ag-text ol { list-style-type: benga
 .rate h2 { margin-bottom: 6px; }
 .rate-head p { margin: 0; max-width: 34em; }
 .rate-rows { display: grid; gap: 4px; }
-.rate-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 20px; }
+.rate-row { display: grid; gap: 0 20px; }
+@media (min-width: 520px) { .rate-row { grid-template-columns: 13em auto; align-items: center; } }
 .rate-row > span:first-child { color: var(--text); font-weight: 600; }
-.stars { display: inline-flex; }
+.stars { display: inline-flex; margin-left: -8px; }
 .stars button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--text-muted); cursor: pointer; }
 .stars button svg { width: 28px; height: 28px; }
 .stars button.is-on { color: var(--orange); }
