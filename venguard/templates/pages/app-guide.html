@@ -15,7 +15,11 @@
   <div class="wrap">
     <div class="notice notice--info ag-when">
       <p><strong>{{ t("প্রি-অর্ডার করেছেন? এখনই অ্যাপ লাগবে না।", "Pre-ordered? You do not need the app yet.") }}</strong> {{ t("অ্যাপ কাজ করে বসানো VenGuard-এর সাথে। ডেলিভারি ও বসানোর দিন আমরা অ্যাপ ইনস্টল ও আপনার ডিভাইস যোগ করতে সাহায্য করব। ততদিন এই ট্যুরে দেখে নিন কী পাবেন।", "The app works with an installed VenGuard. On delivery and installation day we help you install it and add your device. Until then, this tour shows what you will get.") }}</p>
-      <p>{{ t("VenGuard বসানো হয়ে গেছে?", "Already have your VenGuard installed?") }} <a href="#install">{{ t("অ্যাপ ইনস্টল করুন", "Install the app") }}</a> {{ t("অথবা", "or") }} <a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="app_tour">{{ t("ওয়েবে সাইন ইন করুন", "sign in on the web") }}</a>.</p>
+      <p><strong>{{ t("VenGuard বসানো হয়ে গেছে?", "Already have your VenGuard installed?") }}</strong></p>
+      <div class="btn-row">
+        <a class="btn btn--dark" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="app_tour">{{ icon("download") }}{{ t("অ্যান্ড্রয়েড অ্যাপ ডাউনলোড", "Download for Android") }}</a>
+        <a class="btn btn--secondary" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="app_tour">{{ t("অ্যাপ খুলুন", "Open the app") }}</a>
+      </div>
     </div>
     <nav class="ag-toc card card--flat" aria-label="{{ t('এই পাতায়', 'On this page') }}">
       <ol>
