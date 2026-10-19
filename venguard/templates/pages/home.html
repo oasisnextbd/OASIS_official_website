@@ -21,7 +21,7 @@
   <div class="wrap">
     <div class="app-strip">
       <span class="app-strip-icon">{{ icon("smartphone") }}</span>
-      <p><strong>{{ t("VenGuard অ্যাপ", "The VenGuard app") }}</strong> · {{ t("লাইভ গ্যাসের মাত্রা, সতর্কবার্তা ও দূর থেকে গ্যাস বন্ধ। ওয়েব অ্যাপে ডেমো দেখুন, অথবা অ্যান্ড্রয়েড অ্যাপ নিয়ে আপনার VenGuard যোগ করুন।", "Live gas level, alerts and remote shut-off. Try the demo in the web app, or get the Android app and add your VenGuard.") }} <a href="{{ url('app-guide') }}">{{ t("কীভাবে ব্যবহার করবেন", "How to use it") }}</a></p>
+      <p><strong>{{ t("VenGuard অ্যাপ", "The VenGuard app") }}</strong> · {{ t("লাইভ গ্যাসের মাত্রা, সতর্কবার্তা ও দূর থেকে গ্যাস বন্ধ। অ্যান্ড্রয়েড অ্যাপ নিন বা ওয়েব অ্যাপে সাইন ইন করুন, তারপর স্টিকারের আইডি ও কোড দিয়ে আপনার VenGuard যোগ করুন।", "Live gas level, alerts and remote shut-off. Get the Android app or sign in on the web, then add your VenGuard with the ID and code on its sticker.") }} <a href="{{ url('app-guide') }}">{{ t("কীভাবে ব্যবহার করবেন", "How to use it") }}</a></p>
       <div class="btn-row">
         <a class="btn btn--secondary btn--sm" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="hero">{{ t("অ্যাপ খুলুন", "Open the app") }}</a>
         <a class="btn btn--dark btn--sm" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="hero">{{ icon("download") }}{{ t("অ্যান্ড্রয়েড অ্যাপ নিন", "Get the Android app") }}</a>
@@ -121,7 +121,7 @@
     <div class="hx-connected">
       <span class="hx-connected-icon">{{ icon("smartphone") }}</span>
       <p><strong>{{ t("কানেক্টেড প্ল্যান · ঐচ্ছিক", "Connected plan · optional") }}</strong> {{ t("ফোনে লাইভ অবস্থা, পরিবারকে সতর্কতা ও দূর থেকে গ্যাস বন্ধ: বছরে ৳" ~ num(p.connected_plan_bdt_per_year) ~ "। মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Live status on your phone, family alerts and remote shut-off: BDT " ~ num(p.connected_plan_bdt_per_year) ~ " a year. Core safety is never locked behind a subscription.") }}</p>
-      <a class="arrow-link" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="connected_plan">{{ t("অ্যাপ ডেমো", "Try the app") }} {{ icon("arrow", "", 18) }}</a>
+      <a class="arrow-link" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="connected_plan">{{ t("অ্যাপটি খুলুন", "Open the app") }} {{ icon("arrow", "", 18) }}</a>
     </div>
   </div>
 </section>

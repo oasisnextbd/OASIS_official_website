@@ -2,6 +2,25 @@
 {% set c = site.contact %}
 <footer class="site-footer">
   <div class="wrap">
+    {#- Star ratings: one tap saves (no form), anonymous, read only in the team dashboard → Ratings.
+        Behaviour: setupRatings() in assets/js/site.js; database rules: backend/connected-firebase/firestore.rules. -#}
+    <section class="rate" data-rate aria-labelledby="rate-title" data-msg-ok="{{ t('ধন্যবাদ! আপনার রেটিং জমা হয়েছে। চাইলে পরে বদলাতে পারেন।', 'Thank you! Your rating is saved. You can change it any time.') }}" data-msg-fail="{{ t('রেটিং জমা হয়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।', 'Your rating was not saved. Check the internet and try again.') }}">
+      <div class="rate-head">
+        <h2 id="rate-title">{{ t("VenGuard-কে রেটিং দিন", "Rate VenGuard") }}</h2>
+        <p class="small">{{ t("তারায় চাপ দিলেই জমা হয়। যা ব্যবহার করেছেন শুধু সেটিকেই দিন। নাম বা ফোন নম্বর লাগে না।", "Tap a star and it is saved. Rate only what you have used; no name or phone number needed.") }}</p>
+      </div>
+      <div class="rate-rows">
+        {% for key, bn, en in [("product", "VenGuard ডিভাইস", "The VenGuard device"), ("website", "এই ওয়েবসাইট", "This website"), ("service", "আমাদের সেবা ও সহায়তা", "Our service and support")] %}
+        <div class="rate-row">
+          <span id="rate-{{ key }}">{{ t(bn, en) }}</span>
+          <span class="stars" role="group" aria-labelledby="rate-{{ key }}" data-rate-key="{{ key }}">
+            {%- for n in range(1, 6) %}<button type="button" data-star="{{ n }}" aria-pressed="false" aria-label="{{ t(num(n) ~ ' তারা', n ~ (' star' if n == 1 else ' stars')) }}">{{ icon("star") }}</button>{% endfor -%}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="small rate-msg" role="status" aria-live="polite"></p>
+    </section>
     <div class="footer-grid">
       <div>
         <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
@@ -25,7 +44,7 @@
           <li><a href="{{ url('landlords-restaurants') }}">{{ t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants") }}</a></li>
           <li><a href="{{ url('dealers') }}">{{ t("ডিলার হোন", "Become a dealer") }}</a></li>
           <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (শীঘ্রই)", "Agro and Marine (coming soon)") }}</a></li>
-          <li><a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="footer">{{ t("VenGuard অ্যাপ: ডেমো ও সাইন ইন", "VenGuard app: demo and sign-in") }}</a></li>
+          <li><a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="footer">{{ t("VenGuard অ্যাপ: সাইন ইন", "VenGuard app: sign in") }}</a></li>
           <li><a href="{{ site.app.apk_url }}" data-track="app_apk_click" data-position="footer">{{ t("অ্যান্ড্রয়েড অ্যাপ ডাউনলোড", "Download for Android") }}</a></li>
           <li><a href="{{ url('app-guide') }}">{{ t("অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the app") }}</a></li>
         </ul>

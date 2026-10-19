@@ -123,3 +123,17 @@ export function renewalState(s, today) {
   if (n < 0) return "overdue";
   return n <= (Number(s.remind_days) || 30) ? "soon" : "ok";
 }
+
+/* ---------- star ratings from the website footer ---------- */
+export const RATING_FOR = { product: "VenGuard device", website: "Website", service: "Service and support" };
+/** One rating kind across visitors: how many gave it, the average (1 decimal) and the count per star (index 0 = 1 star). */
+export function ratingSummary(rows, key) {
+  const dist = [0, 0, 0, 0, 0];
+  let n = 0, sum = 0;
+  for (const r of rows) {
+    const v = Number(r[key]);
+    if (!Number.isInteger(v) || v < 1 || v > 5) continue;
+    dist[v - 1]++; n++; sum += v;
+  }
+  return { n, avg: n ? Math.round((sum / n) * 10) / 10 : null, dist };
+}

@@ -17,7 +17,7 @@ nothing until they sign in.
 | Role | Can |
 |---|---|
 | Owner (company account) | everything, including the team list |
-| Founder | everything except the team list: orders, invoices (including cancelling), stock, packages, promo codes, costs, dealers, company details, signatures, website settings |
+| Founder | everything except the team list: orders, invoices (including cancelling), stock, packages, promo codes, costs, dealers, company details, signatures, website settings, deleting spam ratings |
 | Support | add and update orders; issue, change and re-sign invoices; record payments; stock in and out |
 | Marketing | promo codes and marketing costs; sees everything else |
 
@@ -56,6 +56,10 @@ nothing until they sign in.
   - What was spent per channel.
   - Orders, paying customers and invoiced sales per channel, cost per order, cost per paying customer,
     and taka back per taka spent.
+- **Ratings**: the 1–5 stars visitors give in the website footer for the VenGuard device, the website, and
+  our service and support. Averages, how the stars are spread, pages, and every rating. Anonymous; one record
+  per browser, so changing stars does not count twice. Everyone on the team sees them; founders delete spam.
+  Website side: `setupRatings()` in `venguard/assets/js/site.js`; rules: `ratings` in `firestore.rules`.
 - **Dealers**: dealer list, QR sticker and link per dealer, applications from the website.
 - **Subscriptions & renewals**: every service the company uses (domain, hosting, SMS, design tools…) with
   its cost, billing cycle, next renewal date, who pays and with what. A warning shows on Overview and in

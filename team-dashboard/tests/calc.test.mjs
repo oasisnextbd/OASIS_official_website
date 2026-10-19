@@ -63,3 +63,11 @@ test("subscriptions: renewal dates, reminders and monthly cost", () => {
   assert.equal(renewalState({ renews_on: "2026-10-01", cycle: "monthly" }, "2026-10-18"), "overdue");
   assert.equal(renewalState({ cycle: "free" }, "2026-10-18"), "none");
 });
+
+test("ratings: average, count and spread per kind; missing or invalid stars are skipped", async () => {
+  const { ratingSummary } = await import("../js/calc.js");
+  const rows = [{ website: 5, product: 4 }, { website: 4 }, { website: 4, service: 1 }, { website: "x" }, { website: 9 }, {}];
+  assert.deepEqual(ratingSummary(rows, "website"), { n: 3, avg: 4.3, dist: [0, 0, 0, 2, 1] });
+  assert.deepEqual(ratingSummary(rows, "product"), { n: 1, avg: 4, dist: [0, 0, 0, 1, 0] });
+  assert.deepEqual(ratingSummary([], "service"), { n: 0, avg: null, dist: [0, 0, 0, 0, 0] });
+});

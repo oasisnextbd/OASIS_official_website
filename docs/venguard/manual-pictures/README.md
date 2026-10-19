@@ -13,7 +13,7 @@ of each (Playwright, the Firebase SDK in `venguard-app/node_modules`, the rules-
 | Script | What it does |
 |---|---|
 | `mark.mjs` | draws the numbered rings (`mark(page, [[locator, number, padding], …])`) |
-| `dash-shots.mjs` | the dashboard in demo mode (`http://localhost:8765/team/?demo` after `python3 scripts/build.py` and `python3 -m http.server 8765 -d _site`) → 20 pictures |
+| `dash-shots.mjs` | the dashboard in demo mode (`http://localhost:8765/team/?demo` after `python3 scripts/build.py` and `python3 -m http.server 8765 -d _site`) → 22 pictures |
 | `app-shots.mjs <out> <ctrl> <bn|en>` | the Android layout of the app against the local Firebase emulators, as a new customer: sign up, add a device, leak, mitigated, reset, history, remove, profile → 15 pictures |
 | `node-dash.mjs <ctrl>` | runs the dashboard's own emulator code (`store.js`, `emulator.js`) against the emulators: creates and starts the test device that `app-shots.mjs` adds, and follows its commands (`<ctrl>/cmd.txt`) |
 
