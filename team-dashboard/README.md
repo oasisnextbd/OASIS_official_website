@@ -65,6 +65,11 @@ nothing until they sign in.
 - **Settings & team**: company details for invoices, authorised signatures, website switches (pre-orders
   on or off, price shown, notice bar: the website reads them within 10 minutes), the team
   list, and an activity log of every change.
+- **VenGuard app** (under Settings): a notice shown at the top of the Android app (Bangla and English),
+  and a minimum app version. New screens reach installed apps by themselves (in-app updates, see the
+  venguard-app README); set a minimum version only when a release needs the new APK, and older apps
+  then ask people to install it. Shows the latest published app version. Stored in `settings/app`,
+  which anyone may read (the app reads it without signing in); founders edit it.
 
 Everything updates live for everyone who is signed in. A copy is kept on each computer so the dashboard
 opens at once; signing out deletes that copy.
@@ -88,7 +93,7 @@ folder to `_site/team/` and puts `config.json` into the page.
 | `tests/calc.test.mjs` | `node --test team-dashboard/tests/calc.test.mjs` |
 
 Collections in Firestore: `team`, `orders`, `invoices`, `counters`, `inventory`, `stockMoves`, `products`,
-`promos`, `marketing`, `dealers`, `subscriptions`, `signatories`, `settings` (`company`, `website`) and `activity`.
+`promos`, `marketing`, `dealers`, `subscriptions`, `signatories`, `settings` (`company`, `website`, `app`) and `activity`.
 
 To add a section, write `js/views/name.js` and add it to `VIEWS` in `js/app.js`. Put any new database write
 in `store.js`, and give it a rule in `firestore.rules` with a test.

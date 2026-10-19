@@ -165,9 +165,10 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // settings/website (pre-orders open, price, notice) is public for the website; the rest is team only.
+    // settings/website (pre-orders open, price, notice) is public for the website, and settings/app
+    // (notice and minimum version for the VenGuard app) for the app; the rest is team only.
     match /settings/{id} {
-      allow get: if id == 'website' || isTeam();
+      allow get: if id in ['website', 'app'] || isTeam();
       allow list: if isTeam();
       allow write: if hasRole(['founder']);
     }

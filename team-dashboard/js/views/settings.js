@@ -1,4 +1,5 @@
-/* Settings: company details printed on invoices, authorised signatures, website switches,
+/* Settings: company details printed on invoices, authorised signatures, website switches, VenGuard app
+   (notice and minimum version),
    the team list (only the company account changes it) and the activity log. */
 
 import { $, esc, when, toast, drawer, closeDrawer, on, busy, field, select, area, emptyRow, pill, ICON } from "../ui.js";
@@ -9,8 +10,9 @@ const COMPANY = [["legal_name", "Legal name (as on the trade licence)"], ["addre
 
 export default {
   id: "settings", label: "Settings & team", icon: "settings", deps: ["settings", "signatories", "team", "activity"],
+  mounted() { showLatestApp(); },
   render() {
-    const c = S.data.settings.company || {}, w = S.data.settings.website || {}, founder = can("settings");
+    const c = S.data.settings.company || {}, w = S.data.settings.website || {}, a = S.data.settings.app || {}, founder = can("settings");
     const open = !(w.preorder_open === false);
     const sigs = S.data.signatories.slice().sort((a, b) => (b.active !== false) - (a.active !== false));
     return `<div class="topline"><div><h1>Settings &amp; team</h1></div></div>
@@ -29,8 +31,13 @@ export default {
       <div class="grid2"><section class="panel"><div class="panel-head"><h2>Website</h2>${founder ? `<button class="btn" data-act="set:website">${ICON.pen}Edit</button>` : ""}</div>
         <dl class="dl"><dt>Pre-orders</dt><dd>${open ? "Open" : "Closed (buttons say “Get notified”)"}</dd><dt>Kit price shown</dt><dd>${w.kit_price_bdt ? "BDT " + esc(w.kit_price_bdt) : "Final price to be announced"}</dd>
           ${w.notice_en || w.notice_bn ? `<dt>Notice bar</dt><dd>${esc(w.notice_en || "")}${w.notice_bn ? `<br><span lang="bn">${esc(w.notice_bn)}</span>` : ""}</dd>` : ""}</dl>
-        <p class="sub">The website reads these once its order form is connected to this database.</p></section>
-      ${teamPanel()}</div>
+        <p class="sub">The website reads these within 10 minutes.</p></section>
+      <section class="panel"><div class="panel-head"><h2>VenGuard app</h2>${founder ? `<button class="btn" data-act="set:app">${ICON.pen}Edit</button>` : ""}</div>
+        <dl class="dl"><dt>Notice</dt><dd>${a.notice_en || a.notice_bn ? `${esc(a.notice_en || "")}${a.notice_bn ? `<br><span lang="bn">${esc(a.notice_bn)}</span>` : ""}` : '<span class="muted">None</span>'}</dd>
+          <dt>Minimum version</dt><dd>${a.min_version ? esc(a.min_version) : '<span class="muted">None (no one is asked to reinstall)</span>'}</dd>
+          <dt>Latest published</dt><dd id="appLatest" class="muted">Checking…</dd></dl>
+        <p class="sub">The Android app shows the notice under its top bar within 10 minutes (people can close it; a changed notice shows again). New screens reach installed apps by themselves the next time they open. Set a minimum version only when a release needs the new APK; older apps then show “Please install the new version” with the download link. The app keeps working either way.</p></section></div>
+      <div class="grid2">${teamPanel()}</div>
       <section class="panel log"><h2>Activity</h2>${S.data.activity.length ? `<ul>${S.data.activity.slice(0, 120).map((a) => `<li><span class="num muted">${when(a.at)}</span><span><strong>${esc(a.user)}</strong> ${esc(String(a.action).replace(/_/g, " "))} ${a.ref ? `<span class="mono">${esc(a.ref)}</span> ` : ""}<span class="muted">${esc(a.detail)}</span></span></li>`).join("")}</ul>` : '<p class="muted">No changes yet.</p>'}</section>`;
   },
 };
@@ -104,6 +111,31 @@ on.act("set:website", () => {
 on.form("set:website", (f, d) => busy(f, async () => {
   d.kit_price_bdt = String(d.kit_price_bdt || "").replace(/\D/g, "");
   try { await saveSettings("website", d); toast("Website settings saved"); closeDrawer(); } catch (e) { toast(e.message || String(e)); }
+}));
+
+/* ---------- VenGuard app ---------- */
+const APP_LATEST = "https://oasisnextbd.github.io/venguard-app/updates/latest.json";
+let latestApp;   // undefined = not asked yet this session; null = nothing published or offline
+async function showLatestApp() {
+  if (latestApp === undefined) {
+    latestApp = null;
+    try { latestApp = await fetch(APP_LATEST, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)); } catch { /* offline */ }
+  }
+  const el = document.getElementById("appLatest");
+  if (el) el.textContent = latestApp ? `${latestApp.version} (build ${latestApp.build}); needs app ${latestApp.minNative} or newer` : "Not published yet";
+}
+on.act("set:app", () => {
+  const a = S.data.settings.app || {};
+  drawer("VenGuard app", `<form data-form="set:app" class="stack">
+    ${field("notice_bn", "Notice, Bangla", a.notice_bn, 'lang="bn" maxlength="300"')}${field("notice_en", "Notice, English", a.notice_en, 'maxlength="300" placeholder="e.g. Founders\u2019 test build: report anything odd on WhatsApp"')}
+    ${field("min_version", "Minimum app version", a.min_version, 'inputmode="decimal" pattern="\\d+(\\.\\d+)*" placeholder="Leave empty, or e.g. 0.4.0"')}
+    <p class="sub">Leave both notice boxes empty to remove the notice.</p>
+    <div><button class="btn primary" type="submit">Save</button></div></form>`);
+});
+on.form("set:app", (f, d) => busy(f, async () => {
+  d.min_version = String(d.min_version || "").trim();
+  if (d.min_version && !/^\d+(\.\d+)*$/.test(d.min_version)) { toast("Minimum version looks like 0.4.0"); return; }
+  try { await saveSettings("app", d); toast("App settings saved"); closeDrawer(); } catch (e) { toast(e.message || String(e)); }
 }));
 
 /* ---------- team (company account only) ---------- */

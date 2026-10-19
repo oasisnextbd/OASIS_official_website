@@ -9,7 +9,7 @@ export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], settings: { company: {}, website: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], settings: { company: {}, website: {}, app: {} },
   },
   loaded: new Set(),
 };
@@ -56,7 +56,7 @@ export function start(onChange, onError) {
   for (const [col, o] of Object.entries(WATCH)) {
     stops.push(S.db.watch(col, (rows) => { S.data[col] = rows; S.loaded.add(col); onChange(col); }, o, onError));
   }
-  for (const id of ["company", "website"]) {
+  for (const id of ["company", "website", "app"]) {
     stops.push(S.db.watchDoc("settings", id, (d) => { S.data.settings[id] = d || {}; onChange("settings"); }, onError));
   }
 }

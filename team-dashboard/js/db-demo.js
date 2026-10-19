@@ -108,6 +108,7 @@ function sample() {
     settings: {
       company: { legal_name: "", address: "", phone: "", email: "", bin: "", trade_license: "", vat_rate: 0, invoice_prefix: "INV", terms: "" },
       website: { preorder_open: true, kit_price_bdt: "", notice_bn: "", notice_en: "" },
+      app: { notice_bn: "", notice_en: "", min_version: "" },
     },
     subscriptions: {
       s1: { name: "GitHub (website hosting, code)", category: "Hosting", cycle: "free", cost: 0, currency: "BDT", active: true, remind_days: 30, history: [] },

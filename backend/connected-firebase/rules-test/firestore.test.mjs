@@ -160,8 +160,12 @@ test("signatures cannot be changed once saved; only founders add signatories", a
   await assertFails(deleteDoc(doc(founder(), "signatories/s1")));
 });
 
-test("settings: website settings are public to read; company settings are not; founders write", async () => {
+test("settings: website and app settings are public to read; company settings are not; founders write", async () => {
   await assertSucceeds(getDoc(doc(anon(), "settings/website")));
+  await assertSucceeds(getDoc(doc(anon(), "settings/app")));
+  await assertFails(setDoc(doc(anon(), "settings/app"), { notice_en: "x" }));
+  await assertFails(setDoc(doc(support(), "settings/app"), { notice_en: "x" }));
+  await assertSucceeds(setDoc(doc(founder(), "settings/app"), { notice_en: "x", min_version: "0.3.0" }));
   await assertFails(getDoc(doc(anon(), "settings/company")));
   await assertFails(setDoc(doc(support(), "settings/website"), { preorder_open: false }));
   await assertSucceeds(setDoc(doc(founder(), "settings/company"), { legal_name: "Y" }));
