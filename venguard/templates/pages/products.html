@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, preorder_btn %}
+{% import "partials/forms.html" as f %}
+{#- Products: the VenGuard line by OASIS, laid out as a catalogue (editions, then the parts every edition is
+    built from, then the principles). Only VenGuard Home is on sale; the other editions say "in development"
+    until the founders confirm them. Prices come from site.json → preorder. Part pictures: assets/img/parts/. -#}
+{% set p = site.preorder %}
+{% set page_title = t("VenGuard by OASIS — হোম, প্রো ও এগ্রো-মেরিন সংস্করণ", "VenGuard by OASIS — Home, Pro and Agro & Marine editions") %}
+{% set page_desc = t("একই নিরাপত্তা ব্যবস্থা, বাসা, বাণিজ্যিক রান্নাঘর, খামার ও নৌযানের জন্য আলাদা সংস্করণে। ডিটেক্টর, এগজস্ট রিলে, স্বয়ংক্রিয় ভালভ ও কানেক্টেড প্ল্যান।", "One safety system in editions for homes, commercial kitchens, farms and vessels. Detector, exhaust relay, automatic valve and the Connected plan.") %}
+{% block content %}
+{{ f.page_head(t, url, "VenGuard by OASIS", "VenGuard by OASIS", "একটি নিরাপত্তা ব্যবস্থা, ভিন্ন ভিন্ন জায়গার জন্য সংস্করণ। প্রতিটি সংস্করণ একই অংশ দিয়ে তৈরি আর একইভাবে কাজ করে: লিক টের পায়, গ্যাস বন্ধ করে, বাতাস বের করে দেয়।", "One safety system, in editions for different places. Every edition is built from the same parts and works the same way: it senses a leak, shuts off the gas and clears the air.") }}
+
+<section class="section" id="editions" aria-labelledby="editions-title">
+  <div class="wrap">
+    <h2 id="editions-title">{{ t("সংস্করণ", "Editions") }}</h2>
+    <div class="grid grid--3 editions">
+      <article class="card edition" id="home">
+        <span class="tag tag--live">{{ t("প্রি-অর্ডার চলছে", "Pre-order open") if p.open else t("শীঘ্রই", "Coming soon") }}</span>
+        {{ icon("home", "icon") }}
+        <h3>VenGuard Home</h3>
+        <p>{{ t("এলপিজি সিলিন্ডারসহ বাসার রান্নাঘরের জন্য। ডিটেক্টর, এগজস্ট রিলে ও স্বয়ংক্রিয় ভালভ, একটি কিটে।", "For household kitchens with an LPG cylinder. Detector, exhaust relay and automatic valve in one kit.") }}</p>
+        <p class="edition-price"><strong class="num">৳{{ num(p.kit_price_bdt) }}</strong> <span class="small">{{ t("· ৳" ~ num(p.deposit_bdt) ~ " ফেরতযোগ্য জামানতে প্রি-অর্ডার", "· pre-order with a refundable BDT " ~ num(p.deposit_bdt) ~ " deposit") }}</span></p>
+        <div class="btn-row">
+          {{ preorder_btn(t, url, site, "products_home", "btn btn--primary btn--sm") }}
+          <a class="btn btn--secondary btn--sm" href="{{ url('home-kit') }}">{{ t("বিস্তারিত", "Details") }}</a>
+        </div>
+      </article>
+      <article class="card edition" id="pro">
+        <span class="tag">{{ t("তৈরি হচ্ছে · পাইলট অংশীদার খুঁজছি", "In development · pilot partners wanted") }}</span>
+        {{ icon("restaurant", "icon") }}
+        <h3>{{ t("VenGuard প্রো (বাণিজ্যিক)", "VenGuard Pro (Commercial)") }}</h3>
+        <p>{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘরের জন্য পরিকল্পিত: একাধিক জায়গায় গ্যাস শনাক্তকরণ এবং বড় সিলিন্ডার সেটআপ ও হুডের জন্য উপযুক্ত ভালভ ও রিলে। প্রতিটি রান্নাঘর আগে সরেজমিনে দেখা হয়।", "Planned for restaurants and commercial kitchens: gas sensing at several points, and valves and relays suited to larger cylinder setups and hoods. Every kitchen is assessed on site first.") }}</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--sm" href="{{ url('restaurants') }}#assessment" data-track="b2b_click" data-position="products_pro">{{ t("পাইলট বা মূল্যায়নের অনুরোধ", "Request a pilot or assessment") }}</a>
+        </div>
+      </article>
+      <article class="card edition" id="agro-marine">
+        <span class="tag">{{ t("তৈরি হচ্ছে", "In development") }}</span>
+        {{ icon("marine", "icon") }}
+        <h3>{{ t("VenGuard এগ্রো ও মেরিন", "VenGuard Agro & Marine") }}</h3>
+        <p>{{ t("গ্যাস ব্রুডারসহ পোল্ট্রি খামার এবং লঞ্চ ও ট্রলারের রান্নাঘরের জন্য, যেখানে আর্দ্রতা ও লোনা বাতাস যন্ত্রের জন্য কঠিন। এর জন্য উপযুক্ত আবরণ নিয়ে কাজ চলছে।", "For poultry farms with gas brooders and galleys on launches and trawlers, where damp and salt air are hard on electronics. Enclosures for these conditions are being developed.") }}</p>
+        <div class="btn-row">
+          <a class="btn btn--secondary btn--sm" href="{{ url('agro-marine') }}">{{ t("অপেক্ষার তালিকায় নাম লেখান", "Join the waitlist") }}</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="parts" aria-labelledby="parts-title">
+  <div class="wrap">
+    <h2 id="parts-title">{{ t("যে অংশ দিয়ে VenGuard তৈরি", "The parts every VenGuard is built from") }}</h2>
+    <p class="lead">{{ t("পুরো কিট নিন, অথবা ডিটেক্টর ও রিলে দিয়ে শুরু করে পরে ভালভ যোগ করুন।", "Take the full kit, or start with the detector and relay and add the valve later.") }}</p>
+    <div class="grid parts">
+      <article class="card part">
+        <img src="{{ root }}assets/img/parts/detector.webp" width="480" height="480" loading="lazy" alt="{{ t('VenGuard গ্যাস ডিটেক্টর', 'VenGuard gas detector') }}">
+        <h3>{{ t("গ্যাস ডিটেক্টর", "Gas detector") }}</h3>
+        <p>{{ t("রান্নাঘরের দেয়ালে বসে, সবসময় গ্যাসের মাত্রা মাপে আর লিক নিশ্চিত হলে ৮৫ ডেসিবেলে অ্যালার্ম বাজায়।", "Sits on the kitchen wall, measures the gas level all the time and sounds an 85 dB alarm when it confirms a leak.") }}</p>
+        <p class="part-price"><span class="num">৳{{ num(p.detector_relay_bdt) }}</span> <span class="small">{{ t("ডিটেক্টর + রিলে একসাথে", "detector + relay together") }}</span></p>
+      </article>
+      <article class="card part">
+        <img src="{{ root }}assets/img/parts/relay.webp" width="480" height="480" loading="lazy" alt="{{ t('VenGuard এগজস্ট রিলে', 'VenGuard exhaust relay') }}">
+        <h3>{{ t("স্মার্ট এগজস্ট রিলে", "Smart exhaust relay") }}</h3>
+        <p>{{ t("আপনার এগজস্ট ফ্যান বা হুডের সাথে যুক্ত থাকে; লিক হলে ফ্যান চালু করে বাতাস পরিষ্কার না হওয়া পর্যন্ত চালায়।", "Connects to your exhaust fan or hood; on a leak it starts the fan and runs it until the air is clear.") }}</p>
+        <p class="part-price"><span class="num">৳{{ num(p.detector_relay_bdt) }}</span> <span class="small">{{ t("ডিটেক্টর + রিলে একসাথে", "detector + relay together") }}</span></p>
+      </article>
+      <article class="card part">
+        <img src="{{ root }}assets/img/parts/valve.webp" width="480" height="480" loading="lazy" alt="{{ t('VenGuard স্বয়ংক্রিয় ভালভ', 'VenGuard automatic valve') }}">
+        <h3>{{ t("স্বয়ংক্রিয় ভালভ", "Automatic valve actuator") }}</h3>
+        <p>{{ t("রেগুলেটরের পরের গ্যাস লাইনে বসে, নিজস্ব ব্যাটারিতে চলে; লিক হলে গ্যাস বন্ধ করে। গ্যাস পাইপ বা সিলিন্ডারের প্যাঁচে কোনো পরিবর্তন লাগে না।", "Fits on the gas line after the regulator and runs on its own batteries; on a leak it shuts off the gas. No changes to gas pipes or cylinder threads.") }}</p>
+        <p class="part-price"><span class="num">৳{{ num(p.valve_addon_bdt) }}</span> <span class="small">{{ t("অ্যাড-অন", "add-on") }}</span></p>
+      </article>
+      <article class="card part">
+        <span class="part-icon">{{ icon("smartphone") }}</span>
+        <h3>{{ t("কানেক্টেড ক্লাউড প্ল্যান", "Connected cloud plan") }}</h3>
+        <p>{{ t("ঐচ্ছিক: ফোনে লাইভ অবস্থা, লিকের সতর্কবার্তা ও দূর থেকে গ্যাস বন্ধ। মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Optional: live status on your phone, leak alerts and remote shut-off. Core safety is never locked behind a subscription.") }}</p>
+        <p class="part-price"><span class="num">৳{{ num(p.connected_plan_bdt_per_year) }}</span> <span class="small">{{ t("প্রতি বছর", "a year") }}</span></p>
+        <a class="arrow-link" href="{{ url('app-guide') }}">{{ t("অ্যাপ ট্যুর দেখুন", "Take the app tour") }} {{ icon("arrow", "", 18) }}</a>
+      </article>
+    </div>
+    <p class="small muted mt-2">{{ t("সম্পূর্ণ কিট (ডিটেক্টর, রিলে ও ভালভ) ৳" ~ num(p.kit_price_bdt) ~ ", আলাদা কেনার চেয়ে ৳" ~ num(p.detector_relay_bdt + p.valve_addon_bdt - p.kit_price_bdt) ~ " কম।", "The complete kit (detector, relay and valve) is BDT " ~ num(p.kit_price_bdt) ~ ", BDT " ~ num(p.detector_relay_bdt + p.valve_addon_bdt - p.kit_price_bdt) ~ " less than buying the parts separately.") }}</p>
+  </div>
+</section>
+
+{% include "partials/principles.html" %}
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="hx-b2b">
+      <div>
+        <h2>{{ t("কোনটি আপনার জন্য?", "Which one is for you?") }}</h2>
+        <p>{{ t("বাসার জন্য হোম কিট প্রি-অর্ডার করুন। ভবন, রেস্তোরাঁ বা খামারের জন্য আগে সাইট মূল্যায়নের অনুরোধ করুন।", "For a home, pre-order the Home kit. For a building, restaurant or farm, request a site assessment first.") }}</p>
+      </div>
+      <div class="btn-row">
+        {{ preorder_btn(t, url, site, "products_final") }}
+        <a class="btn btn--secondary" href="{{ url('landlords-restaurants') }}#assessment" data-track="b2b_click" data-position="products_final">{{ t("সাইট মূল্যায়নের অনুরোধ", "Request a site assessment") }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

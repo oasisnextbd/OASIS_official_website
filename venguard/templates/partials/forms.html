@@ -1,3 +1,4 @@
+{% from "partials/macros.html" import icon %}
 {#- One form skeleton for every lead type (brief Part 6: "the same form skeleton,
     with different fields, serves the landlord, restaurant and dealer enquiries").
     assets/js/site.js handles validation, tracking and submission for any
@@ -159,4 +160,51 @@
 data-msg-ok="{{ t('ধন্যবাদ! আপনার তথ্য পেয়েছি। আমাদের দল শীঘ্রই যোগাযোগ করবে।', 'Thank you! We have your details. Our team will be in touch soon.') }}"
 data-msg-fail="{{ t('দুঃখিত, পাঠানো যায়নি। আবার চেষ্টা করুন বা যোগাযোগ পাতা থেকে লিখুন।', 'Sorry, that did not send. Please try again or use the contact page.') }}"
 data-msg-check="{{ t('কিছু ঘর ঠিক করতে হবে, নিচে দেখুন।', 'Some fields need attention, see below.') }}"
+{%- endmacro %}
+
+{#- "Request a site safety assessment": the business lead form (form_type "enquiry", shown in the team
+    dashboard as a site assessment). preset picks "You are" (landlord | restaurant | other_business).
+    Next to it, booking by WhatsApp with a ready-written message (no calendar yet). -#}
+{% macro assessment_form(t, url, site, preset="") -%}
+<section class="section section--alt" id="assessment" aria-labelledby="assessment-title">
+  <div class="wrap">
+    <div class="assess">
+      <div class="assess-intro">
+        <p class="eyebrow">{{ t("বিনামূল্যে, কোনো বাধ্যবাধকতা নেই", "Free, no obligation") }}</p>
+        <h2 id="assessment-title">{{ t("সাইট নিরাপত্তা মূল্যায়নের অনুরোধ", "Request a site safety assessment") }}</h2>
+        <p>{{ t("আমাদের দল আপনার ভবন বা রান্নাঘর দেখে জানাবে কোথায় কোন VenGuard লাগবে, কীভাবে বসানো হবে আর খরচ কত।", "Our team looks at your building or kitchen and tells you which VenGuard goes where, how it is installed and what it costs.") }}</p>
+        <ol class="assess-steps">
+          <li>{{ t("নিচের ফর্ম পাঠান বা WhatsApp-এ লিখুন।", "Send the form below, or message us on WhatsApp.") }}</li>
+          <li>{{ t("আমরা ফোন করে দেখার সময় ঠিক করি।", "We call to agree a time to visit.") }}</li>
+          <li>{{ t("দেখার পর লিখিত প্রস্তাব ও কোটেশন পাঠাই।", "After the visit, we send a written proposal and quote.") }}</li>
+        </ol>
+        {% if site.contact.whatsapp_number %}
+        <a class="btn btn--secondary" href="https://wa.me/{{ site.contact.whatsapp_number }}?text={{ t('আসসালামু আলাইকুম। আমি VenGuard-এর সাইট নিরাপত্তা মূল্যায়নের সময় নিতে চাই।', 'Hello, I would like to book a VenGuard site safety assessment.')|string|urlencode }}" rel="noopener" data-track="whatsapp_click" data-position="assessment">{{ icon("whatsapp") }}{{ t("WhatsApp-এ সময় নিন", "Book on WhatsApp") }}</a>
+        {% endif %}
+      </div>
+      <form class="form" data-vg-form="enquiry" novalidate {{ thanks_messages(t) }}>
+        {{ hidden(t) }}
+        {{ choices(t, "kitchen_type", "আপনি কে?", "You are", [("landlord", t("বাড়িওয়ালা / ডেভেলপার", "Landlord / developer")), ("restaurant", t("রেস্তোরাঁ / বাণিজ্যিক রান্নাঘর", "Restaurant / commercial kitchen")), ("other_business", t("অন্য ব্যবসা", "Other business"))], true, preset) }}
+        <div class="form-grid form-grid--2">
+          {{ field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
+          {{ phone(t) }}
+        </div>
+        <div class="form-grid form-grid--2">
+          {{ field(t, "organisation", "ভবন বা ব্যবসার নাম", "Building or business name", "text", false, "organization") }}
+          {{ field(t, "email", "ইমেইল", "Email", "email", false, "email", attrs='data-validate="email" data-msg-invalid="' ~ t("সঠিক ইমেইল ঠিকানা লিখুন।", "Please enter a valid email address.") ~ '"') }}
+        </div>
+        <div class="form-grid form-grid--2">
+          {{ field(t, "area", "এলাকা", "Area", "text", true, "address-level3") }}
+          {{ districts(t) }}
+        </div>
+        {{ field(t, "units", "কয়টি রান্নাঘর বা ফ্ল্যাট?", "How many kitchens or flats?", "number", true, "", inputmode="numeric", attrs='min="1" max="9999" data-validate="units" data-msg-invalid="' ~ t("একটি সঠিক সংখ্যা লিখুন।", "Please enter a valid number.") ~ '"') }}
+        {{ field(t, "message", "সিলিন্ডার, চুলা ও এগজস্ট হুড সম্পর্কে কিছু জানান", "Tell us about the cylinders, stoves and exhaust hoods", "textarea", false, hint_bn="যেমন: ৪টি সিলিন্ডার একটি ম্যানিফোল্ডে, ২টি বড় হুড; কোন দিন দেখতে আসা সুবিধা।", hint_en="For example: 4 cylinders on one manifold, 2 large hoods; which days suit a visit.") }}
+        {{ heard(t) }}
+        {{ consent(t, url) }}
+        {{ status() }}
+        {{ submit(t, "মূল্যায়নের অনুরোধ পাঠান", "Request an assessment") }}
+      </form>
+    </div>
+  </div>
+</section>
 {%- endmacro %}

@@ -14,6 +14,7 @@
               10 status · 11 forms · 12 page parts · 13 footer · 14 overlays
               15 utilities · 16 motion · 17 achievements, press, journey · 18 home page · 19 system animation
               20 site improvements · 21 app guide · 22 star ratings · 23 picture viewer
+              24 products, business pages, assessment form, floating WhatsApp
    ========================================================================= */
 
 /* 1 · Tokens ------------------------------------------------------------- */
@@ -215,7 +216,7 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
 .nav > ul { list-style: none; display: flex; align-items: center; gap: 2px; }
 .nav a { display: block; white-space: nowrap; padding: 8px 11px; border-radius: var(--r); color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: .95rem; }
 .nav a:hover { color: var(--text); background: var(--bg-alt); }
-.nav a[aria-current="page"] { color: var(--text); box-shadow: inset 0 -3px 0 var(--accent); border-radius: 0; }
+.nav a[aria-current="page"], .nav a[aria-current="true"] { color: var(--text); box-shadow: inset 0 -3px 0 var(--accent); border-radius: 0; }
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .lang-switch { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; font-size: .88rem; }
 .lang-switch a { padding: 7px 12px; text-decoration: none; color: var(--text-muted); font-weight: 600; }
@@ -252,7 +253,7 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
   .nav.is-open { display: block; }
   .nav > ul { flex-direction: column; align-items: stretch; }
   .nav a { padding: 12px 8px; font-size: 1rem; }
-  .nav a[aria-current="page"] { box-shadow: inset 3px 0 0 var(--accent); padding-left: 14px; }
+  .nav a[aria-current="page"], .nav a[aria-current="true"] { box-shadow: inset 3px 0 0 var(--accent); padding-left: 14px; }
   .header-actions { margin-left: auto; }
   .has-sub { flex-wrap: wrap; }
   .has-sub > a { flex: 1; }
@@ -339,10 +340,10 @@ html[lang="bn"] .stat-figure cite { font: 500 .85rem/1.4 var(--font-bn); letter-
 
 /* Timeline (status) */
 .timeline { list-style: none; display: grid; gap: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); overflow: hidden; }
-@media (min-width: 900px) { .timeline { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1000px) { .timeline { grid-template-columns: repeat(5, 1fr); } }
 .timeline li { padding: 24px; display: grid; gap: 8px; align-content: start; }
 .timeline li + li { border-top: 1px solid var(--line); }
-@media (min-width: 900px) { .timeline li + li { border-top: 0; border-left: 1px solid var(--line); } }
+@media (min-width: 1000px) { .timeline li + li { border-top: 0; border-left: 1px solid var(--line); } }
 .timeline h3 { margin: 0; }
 .timeline p { margin: 0; color: var(--text-muted); font-size: .95rem; }
 
@@ -980,3 +981,54 @@ html[lang="bn"] .ag-toc ol, html[lang="bn"] .ag-text ol { list-style-type: benga
 .zoom img { display: block; max-width: 96vw; max-height: 94vh; width: auto; height: auto; border-radius: 22px; }
 .zoom-x { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--navy); color: #fff; font-size: 1.15rem; cursor: pointer; box-shadow: 0 2px 10px rgb(0 0 0 / .35); }
 .zoom-x:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* 24 · Products, business pages, assessment form, floating WhatsApp ------- */
+/* Hero: the business path under the pre-order button */
+.hx-b2b-link { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 0; font-size: .95rem; color: var(--text-muted); }
+.hx-b2b-link svg { flex: none; width: 20px; height: 20px; margin-top: 2px; color: var(--accent); }
+.hx-b2b-link a { color: var(--accent-text); font-weight: 600; }
+.hx-b2b-paths { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 12px 0 0; }
+.hx-b2b-paths a { display: inline-flex; gap: 8px; align-items: center; color: var(--text); font-weight: 600; text-decoration: none; }
+.hx-b2b-paths a:hover { color: var(--accent-text); }
+.hx-b2b-paths svg { width: 18px; height: 18px; color: var(--accent); }
+
+/* Products: editions and parts */
+.edition { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.edition .tag { margin-bottom: 14px; }
+.tag--live { background: var(--invert-bg); color: var(--invert-text); border-color: transparent; }
+.edition .btn-row { margin-top: auto; padding-top: 12px; }
+.edition-price { color: var(--text) !important; }
+.parts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+.part img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; border-radius: var(--r); background: #EEF1F4; margin-bottom: 16px; }
+.part-icon { display: grid; place-items: center; aspect-ratio: 1; border-radius: var(--r); background: var(--bg-alt); color: var(--accent); margin-bottom: 16px; }
+.part-icon svg { width: 34%; height: auto; stroke-width: 1.5; }
+.part-price { color: var(--text) !important; font-weight: 700; }
+.part-price .small { font-weight: 400; color: var(--text-muted); }
+
+/* Business hub: one card per audience */
+.path { display: flex; flex-direction: column; gap: 4px; color: var(--text); text-decoration: none; transition: border-color .15s, transform .15s; }
+.path:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.path h2 { font-size: 1.3rem; margin: 0 0 4px; }
+.path .arrow-link { margin-top: auto; padding-top: 8px; }
+.steps-cards { list-style: none; padding: 0; }
+.steps-cards .ag-num { margin-bottom: 12px; }
+.installer { display: flex; gap: 16px; align-items: flex-start; }
+.installer .icon { flex: none; margin: 0; }
+.installer p { margin-bottom: 0; }
+
+/* Site assessment: intro and booking on the left, form on the right */
+.assess { display: grid; gap: 32px; align-items: start; }
+@media (min-width: 960px) { .assess { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); } .assess-intro { position: sticky; top: calc(var(--header-h) + 24px); } }
+.assess-steps { padding-left: 1.3em; margin: 16px 0 20px; }
+.assess-steps li { margin-bottom: 6px; }
+html[lang="bn"] .assess-steps { list-style-type: bengali; }
+.ag-when { margin-bottom: 8px; }
+
+/* Floating WhatsApp: bottom right; above the phone action bar; hidden while the cookie bar is open */
+.wa-float { position: fixed; z-index: 45; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--navy); color: #fff; box-shadow: 0 6px 18px rgb(7 25 44 / .35); border: 2px solid #fff; }
+.wa-float svg { width: 28px; height: 28px; }
+.wa-float:hover { transform: translateY(-2px); }
+.wa-float:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+@media (max-width: 719px) { body.has-mobile-cta .wa-float { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
+body:has(.consent.is-visible) .wa-float { display: none; }
+@media print { .wa-float { display: none; } }

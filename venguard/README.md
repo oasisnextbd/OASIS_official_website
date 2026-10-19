@@ -78,5 +78,12 @@ To add a page: create `templates/pages/<name>.html` and add it to `PAGES` in `to
 `cta_preorder_click` (with `position`), `whatsapp_click`, `call_click`, `email_click`, `factsheet_download`,
 `faq_open`, `scroll_depth`, `video_play`, `audience_tab`, `language_switch`, `campaign_landing`,
 `funnel_how_it_works`, `form_start`, `form_start_preorder`, `form_error`, `form_abandon`, `lead_submit`,
-`lead_submit_error`, `payment_start`, `payment_fail`, `deposit_paid`, `preorder_submitted_unpaid`.
+`lead_submit_error`, `payment_start`, `payment_fail`, `deposit_paid`, `preorder_submitted_unpaid`,
+`b2b_click` (site assessment and business pages, with `position`), `dealer_apply_click`, `app_tour_click`,
+`app_open_click`, `app_apk_click` (App tour only), `rating_given`.
 All are pushed to `window.dataLayer`.
+
+Calls to action: households → **Pre-order** (header, phone bar, hero); businesses → **Request a site
+assessment** (`partials/forms.html` → `assessment_form`, saved as form type `enquiry`, booking by WhatsApp);
+dealers → **Apply**. The Android app is offered only in the App tour (`pages/app-guide.html`), not to
+visitors who have not received a kit yet. WhatsApp: the floating button on every page (`base.html`).

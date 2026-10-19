@@ -1,28 +1,35 @@
-{% from "partials/macros.html" import icon, preorder_btn, whatsapp %}
-{#- Main menu. Each entry: (slug, label, sub-items). Sub-items link to section ids on that page
-    (keep in sync with the ids in pages/home-kit.html and pages/about.html). -#}
+{% from "partials/macros.html" import icon, preorder_btn %}
+{#- Main menu. Each entry: (slug, label, sub-items, slugs that light it up). Sub-items are (link, label):
+    a page, or a section id on a page (keep in sync with the ids in pages/products.html and pages/about.html). -#}
 {% set about_items = [
-  ("story", t("আমাদের গল্প", "Our story")),
-  ("mission", t("আমাদের লক্ষ্য", "Our mission")),
-  ("vision", t("আমাদের স্বপ্ন", "Our vision")),
-  ("roadmap", t("রোডম্যাপ", "Roadmap")),
-  ("team", t("দল", "Team")),
-] + ([("advisors", t("উপদেষ্টা পর্ষদ", "Board of Advisors"))] if site.advisors else [])
-  + ([("partners", t("অংশীদার", "Partners"))] if site.partners["items"] else [])
-  + ([("achievements", t("অর্জন", "Achievements"))] if site.achievements["items"] else []) %}
+  (url('about') ~ "#story", t("আমাদের গল্প", "Our story")),
+  (url('about') ~ "#mission", t("আমাদের লক্ষ্য", "Our mission")),
+  (url('about') ~ "#vision", t("আমাদের স্বপ্ন", "Our vision")),
+  (url('about') ~ "#roadmap", t("রোডম্যাপ", "Roadmap")),
+  (url('about') ~ "#team", t("দল", "Team")),
+] + ([(url('about') ~ "#advisors", t("উপদেষ্টা পর্ষদ", "Board of Advisors"))] if site.advisors else [])
+  + ([(url('about') ~ "#partners", t("অংশীদার", "Partners"))] if site.partners["items"] else [])
+  + ([(url('about') ~ "#achievements", t("অর্জন", "Achievements"))] if site.achievements["items"] else []) %}
 {% set nav = [
-  ("home-kit", t("হোম কিট", "Home kit"), [
-    ("box-title", t("বাক্সে যা থাকে", "In the box")),
-    ("install-title", t("বসানো", "Installation")),
-    ("specs-title", t("স্পেসিফিকেশন", "Specifications")),
-    ("price-title", t("দাম ও প্যাকেজ", "Price and packages")),
-  ]),
-  ("how-it-works", t("কীভাবে কাজ করে", "How it works"), []),
-  ("landlords-restaurants", t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants"), []),
-  ("dealers", t("ডিলার", "Dealers"), []),
-  ("guides", t("নিরাপত্তা গাইড", "Guides"), []),
-  ("about", t("আমাদের কথা", "About"), about_items),
+  ("products", t("পণ্য", "Products"), [
+    (url('products'), t("সব সংস্করণ", "All editions")),
+    (url('home-kit'), t("VenGuard হোম কিট", "VenGuard Home kit")),
+    (url('products') ~ "#pro", t("VenGuard প্রো (বাণিজ্যিক)", "VenGuard Pro (Commercial)")),
+    (url('agro-marine'), t("এগ্রো ও মেরিন", "Agro and Marine")),
+    (url('products') ~ "#parts", t("অংশ ও দাম", "Parts and prices")),
+  ], ["products", "home-kit", "agro-marine"]),
+  ("how-it-works", t("কীভাবে কাজ করে", "How it works"), [], ["how-it-works"]),
+  ("landlords-restaurants", t("ব্যবসার জন্য", "For businesses"), [
+    (url('landlords'), t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers")),
+    (url('restaurants'), t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens")),
+    (url('dealers'), t("ডিলার ও ইনস্টলার", "Dealers and installers")),
+    (url('landlords-restaurants') ~ "#assessment", t("সাইট মূল্যায়নের অনুরোধ", "Request a site assessment")),
+  ], ["landlords-restaurants", "landlords", "restaurants", "dealers"]),
+  ("guides", t("নিরাপত্তা গাইড", "Guides"), [], ["guides", "app-guide"]),
+  ("about", t("আমাদের কথা", "About"), about_items, ["about"]),
 ] %}
+{#- Business pages lead with an assessment (or, for dealers, the application) instead of the pre-order. -#}
+{% set business = slug in ["landlords-restaurants", "landlords", "restaurants"] %}
 {%- set checkout = slug == "pre-order" -%}
 <header class="site-header{% if checkout %} site-header--checkout{% endif %}">
   <div class="wrap">
@@ -30,19 +37,19 @@
     {% if not checkout %}
     <nav class="nav" id="site-nav" aria-label="{{ t('প্রধান মেনু', 'Main menu') }}">
       <ul>
-        {% for s, label, subs in nav %}
+        {% for s, label, subs, group in nav %}
         {% if subs %}
         <li class="has-sub">
-          <a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a>
+          <a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% elif slug in group %} aria-current="true"{% endif %}>{{ label }}</a>
           <button type="button" class="sub-toggle" aria-expanded="false" aria-controls="sub-{{ s }}" aria-label="{{ label }}: {{ t('আরও', 'more') }}">{{ icon("chevron-down") }}</button>
           <ul class="sub-menu" id="sub-{{ s }}">
-            {% for anchor, sub in subs %}
-            <li><a href="{{ url(s) }}#{{ anchor }}">{{ sub }}</a></li>
+            {% for href, sub in subs %}
+            <li><a href="{{ href }}">{{ sub }}</a></li>
             {% endfor %}
           </ul>
         </li>
         {% else %}
-        <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a></li>
+        <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% elif slug in group %} aria-current="true"{% endif %}>{{ label }}</a></li>
         {% endif %}
         {% endfor %}
       </ul>
@@ -54,9 +61,14 @@
         <a href="{{ url(slug, 'en') }}" hreflang="en" lang="en" data-lang-switch="en" aria-current="{{ 'true' if lang == 'en' else 'false' }}">EN</a>
       </div>
       <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="{{ t('রাতের থিম', 'Night theme') }}" title="{{ t('দিন / রাতের থিম', 'Day / night theme') }}">{{ icon("moon", "i-moon") }}{{ icon("sun", "i-sun") }}</button>
-      {{ whatsapp(site, t, "header", "icon-btn wa-link", icon_only=true) }}
       {% if not checkout %}
+      {% if business %}
+      <a class="btn btn--primary btn--sm" href="#assessment" data-track="b2b_click" data-position="header">{{ t("মূল্যায়নের অনুরোধ", "Request an assessment") }}</a>
+      {% elif slug == "dealers" %}
+      <a class="btn btn--primary btn--sm" href="#apply" data-track="dealer_apply_click" data-position="header">{{ t("আবেদন করুন", "Apply") }}</a>
+      {% else %}
       {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
+      {% endif %}
       <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
       {% endif %}
     </div>

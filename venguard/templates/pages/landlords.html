@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{#- Real estate developers and landlords. No insurance or compliance claims until an insurer or regulator
+    confirms them (brand rules: no claims ahead of testing). -#}
+{% set page_title = t("বাড়িওয়ালা ও ডেভেলপারদের জন্য VenGuard — প্রতিটি ফ্ল্যাটে স্বয়ংক্রিয় গ্যাস বন্ধ", "VenGuard for landlords and developers — automatic gas shut-off in every flat") %}
+{% set page_desc = t("বহু-ইউনিট ভবনের প্রতিটি রান্নাঘরে স্বয়ংক্রিয় গ্যাস বন্ধের ব্যবস্থা। বিনামূল্যে সাইট নিরাপত্তা মূল্যায়নের অনুরোধ করুন।", "Automatic gas shut-off in every kitchen of a multi-unit building. Request a free site safety assessment.") %}
+{% block content %}
+{{ f.page_head(t, url, "বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers", "একটি ফ্ল্যাটের লিক পুরো ভবন ও প্রতিবেশীদের ঝুঁকিতে ফেলে। VenGuard প্রতিটি রান্নাঘরে নিজে থেকে গ্যাস বন্ধ করার জন্য তৈরি, ভাড়াটিয়া বাসায় না থাকলেও।", "A leak in one flat puts the whole building and its neighbours at risk. VenGuard is designed to shut off the gas in every kitchen by itself, even when the tenants are out.") }}
+
+<section class="section" aria-labelledby="why-buildings">
+  <div class="wrap split">
+    <div>
+      <h2 id="why-buildings">{{ t("ভবনের জন্য কেন VenGuard", "Why VenGuard for a building") }}</h2>
+      <ul class="ticks">
+        <li>{{ icon("tick") }}<span><strong>{{ t("প্রতিটি ফ্ল্যাট আলাদাভাবে সুরক্ষিত।", "Every flat protected on its own.") }}</strong> {{ t("প্রতিটি রান্নাঘরের নিজস্ব ডিটেক্টর ও ভালভ; কাউকে বাসায় থাকতে হয় না।", "Each kitchen has its own detector and valve; nobody needs to be home.") }}</span></li>
+        <li>{{ icon("tick") }}<span><strong>{{ t("আপনার ঝুঁকি কমান।", "Reduce the risk you carry.") }}</strong> {{ t("লিক বাড়ার আগেই সিলিন্ডারে গ্যাস বন্ধ ও বাতাস বের করার জন্য তৈরি, যাতে আগুন বা বিস্ফোরণের সুযোগ কমে।", "Designed to stop the gas at the cylinder and clear the air before a leak builds up, so a fire or explosion is less likely.") }}</span></li>
+        <li>{{ icon("tick") }}<span><strong>{{ t("নতুন ভবনে শুরু থেকেই।", "Planned into new buildings.") }}</strong> {{ t("ফিট-আউটের সময় ডিটেক্টর, ভালভ ও এগজস্ট রিলের জায়গা ও তার আমরা পরিকল্পনা করে দিই।", "At fit-out we plan where the detector, valve and exhaust relay go, and the wiring.") }}</span></li>
+        <li>{{ icon("tick") }}<span><strong>{{ t("সব ইউনিট এক জায়গায় (ঐচ্ছিক)।", "Every unit in one view (optional).") }}</strong> {{ t("কানেক্টেড প্ল্যানে প্রতিটি ইউনিটের অবস্থা অ্যাপে দেখা যায়; ভবনের ড্যাশবোর্ড পরের ধাপে আসবে।", "With the Connected plan each unit shows in the app; a building dashboard comes in a later phase.") }}</span></li>
+      </ul>
+      <p class="small muted">{{ t("পাইপলাইনের গ্যাস (তিতাস) থাকলে আগে কথা বলুন। বীমা বা নিয়ম মানার প্রয়োজনে কাগজপত্র লাগলে জানান; পরীক্ষা ও সার্টিফিকেশন শেষ হলে আমরা তা দেব।", "On piped gas (Titas)? Talk to us first. Need documents for an insurer or for compliance? Tell us; we provide them once testing and certification are complete.") }}</p>
+    </div>
+    <div>
+      <div class="dash" aria-label="{{ t('ড্যাশবোর্ডের নমুনা ছবি', 'Dashboard preview illustration') }}">
+        <div class="dash-head"><span>{{ t("রোজ ভিউ টাওয়ার — ১২টি ইউনিট", "Rose View Tower — 12 units") }}</span><span>{{ icon("chart", "", 20) }}</span></div>
+        <div class="dash-row"><span>{{ t("ফ্ল্যাট ২এ", "Flat 2A") }}</span><span class="dash-ok">{{ t("স্বাভাবিক", "Normal") }}</span></div>
+        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৩বি", "Flat 3B") }}</span><span class="dash-ok">{{ t("স্বাভাবিক", "Normal") }}</span></div>
+        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৪এ", "Flat 4A") }}</span><span><strong>{{ t("ভালভ বন্ধ — নিরাপদে গ্যাস বন্ধ হয়েছে", "Valve closed — gas shut off safely") }}</strong></span></div>
+        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৫সি", "Flat 5C") }}</span><span class="muted">{{ t("ব্যাটারি শীঘ্রই বদলাতে হবে", "Battery change due soon") }}</span></div>
+        <div class="dash-note">{{ t("নমুনা ছবি। ভবনের ড্যাশবোর্ড পরবর্তী ধাপে আসবে।", "Illustration only. The building dashboard comes in a later phase.") }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" aria-labelledby="rollout-title">
+  <div class="wrap">
+    <h2 id="rollout-title">{{ t("একটি ভবনে যেভাবে বসানো হয়", "How a building is fitted") }}</h2>
+    <ol class="grid grid--4 steps-cards">
+      <li class="card"><span class="ag-num">{{ num(1) }}</span><h3>{{ t("সাইট মূল্যায়ন", "Site assessment") }}</h3><p>{{ t("আমরা ভবন ও কয়েকটি রান্নাঘর দেখি।", "We visit the building and a few kitchens.") }}</p></li>
+      <li class="card"><span class="ag-num">{{ num(2) }}</span><h3>{{ t("প্রস্তাব ও দাম", "Proposal and price") }}</h3><p>{{ t("লিখিত পরিকল্পনা, অনেক ইউনিটে বিশেষ দাম।", "A written plan, with volume pricing for many units.") }}</p></li>
+      <li class="card"><span class="ag-num">{{ num(3) }}</span><h3>{{ t("ফ্ল্যাট ধরে ধরে বসানো", "Fitting flat by flat") }}</h3><p>{{ t("আমাদের প্রশিক্ষিত টেকনিশিয়ান বসান ও পরীক্ষা করেন।", "Our trained technicians fit and test each kitchen.") }}</p></li>
+      <li class="card"><span class="ag-num">{{ num(4) }}</span><h3>{{ t("হস্তান্তর", "Handover") }}</h3><p>{{ t("ভাড়াটিয়াদের জন্য সহজ নির্দেশিকা ও আমাদের সহায়তা।", "A simple guide for tenants, and our support.") }}</p></li>
+    </ol>
+  </div>
+</section>
+
+{{ f.assessment_form(t, url, site, "landlord") }}
+{% endblock %}

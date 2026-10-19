@@ -64,20 +64,30 @@
 } | tojson }}
 </script>
 </head>
-<body class="{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}has-mobile-cta{% endif %}" data-page="{{ slug or 'home' }}" data-lang="{{ lang }}">
+{%- set mobile_bar = slug in ["landlords-restaurants", "landlords", "restaurants", "dealers"] or (slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open) -%}
+<body class="{% if mobile_bar %}has-mobile-cta{% endif %}" data-page="{{ slug or 'home' }}" data-lang="{{ lang }}">
 <a class="skip-link" href="#main">{{ t("মূল অংশে যান", "Skip to content") }}</a>
 {% include "partials/header.html" %}
 <main id="main">
 {% block content %}{% endblock %}
 </main>
 {% include "partials/footer.html" %}
-{% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}
+{#- Phones: one main action fixed at the bottom (the header button is hidden there). Business pages lead
+    with the assessment, the dealer page with the application, every other page with the pre-order.
+    The Android app is not offered here: it is for people who already have a VenGuard (App tour). -#}
+{% if mobile_bar %}
 <div class="mobile-cta">
+  {% if slug in ["landlords-restaurants", "landlords", "restaurants"] %}
+  <a class="btn btn--primary" href="#assessment" data-track="b2b_click" data-position="mobile_sticky">{{ t("মূল্যায়নের অনুরোধ", "Request an assessment") }}</a>
+  {% elif slug == "dealers" %}
+  <a class="btn btn--primary" href="#apply" data-track="dealer_apply_click" data-position="mobile_sticky">{{ t("আবেদন করুন", "Apply") }}</a>
+  {% else %}
   {{ preorder_btn(t, url, site, "mobile_sticky") }}
-  <a class="btn btn--secondary btn--icon" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="mobile_sticky" aria-label="{{ t('অ্যান্ড্রয়েড অ্যাপ নিন', 'Get the Android app') }}">{{ icon("download") }}</a>
-  {{ whatsapp(site, t, "mobile_sticky", "btn btn--secondary btn--icon", icon_only=true) }}
+  {% endif %}
 </div>
 {% endif %}
+{#- Floating WhatsApp button on every page (hidden while the cookie bar is open). -#}
+{{ whatsapp(site, t, "floating", "wa-float", icon_only=true) }}
 <section class="consent" id="consent" aria-label="{{ t('কুকি পছন্দ', 'Cookie choice') }}">
   <div class="wrap">
     <p>{{ t("সাইটটি আরও ভালো করতে আমরা কতজন ভিজিট করছেন তা গুনতে কুকি ব্যবহার করতে চাই। আপনার ফোন নম্বর বা নাম কখনো এসব টুলে যায় না।", "We would like to use cookies to count visits so we can improve this site. Your name and phone number are never sent to these tools.") }} <a href="{{ url('cookies') }}">{{ t("বিস্তারিত", "Details") }}</a></p>

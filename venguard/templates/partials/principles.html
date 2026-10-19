@@ -1,0 +1,29 @@
+{#- The three engineering principles (home page and Products). Claims rule: "designed to" until the
+    matching claim in site.json is confirmed; the power-cut wording matches pages/how-it-works.html. -#}
+{% from "partials/macros.html" import icon, testing_note %}
+<section class="section" id="principles" aria-labelledby="principles-title">
+  <div class="wrap">
+    <div class="hx-head hx-head--center">
+      <p class="eyebrow">{{ t("যেভাবে তৈরি", "How it is engineered") }}</p>
+      <h2 id="principles-title">{{ t("তিনটি জিনিস যা VenGuard-কে আলাদা করে", "Three things built into every VenGuard") }}</h2>
+    </div>
+    <div class="grid grid--3 principles">
+      <div class="card">
+        {{ icon("no-internet", "icon") }}
+        <h3>{{ t("ইন্টারনেট লাগে না", "No internet needed") }}</h3>
+        <p>{{ t("ডিটেক্টর, ভালভ ও রিলে নিজেদের মধ্যে সরাসরি রেডিওতে কথা বলে। Wi-Fi না থাকলে বা ইন্টারনেট বন্ধ থাকলেও সুরক্ষা চালু থাকার জন্য তৈরি। শুধু ফোনের সতর্কবার্তা (কানেক্টেড প্ল্যান) ইন্টারনেটের অপেক্ষা করে।", "The detector, valve and relay talk to each other directly by radio. VenGuard is designed to keep protecting with no Wi-Fi and no internet at all; only phone alerts (Connected plan) wait for the internet.") }}</p>
+      </div>
+      <div class="card">
+        {{ icon("no-power", "icon") }}
+        <h3>{{ t("লোডশেডিংয়েও সুরক্ষা", "Keeps protecting in a power cut") }}</h3>
+        <p>{{ t("ভালভের নিজস্ব ব্যাটারি আছে (২টি AA), তাই বিদ্যুৎ না থাকলেও লিক হলে গ্যাস বন্ধ হয় ও অ্যালার্ম বাজে। এগজস্ট ফ্যানের জন্য বিদ্যুৎ লাগে; বিদ্যুৎ ফিরলে চলে।", "The valve has its own batteries (2 × AA), so a leak still shuts off the gas and sounds the alarm. The exhaust fan needs mains power and runs when it is back.") }}</p>
+      </div>
+      <div class="card">
+        {{ icon("reset", "icon") }}
+        <h3>{{ t("গ্যাস আবার চালু শুধু হাতে", "Gas back on only by hand") }}</h3>
+        <p>{{ t("ফোন থেকে গ্যাস বন্ধ করা যায়, কিন্তু কখনো চালু করা যায় না। জায়গা নিরাপদ হলে চুলার কাছে কেউ লিভার তুললে তবেই গ্যাস আসে, তাই ভুল করে বা দূর থেকে গ্যাস চালু হওয়ার সুযোগ নেই।", "You can close the gas from your phone, but never open it. Gas comes back only when someone lifts the lever at the stove once it is safe, so it cannot be turned on remotely or by mistake.") }}</p>
+      </div>
+    </div>
+    {% if not (claim("no_internet_needed") and claim("no_power_needed")) %}<p class="small muted hx-center mt-2">{{ testing_note(t) }} {{ t("এগুলো VenGuard যেভাবে কাজ করার জন্য তৈরি; বুয়েট BRTC-তে স্বাধীন পরীক্ষা চলছে।", "These describe how VenGuard is designed to work; independent testing at BUET BRTC is under way.") }}</p>{% endif %}
+  </div>
+</section>

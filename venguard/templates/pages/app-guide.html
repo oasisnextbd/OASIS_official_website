@@ -4,15 +4,19 @@
 {#- Customer guide to the VenGuard Android app. Pictures: assets/img/app-guide/<lang>/ (real app screens,
     numbered rings = what to tap; made from the app with the local Firebase emulators, see
     docs/venguard/manual-pictures/README.md). Device behaviour follows the claims rule: "designed to". -#}
-{% set page_title = t("VenGuard অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app") %}
+{% set page_title = t("VenGuard অ্যাপ ট্যুর — ছবিসহ ধাপে ধাপে", "VenGuard app tour — step by step with pictures") %}
 {% set page_desc = t("ধাপে ধাপে ছবিসহ: অ্যাপ ইনস্টল, অ্যাকাউন্ট খোলা, ডিভাইস আইডি ও স্টিকার কোড দিয়ে VenGuard যোগ করা, লিক হলে কী দেখবেন।", "Step by step with pictures: install the app, create an account, add your VenGuard with its device ID and sticker code, and what you see if there is a leak.") %}
 {% macro shot(name, alt_bn, alt_en) -%}
 <figure class="ag-shot"><a href="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" data-zoom data-close="{{ t('ছবি বন্ধ করুন', 'Close picture') }}" title="{{ t('বড় করে দেখুন', 'Open larger') }}"><img src="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" width="540" height="1171" loading="lazy" alt="{{ t(alt_bn, alt_en) }}"></a></figure>
 {%- endmacro %}
 {% block content %}
-{{ f.page_head(t, url, "অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app", "ছবিতে কমলা বৃত্ত ও নম্বর দেখায় কোথায় চাপবেন। নম্বরগুলো লেখার ধাপের সাথে মেলে।", "In the pictures, the orange rings and numbers show where to tap. The numbers match the steps.") }}
+{{ f.page_head(t, url, "অ্যাপ ট্যুর", "App tour", "VenGuard বসানোর পর অ্যাপে আপনি কী দেখবেন ও কী করতে পারবেন, ছবিসহ। ছবিতে কমলা বৃত্ত ও নম্বর দেখায় কোথায় চাপবেন।", "What you see and can do in the app once your VenGuard is installed, with pictures. The orange rings and numbers show where to tap.") }}
 <section class="section ag">
   <div class="wrap">
+    <div class="notice notice--info ag-when">
+      <p><strong>{{ t("প্রি-অর্ডার করেছেন? এখনই অ্যাপ লাগবে না।", "Pre-ordered? You do not need the app yet.") }}</strong> {{ t("অ্যাপ কাজ করে বসানো VenGuard-এর সাথে। ডেলিভারি ও বসানোর দিন আমরা অ্যাপ ইনস্টল ও আপনার ডিভাইস যোগ করতে সাহায্য করব। ততদিন এই ট্যুরে দেখে নিন কী পাবেন।", "The app works with an installed VenGuard. On delivery and installation day we help you install it and add your device. Until then, this tour shows what you will get.") }}</p>
+      <p>{{ t("VenGuard বসানো হয়ে গেছে?", "Already have your VenGuard installed?") }} <a href="#install">{{ t("অ্যাপ ইনস্টল করুন", "Install the app") }}</a> {{ t("অথবা", "or") }} <a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="app_tour">{{ t("ওয়েবে সাইন ইন করুন", "sign in on the web") }}</a>.</p>
+    </div>
     <nav class="ag-toc card card--flat" aria-label="{{ t('এই পাতায়', 'On this page') }}">
       <ol>
         {% for id, bn, en in [

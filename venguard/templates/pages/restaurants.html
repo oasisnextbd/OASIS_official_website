@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{#- Restaurants and commercial kitchens. Multi-cylinder manifolds and large hoods are assessed on site;
+    heavy-duty hardware is VenGuard Pro, in development (no specs until the CTO confirms them). -#}
+{% set page_title = t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘরের জন্য VenGuard", "VenGuard for restaurants and commercial kitchens") %}
+{% set page_desc = t("ব্যস্ত রান্নাঘর, একাধিক সিলিন্ডার, বড় এগজস্ট হুড: কর্মীদের সুরক্ষায় স্বয়ংক্রিয় গ্যাস বন্ধ। বিনামূল্যে সাইট মূল্যায়নের অনুরোধ করুন।", "Busy kitchens, several cylinders, large exhaust hoods: automatic gas shut-off to protect your staff. Request a free site assessment.") %}
+{% block content %}
+{{ f.page_head(t, url, "রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens", "ব্যস্ত রান্নাঘরে চুলার গরম ও রান্নার গন্ধে গ্যাসের গন্ধ চাপা পড়ে যায়। VenGuard কর্মীরা টের পাওয়ার আগেই নিজে থেকে গ্যাস বন্ধ করার জন্য তৈরি।", "In a busy kitchen, heat and cooking smells hide the smell of gas. VenGuard is designed to shut off the gas by itself before anyone has to notice.") }}
+
+<section class="section" aria-labelledby="why-kitchens">
+  <div class="wrap">
+    <h2 id="why-kitchens" class="visually-hidden">{{ t("কেন VenGuard", "Why VenGuard") }}</h2>
+    <div class="grid grid--3">
+      <div class="card">{{ icon("users", "icon") }}<h3>{{ t("কর্মীদের সুরক্ষা", "Protect your staff") }}</h3><p>{{ t("কেউ গন্ধ খেয়াল না করলেও লিক নিশ্চিত হলে গ্যাস বন্ধ হয়, অ্যালার্ম বাজে ও এগজস্ট চালু হয়।", "Even when nobody notices a smell, a confirmed leak shuts off the gas, sounds the alarm and starts the exhaust.") }}</p></div>
+      <div class="card">{{ icon("timer", "icon") }}<h3>{{ t("রাতে বন্ধ থাকার সময়ও", "Overnight, when you are closed") }}</h3><p>{{ t("দোকান বন্ধ, কেউ নেই, তবু সুরক্ষা চালু। লোডশেডিংয়েও ভালভ নিজের ব্যাটারিতে গ্যাস বন্ধ করে।", "Shop shut and nobody there, protection still on. In a power cut, the valve closes the gas on its own batteries.") }}</p></div>
+      <div class="card">{{ icon("fan", "icon") }}<h3>{{ t("এগজস্ট হুডের সাথে যুক্ত", "Works with your exhaust hood") }}</h3><p>{{ t("রিলে লিক হলে আপনার এগজস্ট ফ্যান বা হুড চালু করে। বড় হুড মোটরের ক্ষমতা আমরা সরেজমিনে মিলিয়ে দেখি।", "The relay starts your exhaust fan or hood on a leak. For large hood motors we check the rating on site.") }}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" aria-labelledby="setup-title">
+  <div class="wrap split">
+    <div>
+      <h2 id="setup-title">{{ t("একাধিক সিলিন্ডার ও ম্যানিফোল্ড", "Several cylinders and manifolds") }}</h2>
+      <p>{{ t("একাধিক সিলিন্ডার, ম্যানিফোল্ড বা কয়েকটি রান্নার জায়গা থাকলে প্রতিটি রান্নাঘরের জন্য আলাদা পরিকল্পনা লাগে। আমরা সরেজমিনে দেখে কোথায় ডিটেক্টর ও ভালভ বসবে তা প্রস্তাব করি।", "With several cylinders, a manifold or more than one cooking area, each kitchen needs its own plan. We assess on site and propose where the detectors and valves go.") }}</p>
+      <p>{{ t("বড় সেটআপের জন্য ভারী-কাজের ভালভ ও একাধিক জায়গায় শনাক্তকরণসহ VenGuard প্রো তৈরি হচ্ছে। পাইলট রান্নাঘর হতে চাইলে জানান।", "VenGuard Pro, with heavy-duty valves and sensing at several points for larger setups, is in development. Tell us if you would like to be a pilot kitchen.") }} <a href="{{ url('products') }}#pro">{{ t("VenGuard প্রো সম্পর্কে", "About VenGuard Pro") }}</a></p>
+    </div>
+    <div class="card card--flat">
+      <h3>{{ t("মূল্যায়নে আমরা যা দেখি", "What we check on the visit") }}</h3>
+      <ul class="ticks">
+        <li>{{ icon("tick") }}<span>{{ t("সিলিন্ডারের সংখ্যা, জায়গা ও রেগুলেটর বা ম্যানিফোল্ড", "How many cylinders, where, and the regulator or manifold") }}</span></li>
+        <li>{{ icon("tick") }}<span>{{ t("চুলার সংখ্যা ও রান্নার জায়গা", "How many stoves, and the cooking areas") }}</span></li>
+        <li>{{ icon("tick") }}<span>{{ t("এগজস্ট ফ্যান বা হুড ও তার বিদ্যুৎ সংযোগ", "Exhaust fans or hoods and their power supply") }}</span></li>
+        <li>{{ icon("tick") }}<span>{{ t("কর্মীরা কোথায় কাজ করেন ও কোথা দিয়ে বের হন", "Where staff work and how they get out") }}</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{{ f.assessment_form(t, url, site, "restaurant") }}
+{% endblock %}

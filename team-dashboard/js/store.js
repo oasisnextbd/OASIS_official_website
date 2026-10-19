@@ -16,7 +16,7 @@ export const S = {
 
 export const STATUSES = ["new", "payment_pending", "contacted", "paid", "refunded", "installed", "not_interested"];
 export const STATUS = { new: "New", payment_pending: "Payment pending", contacted: "Contacted", paid: "Deposit paid", refunded: "Refunded", installed: "Installed", not_interested: "Not interested" };
-export const TYPE = { preorder: "Pre-order", enquiry: "Landlord / restaurant", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
+export const TYPE = { preorder: "Pre-order", enquiry: "Site assessment request", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
 export const PACKAGE = { complete: "Complete kit", detector_relay: "Detector + Relay" };
 export const ROLES = { founder: "Founder", support: "Support", marketing: "Marketing" };
 

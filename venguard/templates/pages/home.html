@@ -14,19 +14,12 @@
 {% if ok %}<span class="hx-yes" role="img" aria-label="{{ t('হ্যাঁ', 'Yes') }}">{{ icon("tick") }}</span>{% else %}<span class="hx-no" role="img" aria-label="{{ t('না', 'No') }}">{{ icon("x-mark") }}</span>{% endif %}
 {%- endmacro %}
 {#- Home page (2026 redesign). Calm, product-first layout:
-    hero · how it protects (scroll steps) · lineup · comparison · testing band · recognition · FAQ · final CTA.
+    hero · how it protects (scroll steps) · three principles · lineup · comparison · testing band · businesses ·
+    recognition · FAQ · delivery roadmap · final CTA. The app is not offered here (App tour: pages/app-guide.html).
     Wording follows the claims rule (site.json → claims): "designed to" until testing confirms. -#}
 
 <section class="hx-hero" aria-labelledby="hero-title">
   <div class="wrap">
-    <div class="app-strip">
-      <span class="app-strip-icon">{{ icon("smartphone") }}</span>
-      <p><strong>{{ t("VenGuard অ্যাপ", "The VenGuard app") }}</strong> · {{ t("লাইভ গ্যাসের মাত্রা, সতর্কবার্তা ও দূর থেকে গ্যাস বন্ধ। অ্যান্ড্রয়েড অ্যাপ নিন বা ওয়েব অ্যাপে সাইন ইন করুন, তারপর স্টিকারের আইডি ও কোড দিয়ে আপনার VenGuard যোগ করুন।", "Live gas level, alerts and remote shut-off. Get the Android app or sign in on the web, then add your VenGuard with the ID and code on its sticker.") }} <a href="{{ url('app-guide') }}">{{ t("কীভাবে ব্যবহার করবেন", "How to use it") }}</a></p>
-      <div class="btn-row">
-        <a class="btn btn--secondary btn--sm" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="hero">{{ t("অ্যাপ খুলুন", "Open the app") }}</a>
-        <a class="btn btn--dark btn--sm" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="hero">{{ icon("download") }}{{ t("অ্যান্ড্রয়েড অ্যাপ নিন", "Get the Android app") }}</a>
-      </div>
-    </div>
     <div class="hx-hero-grid">
       <div class="hx-hero-copy">
         <p class="eyebrow hx-eyebrow">{{ t("রান্নাঘরের গ্যাসের সার্কিট ব্রেকার", "A circuit breaker for kitchen gas") }}</p>
@@ -44,6 +37,7 @@
         {% if site.preorder.open %}
         <p class="btn-note">{{ t("দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "। প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.kit_price_bdt) ~ ". Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable.") }} {{ t(site.preorder.delivery_bn, site.preorder.delivery_en) }}</p>
         {% endif %}
+        <p class="hx-b2b-link">{{ icon("building") }}<span>{{ t("ভবন, রেস্তোরাঁ বা ডিলারশিপের জন্য?", "For a building, restaurant or dealership?") }} <a href="{{ url('landlords-restaurants') }}#assessment" data-track="b2b_click" data-position="hero">{{ t("সাইট মূল্যায়নের অনুরোধ করুন", "Request a site assessment") }}</a></span></p>
         {% if site.achievements["items"] %}
         <ul class="hero-proof" aria-label="{{ t('স্বীকৃতি', 'Recognition') }}">
           {% for a in site.achievements["items"] if a.get("highlight_en") %}
@@ -76,6 +70,8 @@
     {% if not (claim("closes_under_1s") and claim("ventilation_relay") and claim("no_power_needed")) %}<p class="small muted hx-center">{{ testing_note(t) }} {{ t("চালু প্রোটোটাইপ। ওপরের ধাপগুলো VenGuard যেভাবে কাজ করার জন্য তৈরি; বিক্রির আগে বুয়েট BRTC-তে স্বাধীন পরীক্ষা ও সার্টিফিকেশন চলছে।", "Working prototype. These steps show how VenGuard is designed to work; independent testing and certification at BUET BRTC come before shipping.") }}</p>{% endif %}
   </div>
 </section>
+
+{% include "partials/principles.html" %}
 
 {# Lineup: the kit and its modular parts #}
 {% set p = site.preorder %}
@@ -121,7 +117,7 @@
     <div class="hx-connected">
       <span class="hx-connected-icon">{{ icon("smartphone") }}</span>
       <p><strong>{{ t("কানেক্টেড প্ল্যান · ঐচ্ছিক", "Connected plan · optional") }}</strong> {{ t("ফোনে লাইভ অবস্থা, পরিবারকে সতর্কতা ও দূর থেকে গ্যাস বন্ধ: বছরে ৳" ~ num(p.connected_plan_bdt_per_year) ~ "। মূল সুরক্ষা কখনো সাবস্ক্রিপশনের পেছনে আটকে থাকে না।", "Live status on your phone, family alerts and remote shut-off: BDT " ~ num(p.connected_plan_bdt_per_year) ~ " a year. Core safety is never locked behind a subscription.") }}</p>
-      <a class="arrow-link" href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="connected_plan">{{ t("অ্যাপটি খুলুন", "Open the app") }} {{ icon("arrow", "", 18) }}</a>
+      <a class="arrow-link" href="{{ url('app-guide') }}" data-track="app_tour_click" data-position="connected_plan">{{ t("অ্যাপ ট্যুর দেখুন", "Take the app tour") }} {{ icon("arrow", "", 18) }}</a>
     </div>
   </div>
 </section>
@@ -173,12 +169,12 @@
     <div class="hx-b2b">
       <div>
         <p class="eyebrow">{{ t("ভবন ও ব্যবসার জন্য", "For buildings and businesses") }}</p>
-        <h2 id="b2b-title">{{ t("বাড়িওয়ালা, ডেভেলপার বা রেস্তোরাঁর মালিক?", "Own a building or run a restaurant?") }}</h2>
-        <p>{{ t("প্রতিটি রান্নাঘরে একটি করে VenGuard, অনেক ইউনিটে বিশেষ দাম ও বসানোর ব্যবস্থা। কয়টি ফ্ল্যাট বা চুলা জানান, আমরা কোটেশন দেব।", "A VenGuard in every kitchen, with volume pricing and installation for many units. Tell us how many flats or stoves and we will send a quote.") }}</p>
+        <h2 id="b2b-title">{{ t("বাড়িওয়ালা, ডেভেলপার, রেস্তোরাঁ বা ডিলার?", "Landlord, developer, restaurant or dealer?") }}</h2>
+        <p>{{ t("প্রতিটি রান্নাঘরে একটি করে VenGuard, অনেক ইউনিটে বিশেষ দাম ও বসানোর ব্যবস্থা। আমরা বিনামূল্যে সাইট দেখে লিখিত প্রস্তাব দিই।", "A VenGuard in every kitchen, with volume pricing and installation for many units. We assess your site for free and send a written proposal.") }}</p>
+        <p class="hx-b2b-paths"><a href="{{ url('landlords') }}" data-track="b2b_click" data-position="home_landlords">{{ icon("building") }}{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a><a href="{{ url('restaurants') }}" data-track="b2b_click" data-position="home_restaurants">{{ icon("restaurant") }}{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</a><a href="{{ url('dealers') }}" data-track="b2b_click" data-position="home_dealers">{{ icon("dealer") }}{{ t("ডিলার ও ইনস্টলার", "Dealers and installers") }}</a></p>
       </div>
       <div class="btn-row">
-        <a class="btn btn--primary" href="{{ url('landlords-restaurants') }}#landlords" data-track="b2b_click" data-position="home_landlords">{{ icon("building") }}{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a>
-        <a class="btn btn--secondary" href="{{ url('landlords-restaurants') }}#restaurants" data-track="b2b_click" data-position="home_restaurants">{{ icon("restaurant") }}{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</a>
+        <a class="btn btn--primary" href="{{ url('landlords-restaurants') }}#assessment" data-track="b2b_click" data-position="home_assessment">{{ t("সাইট মূল্যায়নের অনুরোধ", "Request a site assessment") }}</a>
       </div>
     </div>
   </div>
@@ -222,6 +218,17 @@
     </div>
     {% set faq_limit = 5 %}
     {% include "partials/faq-list.html" %}
+  </div>
+</section>
+
+{# Delivery roadmap: what a pre-order customer waits for (steps and states: site.json → status_timeline) #}
+<section class="section section--tight" id="roadmap" aria-labelledby="roadmap-title">
+  <div class="wrap">
+    <div class="hx-head hx-head--center">
+      <p class="eyebrow">{{ t("প্রি-অর্ডার থেকে আপনার রান্নাঘর", "From pre-order to your kitchen") }}</p>
+      <h2 id="roadmap-title">{{ t("ডেলিভারির পথ", "The road to delivery") }}</h2>
+    </div>
+    {% include "partials/timeline.html" %}
   </div>
 </section>
 
