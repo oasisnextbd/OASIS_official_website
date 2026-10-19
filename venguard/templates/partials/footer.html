@@ -35,20 +35,25 @@
           {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer_icons" aria-label="{{ t('ইমেইল', 'Email') }}">{{ icon("mail") }}</a></li>{% endif %}
         </ul>
       </div>
-      <nav aria-label="{{ t('পণ্য', 'Product') }}">
-        <h2>{{ t("পণ্য", "Product") }}</h2>
+      {#- Four short groups (about five links each). Sign-in for app users is in the App tour. -#}
+      <nav aria-label="{{ t('পণ্য', 'Products') }}">
+        <h2>{{ t("পণ্য", "Products") }}</h2>
         <ul>
-          <li><a href="{{ url('products') }}">{{ t("সব পণ্য: VenGuard by OASIS", "All products: VenGuard by OASIS") }}</a></li>
-          <li><a href="{{ url('home-kit') }}">{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</a></li>
+          <li><a href="{{ url('products') }}">{{ t("সব পণ্য", "All products") }}</a></li>
+          <li><a href="{{ url('home-kit') }}">{{ t("হোম কিট", "Home kit") }}</a></li>
           <li><a href="{{ url('how-it-works') }}">{{ t("কীভাবে কাজ করে", "How it works") }}</a></li>
           <li><a href="{{ url('pre-order') }}" data-track="cta_preorder_click" data-position="footer">{{ t("প্রি-অর্ডার", "Pre-order") }}</a></li>
-          <li><a href="{{ url('landlords-restaurants') }}">{{ t("ব্যবসার জন্য", "For businesses") }}</a></li>
-          <li><a href="{{ url('landlords') }}">{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a></li>
-          <li><a href="{{ url('restaurants') }}">{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</a></li>
-          <li><a href="{{ url('dealers') }}">{{ t("ডিলার ও ইনস্টলার", "Dealers and installers") }}</a></li>
-          <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (তৈরি হচ্ছে)", "Agro and Marine (in development)") }}</a></li>
           <li><a href="{{ url('app-guide') }}">{{ t("অ্যাপ ট্যুর", "App tour") }}</a></li>
-          <li><a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="footer">{{ t("VenGuard অ্যাপ: সাইন ইন", "VenGuard app: sign in") }}</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="{{ t('ব্যবসার জন্য', 'For businesses') }}">
+        <h2>{{ t("ব্যবসার জন্য", "For businesses") }}</h2>
+        <ul>
+          <li><a href="{{ url('landlords') }}">{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a></li>
+          <li><a href="{{ url('restaurants') }}">{{ t("রেস্তোরাঁ ও রান্নাঘর", "Restaurants and kitchens") }}</a></li>
+          <li><a href="{{ url('dealers') }}">{{ t("ডিলার ও ইনস্টলার", "Dealers and installers") }}</a></li>
+          <li><a href="{{ url('agro-marine') }}">{{ t("খামার ও নৌযান", "Farms and vessels") }}</a></li>
+          <li><a href="{{ url('landlords-restaurants') }}#assessment" data-track="b2b_click" data-position="footer">{{ t("সাইট মূল্যায়ন", "Site assessment") }}</a></li>
         </ul>
       </nav>
       <nav aria-label="{{ t('প্রতিষ্ঠান', 'Company') }}">
@@ -57,7 +62,6 @@
           <li><a href="{{ url('about') }}">{{ t("আমাদের কথা", "About us") }}</a></li>
           <li><a href="{{ url('faq') }}">{{ t("সাধারণ প্রশ্ন", "FAQ") }}</a></li>
           <li><a href="{{ url('guides') }}">{{ t("নিরাপত্তা গাইড", "Safety guides") }}</a></li>
-          <li><a href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></li>
           <li><a href="{{ root }}assets/docs/venguard-fact-sheet.pdf" data-track="factsheet_download" data-position="footer">{{ t("ফ্যাক্ট শিট (PDF, ইংরেজি)", "Fact sheet (PDF)") }}</a></li>
         </ul>
       </nav>
@@ -66,7 +70,7 @@
         <ul>
           {% if c.whatsapp_number %}<li><a href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="footer">WhatsApp</a></li>{% endif %}
           {% if c.phone_tel %}<li><a href="tel:{{ c.phone_tel }}" data-track="call_click" data-position="footer">{{ c.phone_display or c.phone_tel }}</a></li>{% endif %}
-          {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer">{{ c.email }}</a></li>{% endif %}
+          {% if c.email %}<li><a href="mailto:{{ c.email }}" data-track="email_click" data-position="footer">{{ c.email.replace("@", "@<wbr>")|safe }}</a></li>{% endif %}
           {% if c.address_en %}<li>{{ t(c.address_bn or c.address_en, c.address_en) }}</li>{% endif %}
           {% if c.hours_en %}<li>{{ t(c.hours_bn or c.hours_en, c.hours_en) }}</li>{% endif %}
           <li><a href="{{ url('contact') }}">{{ t("বার্তা পাঠান", "Send us a message") }}</a></li>
