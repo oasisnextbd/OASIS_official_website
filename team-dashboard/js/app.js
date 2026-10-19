@@ -13,8 +13,11 @@ import marketing from "./views/marketing.js";
 import dealers from "./views/dealers.js";
 import subscriptions from "./views/subscriptions.js";
 import settings from "./views/settings.js";
+import emulators from "./views/emulators.js";
+import manual from "./views/manual.js";
+import { stopAllEmulators } from "./emulator.js";
 
-const VIEWS = [overview, orders, invoices, inventory, promos, marketing, dealers, subscriptions, settings];
+const VIEWS = [overview, orders, invoices, inventory, promos, marketing, dealers, subscriptions, emulators, settings, manual];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));
@@ -31,7 +34,7 @@ let view = VIEWS[0];
   if (cfg.emulators && S.db.auth.testSignIn) window.__vgTestSignIn = S.db.auth.testSignIn;
   S.db.auth.onChange(async (u) => {
     stop(); closeDrawer(); seenOrders = null;
-    if (!u) return signInScreen();
+    if (!u) { stopAllEmulators(); return signInScreen(); }
     S.user = u;
     $("#main").innerHTML = '<p class="sub">Loading…</p>';
     try { S.me = await whoAmI(u); }
@@ -73,7 +76,7 @@ on.act("signin", () => S.db.auth.signIn().catch((e) => {
   if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;
   signInScreen(c === "auth/popup-blocked" ? "The browser blocked the sign-in window. Allow pop-ups for this page, then try again." : `Sign-in didn't work (${c || e}). Please try again.`);
 }));
-on.act("signout", async () => { stop(); await S.db.auth.signOut(); if (!DEMO) location.reload(); });
+on.act("signout", async () => { stop(); await stopAllEmulators(); await S.db.auth.signOut(); if (!DEMO) location.reload(); });
 
 /* ---------- navigation ---------- */
 function visibleViews() { return VIEWS.filter((v) => !v.visible || v.visible()); }

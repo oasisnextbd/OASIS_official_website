@@ -10,6 +10,7 @@ export function connect() {
   function run(w) {
     if (w.id) return w.cb(data[w.col]?.[w.id] ? { id: w.id, ...clone(data[w.col][w.id]) } : null);
     let r = list(w.col);
+    if (w.o.where) r = r.filter((x) => x[w.o.where[0]] === w.o.where[2]);
     if (w.o.orderBy) r.sort((a, b) => (a[w.o.orderBy] > b[w.o.orderBy] ? 1 : -1) * (w.o.desc ? -1 : 1));
     if (w.o.limit) r = r.slice(0, w.o.limit);
     w.cb(r);
@@ -37,6 +38,10 @@ export function connect() {
     },
     async del(col, id) { if (data[col]) { delete data[col][id]; notify(col); } },
     async add(col, v) { const id = newId(); put(col, id, v); return id; },
+    // Emulators talk to the real device database: not available with made-up data.
+    async rtdbUpdate() { throw new Error("Emulators work only in the real dashboard, not the demo."); },
+    async createDeviceUser() { throw new Error("Emulators work only in the real dashboard, not the demo."); },
+    async deviceSession() { throw new Error("Emulators work only in the real dashboard, not the demo."); },
     async tx(fn) {
       const writes = [];
       const r = await fn({
@@ -108,6 +113,7 @@ function sample() {
     settings: {
       company: { legal_name: "", address: "", phone: "", email: "", bin: "", trade_license: "", vat_rate: 0, invoice_prefix: "INV", terms: "" },
       website: { preorder_open: true, kit_price_bdt: "", notice_bn: "", notice_en: "" },
+      app: { notice_en: "", min_version: "" },
     },
     subscriptions: {
       s1: { name: "GitHub (website hosting, code)", category: "Hosting", cycle: "free", cost: 0, currency: "BDT", active: true, remind_days: 30, history: [] },

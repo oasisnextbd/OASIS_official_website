@@ -121,3 +121,38 @@ test("only admins set device metadata; owners can leave", async () => {
   await assertSucceeds(set(ref(db("admin-uid"), `devices/${ID}/meta`), { kit: "detector_relay" }));
   await assertSucceeds(remove(ref(owner(), `devices/${ID}/owners/owner-uid`)));
 });
+
+// The company Google account (team dashboard → Emulators) may register test devices VG-EMU01…99 only.
+const company = (extra = {}) => env.authenticatedContext("company-uid", {
+  email: "oasisnextbd@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" }, ...extra }).database();
+
+test("the company account registers emulator devices, and nothing else", async () => {
+  await assertSucceeds(update(ref(company()), {
+    "deviceAuth/VG-EMU01": "emu-uid-1", "claimCodes/VG-EMU01": "ABCDEFGHJKMN", "devices/VG-EMU01/meta": { kit: "complete" },
+  }));
+  await assertFails(set(ref(company(), `deviceAuth/${ID}`), "attacker-uid"));
+  await assertFails(set(ref(company(), `claimCodes/${ID}`), "ABCDEFGHJKMN"));
+  await assertFails(set(ref(company(), `devices/${ID}/meta`), { kit: "detector_relay" }));
+  await assertFails(set(ref(company(), "claimCodes/VG-EMU02"), "short"));
+  await assertFails(get(ref(company(), "claimCodes/VG-EMU01")));
+  await assertSucceeds(update(ref(company()), { "deviceAuth/VG-EMU01": null, "claimCodes/VG-EMU01": null, "devices/VG-EMU01/meta": null }));
+});
+
+test("only the verified Google sign-in of the company account counts", async () => {
+  await assertFails(set(ref(company({ firebase: { sign_in_provider: "password" } }), "deviceAuth/VG-EMU01"), "x"));
+  await assertFails(set(ref(company({ email_verified: false }), "deviceAuth/VG-EMU01"), "x"));
+  await assertFails(set(ref(env.authenticatedContext("u", { email: "someone@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" } }).database(), "deviceAuth/VG-EMU01"), "x"));
+  await assertFails(set(ref(owner(), "claimCodes/VG-EMU01"), "ABCDEFGHJKMN"));
+});
+
+test("an emulator acts as its device once registered, like real firmware", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await update(ref(ctx.database()), { "deviceAuth/VG-EMU01": "emu-uid-1", "claimCodes/VG-EMU01": "ABCDEFGHJKMN", "devices/VG-EMU01/meta": { kit: "complete" } });
+  });
+  const emu = db("emu-uid-1");
+  await assertSucceeds(set(ref(emu, "devices/VG-EMU01/state"), state));
+  await assertSucceeds(set(ref(emu, "hb/VG-EMU01"), serverTimestamp()));
+  await assertFails(set(ref(emu, `devices/${ID}/state`), state));
+  await assertSucceeds(set(ref(owner(), "devices/VG-EMU01/owners/owner-uid"), "ABCDEFGHJKMN"));
+  await assertSucceeds(get(ref(owner(), "devices/VG-EMU01/state")));
+});

@@ -46,6 +46,7 @@ PAGES = {
     "faq": "faq.html",
     "contact": "contact.html",
     "guides": "guides.html",
+    "app-guide": "app-guide.html",
     "agro-marine": "agro-marine.html",
     "privacy": "privacy.html",
     "terms": "terms.html",

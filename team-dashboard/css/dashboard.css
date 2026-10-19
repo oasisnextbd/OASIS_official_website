@@ -317,3 +317,40 @@ table.tot tr:last-child th, table.tot tr:last-child td { border-bottom: 0; }
   .nav { mask-image: linear-gradient(90deg, #000 85%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); padding-right: 24px; }
 }
 .kpi .value.long { font-size: 1.35rem; line-height: 1.3; }
+
+/* Emulators (js/views/emulators.js). Device states use the device-safety colours, as in the app. */
+.emu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 16px; }
+.emu .panel-head h2 { display: flex; align-items: baseline; gap: 10px; }
+.emu-assign { max-width: 360px; margin: 6px 0 4px; }
+.emu-read { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.emu-read > div { display: grid; gap: 2px; padding: 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); }
+.emu-read span { font-size: .75rem; color: var(--muted); }
+.emu-read strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .emu-read { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.emu-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.emu-log { list-style: none; margin: 12px 0 0; padding: 10px 12px; max-height: 180px; overflow-y: auto; border-radius: 10px; background: var(--panel-2); font-size: .84rem; display: grid; gap: 4px; }
+.emu-state { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; border: 1px solid var(--line); color: var(--muted); }
+.emu-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.emu-state--safe { color: #167A45; border-color: #1E9E5A; }
+.emu-state--caution { color: #7A5B00; border-color: #F5C400; background: #FFF6CC; }
+.emu-state--danger { color: #fff; background: #D7263D; border-color: #D7263D; }
+:root[data-theme="dark"] .emu-state--safe { color: #3CC47F; }
+:root[data-theme="dark"] .emu-state--caution { color: #F5C400; background: rgb(245 196 0 / .14); }
+
+/* Manual (js/views/manual.js) */
+.manual { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 960px) { .manual { grid-template-columns: 1fr; } }
+.manual-toc { position: sticky; top: 16px; }
+.manual-toc ol { margin: 8px 0 12px; padding-left: 1.2em; display: grid; gap: 6px; font-size: .9rem; }
+.manual-toc a { color: var(--ink); }
+.manual-body { display: grid; gap: 20px; }
+.manual-sec { scroll-margin-top: 16px; }
+.manual-sec h2 { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
+.manual-num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .9rem; font-weight: 700; flex: none; }
+:root[data-theme="dark"] .manual-num { background: var(--accent); color: #07192C; }
+.manual-steps { margin: 10px 0 16px; padding-left: 1.3em; display: grid; gap: 8px; line-height: 1.55; }
+.manual-pics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.manual-pics figure { margin: 0; }
+.manual-pics img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); }
+.manual-pics figure:has(img[src*="app-guide"]) img { max-width: 240px; margin: 0 auto; }
+.manual-pics figcaption { margin-top: 6px; font-size: .8rem; color: var(--muted); }

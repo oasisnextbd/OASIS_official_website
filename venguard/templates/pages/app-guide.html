@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon %}
+{% import "partials/forms.html" as f %}
+{#- Customer guide to the VenGuard Android app. Pictures: assets/img/app-guide/<lang>/ (real app screens,
+    numbered rings = what to tap; made from the app with the local Firebase emulators, see
+    docs/venguard/manual-pictures/README.md). Device behaviour follows the claims rule: "designed to". -#}
+{% set page_title = t("VenGuard অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app") %}
+{% set page_desc = t("ধাপে ধাপে ছবিসহ: অ্যাপ ইনস্টল, অ্যাকাউন্ট খোলা, ডিভাইস আইডি ও স্টিকার কোড দিয়ে VenGuard যোগ করা, লিক হলে কী দেখবেন।", "Step by step with pictures: install the app, create an account, add your VenGuard with its device ID and sticker code, and what you see if there is a leak.") %}
+{% macro shot(name, alt_bn, alt_en) -%}
+<figure class="ag-shot"><a href="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" title="{{ t('বড় করে দেখুন', 'Open larger') }}"><img src="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" width="540" height="1171" loading="lazy" alt="{{ t(alt_bn, alt_en) }}"></a></figure>
+{%- endmacro %}
+{% block content %}
+{{ f.page_head(t, url, "অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app", "ছবিতে কমলা বৃত্ত ও নম্বর দেখায় কোথায় চাপবেন। নম্বরগুলো লেখার ধাপের সাথে মেলে।", "In the pictures, the orange rings and numbers show where to tap. The numbers match the steps.") }}
+<section class="section ag">
+  <div class="wrap">
+    <nav class="ag-toc card card--flat" aria-label="{{ t('এই পাতায়', 'On this page') }}">
+      <ol>
+        {% for id, bn, en in [
+          ("install", "অ্যাপ ইনস্টল করুন", "Install the app"),
+          ("account", "অ্যাকাউন্ট খুলুন", "Create your account"),
+          ("sticker", "ডিভাইস আইডি ও স্টিকার কোড", "Device ID and sticker code"),
+          ("add", "VenGuard যোগ করুন", "Add your VenGuard"),
+          ("home", "হোম স্ক্রিন", "The Home screen"),
+          ("device", "একটি ডিভাইসের পাতা", "A device's screen"),
+          ("leak", "লিক হলে", "If there is a leak"),
+          ("history", "ইতিহাস", "History"),
+          ("remove", "ডিভাইস সরানো", "Remove a device"),
+          ("profile", "প্রোফাইল ও সেটিংস", "Profile and settings"),
+          ("updates", "আপডেট ও সাহায্য", "Updates and help")] %}
+        <li><a href="#{{ id }}">{{ t(bn, en) }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+
+    <article class="ag-step" id="install">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(1) }}</span>{{ t("অ্যাপ ইনস্টল করুন", "Install the app") }}</h2>
+        <p>{{ t("এখন অ্যাপটি শুধু অ্যান্ড্রয়েডের জন্য। প্লে স্টোরে আসার আগে এটি সরাসরি আমাদের ওয়েবসাইট থেকে নিতে হয়।", "The app is for Android for now. Until it is on the Play Store, you get it straight from our website.") }}</p>
+        <ol>
+          <li>{{ t("ফোনে নিচের বোতাম চাপুন। ফাইলটি (VenGuard.apk) ডাউনলোড হবে।", "On your phone, tap the button below. The file (VenGuard.apk) downloads.") }}</li>
+          <li>{{ t("ডাউনলোড শেষ হলে ফাইলটি খুলুন, তারপর ইনস্টল চাপুন। ফোন জিজ্ঞেস করলে এই ব্রাউজারকে অ্যাপ ইনস্টল করার অনুমতি দিন।", "When it has downloaded, open the file and tap Install. If the phone asks, allow this browser to install apps.") }}</li>
+          <li>{{ t("স্যামসাং ফোনে ইনস্টল আটকে গেলে: সেটিংস → নিরাপত্তা ও গোপনীয়তা → অটো ব্লকার কিছুক্ষণের জন্য বন্ধ করুন, ইনস্টল শেষে আবার চালু করুন।", "Samsung phones: if the install is blocked, go to Settings → Security and privacy → Auto Blocker and turn it off for the install, then on again.") }}</li>
+          <li>{{ t("গুগল প্লে প্রোটেক্ট সতর্ক করলে আরও বিস্তারিত → তবুও ইনস্টল করুন চাপুন।", "If Google Play Protect warns you, tap More details → Install anyway.") }}</li>
+        </ol>
+        <p><a class="btn btn--dark" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="app_guide">{{ icon("download") }}{{ t("অ্যান্ড্রয়েড অ্যাপ ডাউনলোড", "Download for Android") }}</a></p>
+      </div>
+    </article>
+
+    <article class="ag-step" id="account">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(2) }}</span>{{ t("অ্যাকাউন্ট খুলুন", "Create your account") }}</h2>
+        <p>{{ t("অ্যাপ খুললে প্রথমে VenGuard-এর লোগো, তারপর সাইন ইন পাতা আসে।", "When you open the app you see the VenGuard logo, then the sign-in page.") }}</p>
+        <ol>
+          <li>{{ t("নতুন অ্যাকাউন্ট খুলুন চাপুন (প্রথম ছবি, ১)।", "Tap Create an account (first picture, 1).") }}</li>
+          <li>{{ t("আপনার ইমেইল লিখুন (দ্বিতীয় ছবি, ১)।", "Type your email (second picture, 1).") }}</li>
+          <li>{{ t("কমপক্ষে ৮ অক্ষরের একটি পাসওয়ার্ড দিন (২)।", "Choose a password of at least 8 characters (2).") }}</li>
+          <li>{{ t("অ্যাকাউন্ট খুলুন চাপুন (৩)। পরের বার একই ইমেইল ও পাসওয়ার্ড দিয়ে সাইন ইন করবেন।", "Tap Create account (3). Next time, sign in with the same email and password.") }}</li>
+        </ol>
+        <p class="small muted">{{ t("পাসওয়ার্ড ভুলে গেলে সাইন ইন পাতায় পাসওয়ার্ড ভুলে গেছেন? চাপুন; ইমেইলে নতুন পাসওয়ার্ড দেওয়ার লিংক আসবে।", "Forgot your password? Tap Forgot password? on the sign-in page; a link to set a new one arrives by email.") }}</p>
+      </div>
+      <div class="ag-pics">
+        {{ shot("01-signin", "সাইন ইন পাতা, নতুন অ্যাকাউন্ট খুলুন চিহ্নিত", "Sign-in page with Create an account marked") }}
+        {{ shot("02-create", "নতুন অ্যাকাউন্ট: ইমেইল, পাসওয়ার্ড ও অ্যাকাউন্ট খুলুন চিহ্নিত", "Create an account: email, password and Create account marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="sticker">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(3) }}</span>{{ t("ডিভাইস আইডি ও স্টিকার কোড", "Your device ID and sticker code") }}</h2>
+        <p>{{ t("প্রতিটি VenGuard-এর স্টিকারে ও বাক্সে দুটি জিনিস ছাপা থাকে:", "Two things are printed on the sticker of every VenGuard and on its box:") }}</p>
+        <ul>
+          <li><strong>{{ t("ডিভাইস আইডি", "Device ID") }}</strong>: {{ t("VG- দিয়ে শুরু, যেমন", "starts with VG-, for example") }} <span class="mono">VG-0001A3</span></li>
+          <li><strong>{{ t("স্টিকার কোড", "Sticker code") }}</strong>: {{ t("১২টি অক্ষর ও সংখ্যা, যেমন", "12 letters and numbers, for example") }} <span class="mono">K7Q2M9XW4TPA</span></li>
+        </ul>
+        <p>{{ t("কোডটি শুধু আপনার কাছে রাখুন: যার কাছে আইডি ও কোড দুটোই আছে, সে-ই যন্ত্রটি নিজের অ্যাপে যোগ করতে পারে। বাক্সটি ফেলে দেবেন না।", "Keep the code to yourself: anyone with both the ID and the code can add the device to their app. Keep the box.") }}</p>
+      </div>
+    </article>
+
+    <article class="ag-step" id="add">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(4) }}</span>{{ t("VenGuard যোগ করুন", "Add your VenGuard") }}</h2>
+        <ol>
+          <li>{{ t("হোম স্ক্রিনে ওপরে ডানে + চাপুন (প্রথম ছবি, ১)।", "On Home, tap + at the top right (first picture, 1).") }}</li>
+          <li>{{ t("ডিভাইস আইডি লিখুন (দ্বিতীয় ছবি, ১)।", "Type the device ID (second picture, 1).") }}</li>
+          <li>{{ t("স্টিকার কোড লিখুন (২)। বড় বা ছোট হাতের অক্ষর, ফাঁকা জায়গা বা ড্যাশ নিয়ে চিন্তা করবেন না।", "Type the sticker code (2). Capitals, spaces or dashes don't matter.") }}</li>
+          <li>{{ t("জায়গার নাম দিন, যেমন বাসা বা মায়ের ফ্ল্যাট (৩)। এটি দেখে আপনি চিনবেন কোন যন্ত্র কোথায়।", "Give the place a name, such as Home or Mother's flat (3). This is how you tell your devices apart.") }}</li>
+          <li>{{ t("এলাকা লিখুন, যেমন মিরপুর ১১ (৪)।", "Type the area, such as Mirpur 11 (4).") }}</li>
+          <li>{{ t("যোগ করুন চাপুন (৫)। যন্ত্রের পাতা খুলবে।", "Tap Add device (5). The device's screen opens.") }}</li>
+        </ol>
+        <p class="small muted">{{ t("আইডি বা কোড না মিললে অ্যাপ জানাবে; স্টিকারটি আবার দেখে নিন।", "If the ID or code does not match, the app tells you; check the sticker again.") }}</p>
+      </div>
+      <div class="ag-pics">
+        {{ shot("03-empty", "নতুন অ্যাকাউন্টের হোম স্ক্রিন, + বোতাম চিহ্নিত", "Home of a new account with the + button marked") }}
+        {{ shot("04-add", "VenGuard যোগ করুন: ডিভাইস আইডি, স্টিকার কোড, জায়গার নাম, এলাকা ও যোগ করুন চিহ্নিত", "Add a VenGuard: device ID, sticker code, place name, area and Add device marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="home">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(5) }}</span>{{ t("হোম স্ক্রিন", "The Home screen") }}</h2>
+        <p>{{ t("প্রতিটি যন্ত্রের জন্য একটি প্যানেল (১): জায়গার নাম, এলাকা আর এখনকার অবস্থা। প্যানেলের চারপাশের রং অবস্থা বোঝায়:", "Each device has a panel (1): its place, area and how it is right now. The colour around the panel shows the state:") }}</p>
+        <ul class="ag-legend">
+          <li><i class="ag-dot ag-dot--safe"></i><strong>{{ t("সবুজ", "Green") }}</strong>: {{ t("নিরাপদ, কোনো গ্যাস লিক নেই", "Safe, no gas leak") }}</li>
+          <li><i class="ag-dot ag-dot--caution"></i><strong>{{ t("হলুদ", "Yellow") }}</strong>: {{ t("নজর দিন: গ্যাস বেশি (যাচাই হচ্ছে), ভালভ বন্ধ, বা ব্যাটারি কম", "Look at it: high gas being checked, valve closed, or battery low") }}</li>
+          <li><i class="ag-dot ag-dot--danger"></i><strong>{{ t("লাল", "Red") }}</strong>: {{ t("গ্যাস লিক", "Gas leak") }}</li>
+          <li><i class="ag-dot ag-dot--off"></i><strong>{{ t("ধূসর ড্যাশ", "Grey dashed") }}</strong>: {{ t("যন্ত্রটি অনলাইনে নেই", "The device is not online") }}</li>
+        </ul>
+        <p>{{ t("একটি যন্ত্র থাকলে প্যানেলটি পুরো স্ক্রিন জুড়ে থাকে; একসাথে চারটি পর্যন্ত দেখা যায়, বেশি হলে নিচে স্ক্রল করুন। প্যানেলে চাপলে সেই যন্ত্রের পাতা খোলে।", "With one device the panel fills the screen; up to four show at once, and you scroll for more. Tap a panel to open that device.") }}</p>
+      </div>
+      <div class="ag-pics">{{ shot("05-home", "একটি নিরাপদ যন্ত্রসহ হোম স্ক্রিন", "Home with one safe device") }}</div>
+    </article>
+
+    <article class="ag-step" id="device">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(6) }}</span>{{ t("একটি ডিভাইসের পাতা", "A device's screen") }}</h2>
+        <ol>
+          <li>{{ t("এখনকার অবস্থা (প্রথম ছবি, ১)।", "Its state right now (first picture, 1).") }}</li>
+          <li>{{ t("গ্যাসের মাত্রার বার (২): গ্যাস বাড়লে সবুজ থেকে হলুদ, তারপর লাল হয়। সতর্কতা, LFL ও HFL দাগ দেওয়া আছে; LFL হলো বাতাসে যত কম গ্যাস থাকলে আগুন ধরতে পারে।", "The gas bar (2): it turns from green to yellow, then red as gas rises. The alarm level, LFL and HFL are marked; the LFL is the least gas in the air that can burn.") }}</li>
+          <li>{{ t("ব্যাটারি ও সংযোগ (৩)।", "Battery and connection (3).") }}</li>
+          <li>{{ t("যন্ত্রাংশ: ডিটেক্টর, ভালভ ও রিলে, প্রতিটির অবস্থা (দ্বিতীয় ছবি, ১)।", "The parts: detector, valve and relay, each with its state (second picture, 1).") }}</li>
+          <li>{{ t("এখনই গ্যাস বন্ধ করুন (২): দূর থেকে ভালভ বন্ধ করার অনুরোধ পাঠায়, কানেক্টেড প্ল্যানে। যন্ত্রটি নিশ্চিত করলে অ্যাপ জানায়। আবার চালু করা যায় শুধু চুলার কাছে, হাতে; অ্যাপ থেকে কখনো নয়।", "Close the gas now (2): asks the valve to close from wherever you are, on the Connected plan. The app tells you when the device confirms. Turning gas back on is only possible by hand at the stove, never from the app.") }}</li>
+        </ol>
+      </div>
+      <div class="ag-pics">
+        {{ shot("06-device", "যন্ত্রের পাতা: অবস্থা, গ্যাসের বার, ব্যাটারি ও সংযোগ চিহ্নিত", "Device screen: state, gas bar, battery and connection marked") }}
+        {{ shot("07-device-more", "যন্ত্রাংশ ও এখনই গ্যাস বন্ধ করুন চিহ্নিত", "Parts and Close the gas now marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="leak">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(7) }}</span>{{ t("লিক হলে", "If there is a leak") }}</h2>
+        <p>{{ t("VenGuard লিক নিশ্চিত হলে নিজেই ভালভ বন্ধ করতে ও এগজস্ট ফ্যান চালু করতে তৈরি। অ্যাপে:", "VenGuard is designed to close the valve and start the exhaust fan by itself when it confirms a leak. In the app:") }}</p>
+        <ol>
+          <li>{{ t("পুরো অ্যাপ লাল হয়ে যায়, সতর্কতার শব্দ ও কম্পন চলতে থাকে, আর সেই যন্ত্রের পাতা নিজে থেকেই খোলে। বাতাস পরিষ্কার হলে গ্যাসের বার নামতে দেখবেন (প্রথম ছবি, ১)।", "The whole app turns red, the alarm sound and vibration keep going, and that device's screen opens by itself. Watch the gas bar come down as the air clears (first picture, 1).") }}</li>
+          <li>{{ t("নিরাপত্তার পরামর্শ মেনে চলুন: কোনো সুইচ, আগুন বা চার্জার নয়, জানালা খুলুন। শব্দ বন্ধ চাপলে শুধু শব্দ ও কম্পন থামে (২)।", "Follow the safety advice: no switches, flames or chargers, open the windows. Mute stops only the sound and vibration (2).") }}</li>
+          <li>{{ t("বাতাস স্বাভাবিক হলে লাল রং চলে যায় এবং গ্যাস নিয়ন্ত্রণে এসেছে বার্তা আসে, ফোনের নোটিফিকেশনেও (দ্বিতীয় ছবি, ১)।", "When the air is back to normal, the red goes and Gas is mitigated shows, also as a phone notification (second picture, 1).") }}</li>
+          <li>{{ t("ভালভ বন্ধ থাকে। গন্ধ পুরো চলে গেলে চুলার কাছে ভালভের লিভার তুলে আবার গ্যাস চালু করুন; ধাপগুলো যন্ত্রের পাতায় থাকে (তৃতীয় ছবি, ১)।", "The valve stays closed. When the smell has gone, lift the valve lever at the stove to turn gas back on; the steps are on the device's screen (third picture, 1).") }}</li>
+        </ol>
+        <div class="notice"><p class="mt-0">{{ t("ফোনে সতর্কতা আসে যখন VenGuard অ্যাপ খোলা থাকে বা পেছনে চালু থাকে। রান্নাঘরে ডিটেক্টর নিজেও সতর্কতার শব্দ করে। গ্যাসের গন্ধ পেলে: রেগুলেটর বন্ধ করুন, দরজা-জানালা খুলুন, কোনো সুইচ বা আগুন নয়, বাইরে গিয়ে ১০২ বা ৯৯৯ নম্বরে ফোন করুন।", "Your phone alerts you while the VenGuard app is open or running in the background. The detector also sounds its own alarm in the kitchen. If you smell gas: turn off the regulator, open doors and windows, no switches or flames, go outside and call 102 or 999.") }}</p></div>
+      </div>
+      <div class="ag-pics ag-pics--3">
+        {{ shot("08-alarm", "লিকের সময় লাল অ্যাপ: গ্যাসের বার ও সতর্কবার্তা চিহ্নিত", "The red app during a leak: gas bar and warning marked") }}
+        {{ shot("09-mitigated", "গ্যাস নিয়ন্ত্রণে এসেছে বার্তা", "The Gas is mitigated message") }}
+        {{ shot("10-reset", "কীভাবে আবার চালু করবেন: ধাপগুলো চিহ্নিত", "How to turn gas back on: the steps marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="history">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(8) }}</span>{{ t("ইতিহাস", "History") }}</h2>
+        <p>{{ t("নিচের বারে ইতিহাস চাপুন। প্রতিটি কার্ডে লেখা থাকে কোন যন্ত্রে কী হয়েছে, সময় ও তারিখসহ (১)। লাল বিন্দু লিক, হলুদ নজর দেওয়ার মতো কিছু, সবুজ মানে বিপদ কেটে গেছে। কার্ডে চাপলে সেই যন্ত্রের পাতা খোলে।", "Tap History in the bottom bar. Each card says which device and what happened, with the time and date (1). A red dot is a leak, yellow something to look at, green means it is over. Tap a card to open that device.") }}</p>
+      </div>
+      <div class="ag-pics">{{ shot("11-history", "ইতিহাসের পাতা", "The History page") }}</div>
+    </article>
+
+    <article class="ag-step" id="remove">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(9) }}</span>{{ t("ডিভাইস সরানো", "Remove a device") }}</h2>
+        <ol>
+          <li>{{ t("হোমে সম্পাদনা চাপুন (প্রথম ছবি, ১)।", "On Home, tap Edit (first picture, 1).") }}</li>
+          <li>{{ t("যে যন্ত্র সরাতে চান তার লাল ✕ চাপুন (২)।", "Tap the red ✕ on the device to remove (2).") }}</li>
+          <li>{{ t("সরান চাপুন (দ্বিতীয় ছবি, ১)। যন্ত্রটি শুধু আপনার অ্যাকাউন্ট থেকে সরে; যন্ত্র চালু থাকে, আইডি ও স্টিকার কোড দিয়ে আবার যোগ করা যায়। শেষ হলে শেষ চাপুন।", "Tap Remove (second picture, 1). It leaves your account only; the device keeps working and can be added again with its ID and sticker code. Tap Done when you have finished.") }}</li>
+        </ol>
+      </div>
+      <div class="ag-pics">
+        {{ shot("12-edit", "সম্পাদনা ও লাল ✕ চিহ্নিত", "Edit and the red ✕ marked") }}
+        {{ shot("13-remove", "সরাবেন? প্রশ্ন, সরান চিহ্নিত", "The Remove question with Remove marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="profile">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(10) }}</span>{{ t("প্রোফাইল ও সেটিংস", "Profile and settings") }}</h2>
+        <ol>
+          <li>{{ t("ওপরে ডানে গোল বোতাম চাপুন (প্রথম ছবি, ১)। পাশের চাঁদ/সূর্য বোতাম দিন ও রাতের রং বদলায়।", "Tap the round button at the top right (first picture, 1). The moon/sun button next to it switches Day and Night.") }}</li>
+          <li>{{ t("ভাষা: বাংলা বা ইংরেজি (২)।", "Language: Bangla or English (2).") }}</li>
+          <li>{{ t("থিম: স্বয়ংক্রিয় (ফোনের মতো), দিন বা রাত (৩)। এর নিচে সতর্কতার শব্দ ও নোটিফিকেশন চালু রাখুন।", "Theme: Auto (like the phone), Day or Night (3). Below it, keep the alarm sound and notifications on.") }}</li>
+          <li>{{ t("পরিবার: পরিবারের সদস্যদের নম্বর যোগ করুন (৪)। SMS সতর্কতা চালু হলে (শিগগিরই) লিকের খবর তাঁরা SMS-এ পাবেন। এখনই জানাতে চাইলে তাঁরাও অ্যাপ নিয়ে একই যন্ত্র যোগ করতে পারেন।", "Family: add your family's numbers (4). Once SMS alerts start (coming soon), they get an SMS about a leak. Until then, they can install the app and add the same device too.") }}</li>
+          <li>{{ t("সাইন আউট (দ্বিতীয় ছবি, ১)। একই ইমেইল দিয়ে সাইন ইন করলে আপনার যন্ত্রগুলো আবার দেখা যাবে।", "Sign out (second picture, 1). Sign in with the same email and your devices are back.") }}</li>
+        </ol>
+      </div>
+      <div class="ag-pics">
+        {{ shot("14-profile", "অ্যাকাউন্ট পাতা: ভাষা, থিম ও পরিবার চিহ্নিত", "Account page: language, theme and family marked") }}
+        {{ shot("15-signout", "সাইন আউট চিহ্নিত", "Sign out marked") }}
+      </div>
+    </article>
+
+    <article class="ag-step" id="updates">
+      <div class="ag-text">
+        <h2><span class="ag-num">{{ num(11) }}</span>{{ t("আপডেট ও সাহায্য", "Updates and help") }}</h2>
+        <ul>
+          <li>{{ t("অ্যাপ নিজে থেকেই আপডেট হয়: অ্যাপ বন্ধ করে আবার খুললে নতুন সংস্করণ চলে আসে। প্রোফাইলের নিচে সংস্করণ নম্বর দেখা যায়।", "The app updates itself: close it and open it again, and the new version is there. The version number is at the bottom of Profile.") }}</li>
+          <li>{{ t("কখনো নতুন সংস্করণ ইনস্টল করতে বললে ডাউনলোড চাপুন, ফাইলটি খুলে আপডেট চাপুন। আপনার সেটিংস থেকে যাবে।", "If it ever asks you to install the new version, tap Download, open the file and tap Update. Your settings stay.") }}</li>
+          <li>{{ t("অ্যাপের ওপরে মাঝে মাঝে VenGuard টিমের কোনো বার্তা দেখাতে পারে; ✕ চেপে বন্ধ করা যায়।", "A message from the VenGuard team may show at the top of the app now and then; ✕ closes it.") }}</li>
+        </ul>
+        {% if site.contact.whatsapp_number %}<p><a class="btn btn--secondary" href="https://wa.me/{{ site.contact.whatsapp_number }}" rel="noopener" data-track="whatsapp_click" data-position="app_guide">{{ icon("whatsapp") }}{{ t("WhatsApp-এ সাহায্য নিন", "Get help on WhatsApp") }}</a></p>{% endif %}
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}
