@@ -140,7 +140,7 @@ export default {
         <div class="manual-body">${list.map((s, i) => `<section class="panel manual-sec" id="m-${s.id}">
           <h2><span class="manual-num">${i + 1}</span>${esc(s.title)}</h2>
           <ol class="manual-steps">${s.steps.map((t) => `<li>${t}</li>`).join("")}</ol>
-          <div class="manual-pics">${s.pics.map(([src, alt], n) => `<figure><a href="${src}" target="_blank" rel="noopener" title="Open larger"><img src="${src}" alt="${esc(alt)}" loading="lazy"></a><figcaption>Picture ${n + 1}: ${esc(alt)}</figcaption></figure>`).join("")}</div>
+          <div class="manual-pics">${s.pics.map(([src, alt], n) => `<figure><a href="${src}" data-zoom title="Open larger"><img src="${src}" alt="${esc(alt)}" loading="lazy"></a><figcaption>Picture ${n + 1}: ${esc(alt)}</figcaption></figure>`).join("")}</div>
         </section>`).join("")}</div></div>`;
   },
 };
@@ -152,3 +152,30 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
   document.getElementById("m-" + a.dataset.manual)?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
+
+/* Pictures open larger over the manual, never in a new tab: close with ✕, Esc, a click beside the
+   picture, or the browser's / phone's Back button (opening adds a history step, closing removes it). */
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-zoom]");
+  if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;   // Ctrl/Cmd-click still opens a tab on purpose
+  e.preventDefault();
+  zoom(a.getAttribute("href"), a.querySelector("img")?.alt || "");
+});
+function zoom(src, alt) {
+  let d = document.getElementById("zoom");
+  if (!d) {
+    d = document.createElement("dialog");
+    d.id = "zoom";
+    d.className = "zoom";
+    d.innerHTML = `<button type="button" class="zoom-x" aria-label="Close picture">✕</button><figure><img alt=""><figcaption></figcaption></figure>`;
+    document.body.append(d);
+    d.addEventListener("click", (ev) => { if (ev.target === d || ev.target.closest(".zoom-x")) d.close(); });
+    d.addEventListener("close", () => { if (history.state?.zoom) history.back(); });
+    window.addEventListener("popstate", () => { if (d.open) d.close(); });
+  }
+  d.querySelector("img").src = src;
+  d.querySelector("img").alt = alt;
+  d.querySelector("figcaption").textContent = alt;
+  d.showModal();
+  history.pushState({ zoom: true }, "");
+}

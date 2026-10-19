@@ -162,6 +162,7 @@
     setupOrderSummary();
     setupThankYou();
     setupRatings();
+    setupZoom();
   });
 
   /* ================= Live settings from the team dashboard =================
@@ -261,6 +262,35 @@
   function fsValue(x) {
     x = x || {};
     return "stringValue" in x ? x.stringValue : "integerValue" in x ? Number(x.integerValue) : "doubleValue" in x ? x.doubleValue : "booleanValue" in x ? x.booleanValue : undefined;
+  }
+
+  /* ================= Pictures opened larger (app guide) =================
+     a[data-zoom] opens its picture over the page, never as a bare image: close with ✕, Esc, a tap beside
+     the picture or the phone's Back button (opening adds a history step, closing removes it). */
+  function setupZoom() {
+    var links = $$("a[data-zoom]"), d = null;
+    if (!links.length || typeof HTMLDialogElement !== "function") return;   // old browsers: the link still works
+    links.forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+        e.preventDefault();
+        var img = a.querySelector("img");
+        if (!d) {
+          d = document.createElement("dialog");
+          d.className = "zoom";
+          d.innerHTML = '<button type="button" class="zoom-x">\u2715</button><img alt="">';
+          document.body.appendChild(d);
+          d.addEventListener("click", function (ev) { if (ev.target === d || ev.target.closest(".zoom-x")) d.close(); });
+          d.addEventListener("close", function () { if (history.state && history.state.zoom) history.back(); });
+          window.addEventListener("popstate", function () { if (d.open) d.close(); });
+        }
+        $(".zoom-x", d).setAttribute("aria-label", a.getAttribute("data-close") || "Close");
+        $("img", d).src = a.getAttribute("href");
+        $("img", d).alt = img ? img.alt : "";
+        d.showModal();
+        history.pushState({ zoom: true }, "");
+      });
+    });
   }
 
   /* ================= Star ratings (footer) =================

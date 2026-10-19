@@ -7,7 +7,7 @@
 {% set page_title = t("VenGuard অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app") %}
 {% set page_desc = t("ধাপে ধাপে ছবিসহ: অ্যাপ ইনস্টল, অ্যাকাউন্ট খোলা, ডিভাইস আইডি ও স্টিকার কোড দিয়ে VenGuard যোগ করা, লিক হলে কী দেখবেন।", "Step by step with pictures: install the app, create an account, add your VenGuard with its device ID and sticker code, and what you see if there is a leak.") %}
 {% macro shot(name, alt_bn, alt_en) -%}
-<figure class="ag-shot"><a href="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" title="{{ t('বড় করে দেখুন', 'Open larger') }}"><img src="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" width="540" height="1171" loading="lazy" alt="{{ t(alt_bn, alt_en) }}"></a></figure>
+<figure class="ag-shot"><a href="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" data-zoom data-close="{{ t('ছবি বন্ধ করুন', 'Close picture') }}" title="{{ t('বড় করে দেখুন', 'Open larger') }}"><img src="{{ root }}assets/img/app-guide/{{ lang }}/{{ name }}.webp" width="540" height="1171" loading="lazy" alt="{{ t(alt_bn, alt_en) }}"></a></figure>
 {%- endmacro %}
 {% block content %}
 {{ f.page_head(t, url, "অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the VenGuard app", "ছবিতে কমলা বৃত্ত ও নম্বর দেখায় কোথায় চাপবেন। নম্বরগুলো লেখার ধাপের সাথে মেলে।", "In the pictures, the orange rings and numbers show where to tap. The numbers match the steps.") }}

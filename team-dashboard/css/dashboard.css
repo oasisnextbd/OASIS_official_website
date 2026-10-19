@@ -359,3 +359,12 @@ table.tot tr:last-child th, table.tot tr:last-child td { border-bottom: 0; }
 .section-h { font-size: 1.05rem; margin: 24px 0 10px; }
 .stars-txt { color: var(--accent); letter-spacing: 1px; white-space: nowrap; font-size: 1.05rem; }
 .stars-txt span { color: var(--muted); opacity: .35; }
+
+/* Manual: a picture opened larger (views/manual.js, zoom()) */
+.zoom { width: min(1200px, 96vw); max-height: 94vh; padding: 0; border: 0; border-radius: 14px; background: var(--panel); color: var(--ink); overflow: auto; }
+.zoom::backdrop { background: rgba(5, 18, 34, .75); }
+.zoom figure { margin: 0; padding: 14px; }
+.zoom img { display: block; max-width: 100%; max-height: calc(94vh - 80px); margin: 0 auto; border-radius: 8px; }
+.zoom figcaption { margin-top: 8px; font-size: .85rem; color: var(--muted); text-align: center; }
+.zoom-x { position: sticky; top: 8px; float: right; margin: 8px 8px 0 0; z-index: 1; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .2); }
+.zoom-x:hover { border-color: var(--accent-ink); }
