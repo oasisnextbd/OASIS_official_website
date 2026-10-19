@@ -23,9 +23,11 @@
   ("guides", t("নিরাপত্তা গাইড", "Guides"), []),
   ("about", t("আমাদের কথা", "About"), about_items),
 ] %}
-<header class="site-header">
+{%- set checkout = slug == "pre-order" -%}
+<header class="site-header{% if checkout %} site-header--checkout{% endif %}">
   <div class="wrap">
     <a class="logo" href="{{ url('') }}" aria-label="{{ t('VenGuard হোম', 'VenGuard home') }}">{% include "partials/logo.html" %}</a>
+    {% if not checkout %}
     <nav class="nav" id="site-nav" aria-label="{{ t('প্রধান মেনু', 'Main menu') }}">
       <ul>
         {% for s, label, subs in nav %}
@@ -45,6 +47,7 @@
         {% endfor %}
       </ul>
     </nav>
+    {% endif %}
     <div class="header-actions">
       <div class="lang-switch" role="group" aria-label="{{ t('ভাষা', 'Language') }}">
         <a href="{{ url(slug, 'bn') }}" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="{{ 'true' if lang == 'bn' else 'false' }}">বাংলা</a>
@@ -52,8 +55,10 @@
       </div>
       <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="{{ t('রাতের থিম', 'Night theme') }}" title="{{ t('দিন / রাতের থিম', 'Day / night theme') }}">{{ icon("moon", "i-moon") }}{{ icon("sun", "i-sun") }}</button>
       {{ whatsapp(site, t, "header", "icon-btn wa-link", icon_only=true) }}
+      {% if not checkout %}
       {{ preorder_btn(t, url, site, "header", "btn btn--primary btn--sm") }}
       <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
+      {% endif %}
     </div>
   </div>
 </header>

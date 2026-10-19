@@ -10,7 +10,10 @@
     "valve_addon_bdt": 1700,
     "connected_plan_bdt_per_year": 550,
     "_source": "VenGuard HCD Submission v4",
-    "_pricing_note": "Complete kit (detector + relay + valve) BDT 3,500. Modular: detector + relay bundle BDT 1,900; valve bought separately BDT 1,700. Confirmed by the founders, October 2026."
+    "_pricing_note": "Complete kit (detector + relay + valve) BDT 3,500. Modular: detector + relay bundle BDT 1,900; valve bought separately BDT 1,700. Confirmed by the founders, October 2026.",
+    "delivery_en": "Deliveries planned from March 2027, after testing and certification.",
+    "delivery_bn": "২০২৭ সালের মার্চ থেকে ডেলিভারির পরিকল্পনা, পরীক্ষা ও সার্টিফিকেশন শেষে।",
+    "_delivery_note": "Shown next to pre-order buttons. Keep in step with the FAQ answer 'When will I receive it?' and the roadmap."
   },
   "dealer": {
     "wholesale_bdt": 2800,
@@ -379,22 +382,6 @@
         "h": 565,
         "caption_bn": "কাছ থেকে ভালভ",
         "caption_en": "The valve, up close"
-      },
-      {
-        "type": "image",
-        "src": "kit-skin-sm",
-        "w": 640,
-        "h": 446,
-        "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে",
-        "caption_en": "Colour options being explored"
-      },
-      {
-        "type": "image",
-        "src": "kit-maroon-sm",
-        "w": 640,
-        "h": 447,
-        "caption_bn": "রঙের বিকল্প নিয়ে কাজ চলছে",
-        "caption_en": "Colour options being explored"
       }
     ],
     "_video_example": {

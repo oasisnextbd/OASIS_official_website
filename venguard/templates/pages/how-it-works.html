@@ -14,6 +14,9 @@
       ("fan", t("জোরপূর্বক বাতাস চলাচল", "Forced ventilation"), (t("একই সাথে অ্যাকটিভ ভেন্টিলেশন রিলে রান্নাঘরের এগজস্ট ফ্যান চালু করে, যাতে জমে থাকা গ্যাস দ্রুত বাইরে বের হয়ে যায়। ফ্যান চলার জন্য বিদ্যুৎ লাগে; বিদ্যুৎ না থাকলেও ভালভ গ্যাস বন্ধ রাখে।", "At the same time, the Active Ventilation Relay switches on the kitchen exhaust fan so the gas that has built up is pushed outside quickly. The fan needs mains power to run; without power, the valve still keeps the gas off.") if claim("ventilation_relay") else t("একই সাথে অ্যাকটিভ ভেন্টিলেশন রিলে রান্নাঘরের এগজস্ট ফ্যান চালু করার জন্য তৈরি, যাতে জমে থাকা গ্যাস দ্রুত বাইরে বের হয়ে যায়। ফ্যান চলার জন্য বিদ্যুৎ লাগে; বিদ্যুৎ না থাকলেও ভালভ গ্যাস বন্ধ রাখে।", "At the same time, the Active Ventilation Relay is designed to switch on the kitchen exhaust fan so the gas that has built up is pushed outside quickly. The fan needs mains power to run; without power, the valve still keeps the gas off."))),
       ("reset", t("হাতে রিসেট", "Manual reset"), t("ভালভ বন্ধ থাকে যতক্ষণ না একজন মানুষ এসে রিসেট করেন। জানালাও খুলে দিন, কোনো সুইচে হাত দেবেন না; ঘর পরিষ্কার হলে প্রায় ১০ সেকেন্ডে রিসেট করুন। এটা ইচ্ছা করেই এমন, যাতে গ্যাস নিজে থেকে আবার চালু না হয়।", "The valve stays closed until a person resets it. Open the windows too and leave switches alone; once the air is clear, reset it in about 10 seconds. This is deliberate, so gas never turns back on by itself.")),
     ] %}
+    {% if not (claim("closes_under_1s") and claim("ventilation_relay") and claim("no_power_needed")) %}
+    <p class="small muted">{{ testing_note(t) }} {{ t("চালু প্রোটোটাইপ। এই পাতায় VenGuard যেভাবে কাজ করার জন্য তৈরি তা লেখা; বিক্রির আগে বুয়েট BRTC-তে স্বাধীন পরীক্ষা ও সার্টিফিকেশন চলছে।", "Working prototype. This page describes how VenGuard is designed to work; independent testing and certification at BUET BRTC come before shipping.") }}</p>
+    {% endif %}
     <ol class="chain">
       {% for ic, title, body in chain %}
       <li class="chain-step">
@@ -21,7 +24,6 @@
           <span class="index">{{ t("ধাপ", "STEP") }} {{ num(loop.index) }} / {{ num(chain | length) }}</span>
           <h2>{{ title }}</h2>
           <p>{{ body }}</p>
-          {% if (ic == "valve" and not claim("closes_under_1s")) or (ic == "fan" and not claim("ventilation_relay")) %}{{ testing_note(t) }}{% endif %}
         </div>
         <div class="chain-figure">{% include "partials/diagram-" ~ ic ~ ".html" %}</div>
       </li>
@@ -29,6 +31,41 @@
     </ol>
   </div>
 </section>
+{# Edge cases. Only behaviour the founders have confirmed; add a row only with the CTO's sign-off. #}
+<section class="section section--alt" aria-labelledby="whatif-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label">{{ t("যদি…", "What if…") }}</p>
+      <h2 id="whatif-title">{{ t("কঠিন মুহূর্তেও VenGuard কী করে", "What VenGuard does when things go wrong") }}</h2>
+    </div>
+    <table class="specs whatif">
+      <caption class="visually-hidden">{{ t("বিশেষ পরিস্থিতিতে VenGuard", "VenGuard in special situations") }}</caption>
+      <thead><tr><th scope="col">{{ t("পরিস্থিতি", "Situation") }}</th><th scope="col">{{ t("VenGuard যা করে", "What VenGuard does") }}</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">{{ icon("no-power") }}{{ t("লোডশেডিং", "Power cut (load-shedding)") }}</th>
+          <td>{{ t("ডিটেক্টর ব্যাকআপ ব্যাটারিতে চলতে থাকে, আর ভালভের নিজস্ব ব্যাটারি (২ × AA) আছে, তাই লিক হলে গ্যাস বন্ধ হয় ও অ্যালার্ম বাজে। এগজস্ট ফ্যান চলতে বিদ্যুৎ লাগে, তাই বিদ্যুৎ না থাকলে ফ্যান চলে না; ভালভ তবুও গ্যাস বন্ধ রাখে।", "The detector keeps running on its backup battery and the valve has its own batteries (2 × AA), so a leak still shuts off the gas and sounds the alarm. The exhaust fan needs mains power, so it cannot run during a power cut; the valve still keeps the gas off.") }}</td></tr>
+        <tr><th scope="row">{{ icon("no-internet") }}{{ t("ওয়াই-ফাই বা ইন্টারনেট নেই", "No Wi-Fi or internet") }}</th>
+          <td>{{ t("কিছুই বদলায় না। ডিটেক্টর, ভালভ ও রিলে নিজেদের মধ্যে সরাসরি রেডিওতে কথা বলে, ইন্টারনেট লাগে না। শুধু ফোনের সতর্কতা (কানেক্টেড প্ল্যান) ইন্টারনেট ফেরার অপেক্ষায় থাকে।", "Nothing changes. The detector, valve and relay talk to each other directly by radio, with no internet. Only phone alerts (Connected plan) wait for the internet to come back.") }}</td></tr>
+        <tr><th scope="row">{{ icon("timer") }}{{ t("রান্নার ধোঁয়া, ভাপ, মসলা", "Cooking smells, steam, spices") }}</th>
+          <td>{{ t("ক্ষণিকের গন্ধে কিছু হয় না। গ্যাসের মাত্রা টানা ৭ সেকেন্ড ২০% LEL-এর ওপরে থাকলেই VenGuard কাজ শুরু করে।", "A brief whiff does nothing. VenGuard acts only when the gas stays above 20% LEL for 7 seconds in a row.") }}</td></tr>
+        <tr><th scope="row">{{ icon("home") }}{{ t("বাসায় কেউ নেই বা সবাই ঘুমিয়ে", "Nobody home, or everyone asleep") }}</th>
+          <td>{{ t("কাউকে কিছু করতে হয় না। ভালভ বন্ধ থাকে যতক্ষণ না কেউ এসে হাতে রিসেট করেন।", "Nobody has to do anything. The valve stays closed until someone comes and resets it by hand.") }}</td></tr>
+        <tr><th scope="row">{{ icon("smartphone") }}{{ t("অ্যাপ থেকে", "From the app") }}</th>
+          <td>{{ t("কানেক্টেড প্ল্যানে অ্যাপ দূর থেকে গ্যাস বন্ধ করতে পারে, কিন্তু কখনো চালু করতে পারে না।", "With the Connected plan the app can shut the gas off from anywhere, but it can never turn it back on.") }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="reset-title">
+  <div class="wrap prose">
+    <p class="label">{{ t("হাতে রিসেট", "Manual reset") }}</p>
+    <h2 id="reset-title" class="mt-0">{{ t("কেন গ্যাস শুধু হাতেই আবার চালু হয়", "Why the gas comes back on only by hand") }}</h2>
+    <p>{{ t("লিকের পর গ্যাস আবার চালুর আগে কাউকে নিজের চোখে দেখে নিতে হয়: গন্ধ চলে গেছে কি না, জানালা খোলা কি না, আর লিকের কারণ (ঢিলা হোস বা জয়েন্ট) ঠিক হয়েছে কি না।", "After a leak, someone has to see for themselves before gas flows again: that the smell has gone, the windows are open, and the cause (a loose hose or joint) has been fixed.") }}</p>
+    <p>{{ t("ফোন থেকে গ্যাস চালু করা গেলে সেখানে কেউ থাকত না যিনি এসব দেখবেন, আর অনিরাপদ ঘরে আবার গ্যাস যেতে পারত। তাই ভালভ বন্ধ থাকে যতক্ষণ না চুলার কাছে একজন মানুষ হাতে লিভার তুলে রিসেট করেন (প্রায় ১০ সেকেন্ড)। অ্যাপ গ্যাস বন্ধ করতে পারে, চালু কখনো নয়।", "If gas could be turned on from a phone, nobody would be there to check, and gas could flow into a room that is still unsafe. So the valve stays closed until a person at the stove lifts the lever to reset it (about 10 seconds). The app can shut the gas off, never on.") }}</p>
+  </div>
+</section>
+
 <section class="section section--dark" aria-labelledby="not-title">
   <div class="wrap">
     <div class="section-head"><p class="label">{{ t("সীমা", "Boundaries") }}</p><h2 id="not-title">{{ t("যা VenGuard করে না", "What VenGuard does not do") }}</h2></div>
