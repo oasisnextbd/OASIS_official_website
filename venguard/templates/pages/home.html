@@ -29,6 +29,7 @@
     </div>
     <div class="hx-hero-grid">
       <div class="hx-hero-copy">
+        <p class="eyebrow hx-eyebrow">{{ t("রান্নাঘরের গ্যাসের সার্কিট ব্রেকার", "A circuit breaker for kitchen gas") }}</p>
         <h1 id="hero-title">{{ t("নিরাপত্তা যা", "Safety that") }}<br><span class="accent">{{ t("নিজেই কাজ করে।", "acts.") }}</span></h1>
         <p class="hx-sub">{{ t("গ্যাস লিক টের পেলে VenGuard নিজেই সিলিন্ডারের ভালভ বন্ধ করে ও রান্নাঘরের বাতাস বের করে দেয়।", "When it senses a gas leak, VenGuard closes the cylinder valve and clears the kitchen air, by itself.") if claim("closes_under_1s") else t("গ্যাস লিক টের পেলে VenGuard নিজেই সিলিন্ডারের ভালভ বন্ধ করে ও রান্নাঘরের বাতাস বের করে দেওয়ার জন্য তৈরি।", "Designed to close the cylinder valve and clear the kitchen air by itself the moment it senses a gas leak.") }}</p>
         <ul class="hx-facts">
@@ -41,7 +42,7 @@
           <a class="btn btn--secondary btn--lg" href="#protect" data-track="cta_how_it_works_click" data-position="hero">{{ t("কীভাবে কাজ করে", "How it works") }}</a>
         </div>
         {% if site.preorder.open %}
-        <p class="btn-note">{{ t("দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "। প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.kit_price_bdt) ~ ". Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable.") }}</p>
+        <p class="btn-note">{{ t("দাম ৳" ~ num(site.preorder.kit_price_bdt) ~ "। প্রি-অর্ডারে ৳" ~ num(site.preorder.deposit_bdt) ~ " জামানত, পুরোটাই ফেরতযোগ্য।", "BDT " ~ num(site.preorder.kit_price_bdt) ~ ". Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable.") }} {{ t(site.preorder.delivery_bn, site.preorder.delivery_en) }}</p>
         {% endif %}
         {% if site.achievements["items"] %}
         <ul class="hero-proof" aria-label="{{ t('স্বীকৃতি', 'Recognition') }}">
@@ -72,7 +73,7 @@
     </div>
     {% include "partials/system-animation.html" %}
     <p class="hx-after">{{ icon("reset") }}<span><strong>{{ t("আবার চালু শুধু হাতে।", "Back on only by hand.") }}</strong> {{ t("জায়গা নিরাপদ হলে চুলার কাছে লিভার তুলে গ্যাস চালু করুন। দূর থেকে কখনো চালু হয় না।", "When it is safe, lift the lever at the stove. Gas is never turned back on remotely.") }}</span></p>
-    {% if not (claim("closes_under_1s") and claim("ventilation_relay") and claim("no_power_needed")) %}<p class="small muted hx-center">{{ testing_note(t) }} {{ t("“তৈরি” লেখা অংশগুলো এখন পরীক্ষাধীন।", "Parts marked “designed to” are being tested now.") }}</p>{% endif %}
+    {% if not (claim("closes_under_1s") and claim("ventilation_relay") and claim("no_power_needed")) %}<p class="small muted hx-center">{{ testing_note(t) }} {{ t("চালু প্রোটোটাইপ। ওপরের ধাপগুলো VenGuard যেভাবে কাজ করার জন্য তৈরি; বিক্রির আগে বুয়েট BRTC-তে স্বাধীন পরীক্ষা ও সার্টিফিকেশন চলছে।", "Working prototype. These steps show how VenGuard is designed to work; independent testing and certification at BUET BRTC come before shipping.") }}</p>{% endif %}
   </div>
 </section>
 
@@ -83,7 +84,7 @@
     <div class="hx-head hx-head--row">
       <div>
         <h2 id="lineup-title">{{ t("VenGuard লাইনআপ", "The VenGuard lineup") }}</h2>
-        <p>{{ t("পুরো কিট নিন, অথবা ধাপে ধাপে।", "Take the full kit, or build it up step by step.") }}</p>
+        <p>{{ t("পুরো কিট নিন, অথবা ধাপে ধাপে। যেকোনো ব্র্যান্ডের এলপিজি সিলিন্ডারের জন্য; পাইপলাইনের গ্যাস হলে আগে কথা বলুন।", "Take the full kit, or build it up step by step. For LPG cylinders of any brand; on piped gas, talk to us first.") }}</p>
       </div>
       <a class="btn btn--secondary btn--sm" href="{{ url('home-kit') }}">{{ t("কিটের বিস্তারিত", "Kit details") }} {{ icon("arrow", "", 18) }}</a>
     </div>
@@ -166,6 +167,23 @@
   </div>
 </section>
 
+{# For buildings and businesses: points landlords, developers and restaurants to their own page #}
+<section class="section section--tight" aria-labelledby="b2b-title">
+  <div class="wrap">
+    <div class="hx-b2b">
+      <div>
+        <p class="eyebrow">{{ t("ভবন ও ব্যবসার জন্য", "For buildings and businesses") }}</p>
+        <h2 id="b2b-title">{{ t("বাড়িওয়ালা, ডেভেলপার বা রেস্তোরাঁর মালিক?", "Own a building or run a restaurant?") }}</h2>
+        <p>{{ t("প্রতিটি রান্নাঘরে একটি করে VenGuard, অনেক ইউনিটে বিশেষ দাম ও বসানোর ব্যবস্থা। কয়টি ফ্ল্যাট বা চুলা জানান, আমরা কোটেশন দেব।", "A VenGuard in every kitchen, with volume pricing and installation for many units. Tell us how many flats or stoves and we will send a quote.") }}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="{{ url('landlords-restaurants') }}#landlords" data-track="b2b_click" data-position="home_landlords">{{ icon("building") }}{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a>
+        <a class="btn btn--secondary" href="{{ url('landlords-restaurants') }}#restaurants" data-track="b2b_click" data-position="home_restaurants">{{ icon("restaurant") }}{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 {# Recognition: a scrolling row of photo cards #}
 {% if site.achievements["items"] %}
 <section class="section" aria-labelledby="achievements-title">
@@ -213,7 +231,7 @@
       <div>
         <p class="eyebrow">{{ t("আজই শুরু করুন", "A safer kitchen starts here") }}</p>
         <h2>{{ t("আপনার রান্নাঘর সুরক্ষিত রাখুন।", "Protect your kitchen.") }}</h2>
-        <p>{{ t("৳" ~ num(site.preorder.deposit_bdt) ~ " জামানতে প্রি-অর্ডার, পুরোটাই ফেরতযোগ্য। ডেলিভারির আগে আমরা ফোন করে নিশ্চিত করব।", "Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable. We call to confirm before delivery.") }}</p>
+        <p>{{ t("৳" ~ num(site.preorder.deposit_bdt) ~ " জামানতে প্রি-অর্ডার, পুরোটাই ফেরতযোগ্য। ডেলিভারির আগে আমরা ফোন করে নিশ্চিত করব।", "Pre-order with a BDT " ~ num(site.preorder.deposit_bdt) ~ " deposit, fully refundable. We call to confirm before delivery.") }} {{ t(site.preorder.delivery_bn, site.preorder.delivery_en) }}</p>
       </div>
       <div class="btn-row">
         {{ preorder_btn(t, url, site, "final_cta", "btn btn--primary btn--lg") }}

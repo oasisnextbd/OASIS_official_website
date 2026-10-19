@@ -44,6 +44,7 @@
       <h2 id="install-title">{{ t("কয়েক মিনিটে, পাইপে হাত না দিয়ে।", "A few minutes, no pipe work.") }}</h2>
       <p>{{ t("সাধারণ বার্বড ফিটিং ও জুবিলি ক্ল্যাম্প। গ্যাস পাইপ বা সিলিন্ডারের প্যাঁচে কোনো পরিবর্তন নেই।", "Standard barbed fittings and jubilee clamps. No changes to gas pipes or cylinder threads.") }}</p>
     </div>
+    {% include "partials/install-diagram.html" %}
     <ol class="steps steps--4">
       <li><h3>{{ t("সিলিন্ডার বন্ধ করুন", "Turn off the cylinder") }}</h3><p>{{ t("রেগুলেটরের সুইচ বন্ধ করুন।", "Switch the regulator off.") }}</p></li>
       <li><h3>{{ t("ভালভ লাগান", "Fit the valve") }}</h3><p>{{ t("ছবির নির্দেশনা দেখে রেগুলেটরের পরে লাইনে ভালভ বসান, ক্ল্যাম্প আটকান।", "Following the picture guide, fit the valve on the line after the regulator and tighten the clamps.") }}</p></li>
@@ -66,6 +67,7 @@
       <caption class="visually-hidden">{{ t("VenGuard হোম কিটের স্পেসিফিকেশন", "VenGuard Home kit specifications") }}</caption>
       <tbody>
         <tr><th scope="row">{{ t("কী টের পায়", "Detects") }}</th><td>{{ t("এলপিজি (রান্নার গ্যাস)", "LPG (cooking gas)") }}</td></tr>
+        <tr><th scope="row">{{ t("যেখানে চলে", "Works with") }}</th><td>{{ t("যেকোনো ব্র্যান্ডের এলপিজি সিলিন্ডার (বসুন্ধরা, ওমেরা, যমুনা, টোটালএনার্জিস ইত্যাদি): ভালভ বসে রেগুলেটরের পরে গ্যাস লাইনে। পাইপলাইনের গ্যাস (তিতাস) হলে আগে আমাদের সাথে কথা বলুন।", "LPG cylinders of any brand (Bashundhara, Omera, Jamuna, TotalEnergies and others): the valve fits on the gas line after the regulator. On piped gas (Titas)? Talk to us first.") }}</td></tr>
         <tr><th scope="row">{{ t("সেন্সর", "Sensor") }}</th><td>Winsen MP-5</td></tr>
         <tr><th scope="row">{{ t("ট্রিগার", "Trigger") }}</th><td>{{ t("টানা ৭ সেকেন্ড ২০% LEL-এর ওপরে (রান্নার ধোঁয়ায় ভুল সতর্কতা এড়াতে)", "Above 20% LEL continuously for 7 seconds (to ignore cooking fumes)") }}</td></tr>
         <tr><th scope="row">{{ t("ভালভ বন্ধ হওয়ার সময়", "Valve closing time") }}</th><td>{% if claim("closes_under_1s") %}{{ t("১ সেকেন্ডের কম", "Under 1 second") }}{% else %}{{ t("লক্ষ্য: ১ সেকেন্ডের কম", "Designed for under 1 second") }} {{ testing_note(t) }}{% endif %}</td></tr>

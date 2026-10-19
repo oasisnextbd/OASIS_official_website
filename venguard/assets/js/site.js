@@ -159,6 +159,7 @@
 
     applyLiveSettings();
     $$("form[data-vg-form]").forEach(setupForm);
+    setupOrderSummary();
     setupThankYou();
   });
 
@@ -533,6 +534,29 @@
     }
     box.appendChild(row);
     return box;
+  }
+
+  /* ================= Pre-order summary card =================
+     Shows the chosen package × units, the deposit and what is left to pay at delivery. */
+  function setupOrderSummary() {
+    var card = $("[data-order-summary]"), form = $("form[data-vg-form='preorder']");
+    if (!card || !form) return;
+    var prices = {}, names = {};
+    try { prices = JSON.parse(card.getAttribute("data-prices")); names = JSON.parse(card.getAttribute("data-names")); } catch (e) { return; }
+    var deposit = parseInt(card.getAttribute("data-deposit"), 10) || 0, bn = card.getAttribute("data-lang") === "bn";
+    var money = function (n) { var s = Math.max(0, n).toLocaleString("en-US"); return bn ? "৳" + toBn(s) : "BDT " + s; };
+    function update() {
+      var pkg = ($("input[name='package']:checked", form) || {}).value || "complete";
+      var units = Math.min(999, Math.max(1, parseInt(toAscii((form.elements.units || {}).value), 10) || 1));
+      var total = (prices[pkg] || 0) * units;
+      $("[data-sum-name]", card).textContent = names[pkg] || "";
+      $("[data-sum-units]", card).textContent = units > 1 ? "× " + (bn ? toBn(units) : units) : "";
+      $("[data-sum-total]", card).textContent = money(total);
+      $("[data-sum-rest]", card).textContent = money(total - deposit);
+    }
+    form.addEventListener("change", update);
+    form.addEventListener("input", function (e) { if (e.target.name === "units") update(); });
+    update();
   }
 
   /* ================= Thank-you page ================= */

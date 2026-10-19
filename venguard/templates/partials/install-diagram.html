@@ -1,0 +1,54 @@
+{#- Installation diagram (Home kit page, next to the four steps). Schematic, not to scale.
+    Layout confirmed by the founders: valve right after the regulator with its battery and board in a box
+    on top, then the long hose to the stove; detector within 1.5 m of the cylinder at cylinder height;
+    detector → valve by radio, detector → relay wirelessly; relay switches the exhaust fan (mains).
+    Circled numbers match the steps in pages/home-kit.html. -#}
+<figure class="idg">
+  <svg viewBox="0 0 760 330" role="img" aria-labelledby="idg-title idg-desc">
+    <title id="idg-title">{{ t("VenGuard কীভাবে বসানো হয়", "How VenGuard is installed") }}</title>
+    <desc id="idg-desc">{{ t("সিলিন্ডারের রেগুলেটরের পরেই VenGuard ভালভ, তারপর হোস দিয়ে চুলা। ডিটেক্টর সিলিন্ডারের উচ্চতায়, ১.৫ মিটারের মধ্যে; রেডিও সংকেতে ভালভ ও ওয়্যারলেসে রিলে চালায়; রিলে এগজস্ট ফ্যান চালু করে।", "The VenGuard valve sits right after the cylinder regulator, then the hose runs to the stove. The detector sits at cylinder height within 1.5 m; it signals the valve by radio and the relay wirelessly; the relay switches on the exhaust fan.") }}</desc>
+    <line class="idg-floor" x1="20" y1="300" x2="740" y2="300"/>
+    {# cylinder + regulator #}
+    <rect class="idg-part" x="48" y="150" width="78" height="150" rx="26"/>
+    <rect class="idg-part" x="74" y="128" width="26" height="24" rx="4"/>
+    <text class="idg-label" x="87" y="232" text-anchor="middle">{{ t("সিলিন্ডার", "Cylinder") }}</text>
+    <text class="idg-small" x="87" y="120" text-anchor="middle">{{ t("রেগুলেটর", "Regulator") }}</text>
+    {# valve with its battery box, then the long hose to the stove #}
+    <path class="idg-hose" d="M100 140 H150"/>
+    <rect class="idg-valve" x="150" y="128" width="44" height="24" rx="5"/>
+    <rect class="idg-valve-box" x="154" y="104" width="36" height="22" rx="4"/>
+    <path class="idg-clamp" d="M150 132v16M194 132v16"/>
+    <path class="idg-hose" d="M194 140 C 300 140, 300 260, 420 260 S 560 230, 600 196"/>
+    <text class="idg-label idg-strong" x="172" y="92" text-anchor="middle">{{ t("VenGuard ভালভ", "VenGuard valve") }}</text>
+    <text class="idg-small" x="300" y="285" text-anchor="middle">{{ t("লম্বা হোস", "Long hose") }}</text>
+    {# stove #}
+    <rect class="idg-part" x="560" y="196" width="150" height="16" rx="4"/>
+    <rect class="idg-part" x="572" y="212" width="126" height="88" rx="6"/>
+    <path class="idg-flame" d="M612 194c-6-8 2-14 0-22 8 6 10 14 4 22Zm52 0c-6-8 2-14 0-22 8 6 10 14 4 22Z"/>
+    <text class="idg-label" x="635" y="262" text-anchor="middle">{{ t("চুলা", "Stove") }}</text>
+    {# detector: low, near the cylinder #}
+    <rect class="idg-detector" x="210" y="214" width="46" height="36" rx="6"/>
+    <circle class="idg-led" cx="246" cy="224" r="3"/>
+    <text class="idg-label idg-strong" x="233" y="198" text-anchor="middle">{{ t("ডিটেক্টর", "Detector") }}</text>
+    <path class="idg-measure" d="M126 262 H210"/>
+    <text class="idg-small" x="168" y="256" text-anchor="middle">{{ t("≤ ১.৫ মি", "≤ 1.5 m") }}</text>
+    {# signals #}
+    <path class="idg-signal" d="M224 214 C 210 180, 190 170, 180 156"/>
+    <text class="idg-small idg-sig" x="206" y="204" text-anchor="end">{{ t("রেডিও", "Radio") }}</text>
+    <path class="idg-signal" d="M250 214 C 330 120, 470 60, 560 58"/>
+    <text class="idg-small idg-sig" x="440" y="122" text-anchor="middle">{{ t("ওয়্যারলেস, ইন্টারনেট ছাড়া", "Wireless, no internet") }}</text>
+    {# relay + exhaust fan on the wall #}
+    <rect class="idg-relay" x="560" y="42" width="56" height="32" rx="6"/>
+    <text class="idg-label idg-strong" x="588" y="30" text-anchor="middle">{{ t("রিলে", "Relay") }}</text>
+    <path class="idg-wire" d="M616 58 H660"/>
+    <circle class="idg-part" cx="690" cy="58" r="30"/>
+    <path class="idg-fan" d="M690 58c0-16 14-18 16-8-6 4-10 6-16 8Zm0 0c14 8 10 22 0 20 0-6 0-12 0-20Zm0 0c-14 8-24-2-18-10 6 2 12 6 18 10Z"/>
+    <text class="idg-small" x="690" y="108" text-anchor="middle">{{ t("এগজস্ট ফ্যান (বিদ্যুৎ)", "Exhaust fan (mains)") }}</text>
+    {# step numbers #}
+    <g class="idg-num"><circle cx="58" cy="128" r="11"/><text x="58" y="132" text-anchor="middle">{{ num(1) }}</text></g>
+    <g class="idg-num"><circle cx="208" cy="112" r="11"/><text x="208" y="116" text-anchor="middle">{{ num(2) }}</text></g>
+    <g class="idg-num"><circle cx="544" cy="44" r="11"/><text x="544" y="48" text-anchor="middle">{{ num(3) }}</text></g>
+    <g class="idg-num"><circle cx="270" cy="232" r="11"/><text x="270" y="236" text-anchor="middle">{{ num(4) }}</text></g>
+  </svg>
+  <figcaption class="small muted">{{ t("নকশা মাপমতো নয়। সংখ্যাগুলো নিচের ধাপের সাথে মেলে।", "Schematic, not to scale. Numbers match the steps.") }}</figcaption>
+</figure>

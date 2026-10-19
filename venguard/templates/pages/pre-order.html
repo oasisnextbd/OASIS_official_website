@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "partials/macros.html" import icon %}
+{% from "partials/macros.html" import icon, whatsapp %}
 {% import "partials/forms.html" as f %}
 {% set page_title = t("প্রি-অর্ডার — VenGuard হোম | ৳৫০০ ফেরতযোগ্য জামানত", "Pre-order VenGuard Home | BDT 500 refundable deposit") %}
 {% set page_desc = t("মাত্র এক মিনিটে আপনার VenGuard হোম কিট রিজার্ভ করুন। ৳৫০০ জামানত, ডেলিভারির আগে যেকোনো সময় পুরোটাই ফেরতযোগ্য।", "Reserve your VenGuard Home kit in about a minute. BDT 500 deposit, fully refundable any time before delivery.") %}
@@ -10,6 +10,8 @@
     {% if not site.preorder.open %}
     <div class="notice"><p>{{ t("প্রি-অর্ডার এই মুহূর্তে বন্ধ আছে। আপডেট পেতে যোগাযোগ করুন।", "Pre-orders are paused right now. Contact us to be notified.") }} <a href="{{ url('contact') }}">{{ t("যোগাযোগ", "Contact") }}</a></p></div>
     {% else %}
+    {% set p = site.preorder %}
+    <div class="checkout">
     <form class="form" data-vg-form="preorder" novalidate
       data-next="{{ url('pre-order/thank-you') }}"
       {{ f.thanks_messages(t) }}>
@@ -53,6 +55,33 @@
       {{ f.status() }}
       {{ f.submit(t, "তথ্য পাঠান ও জামানত দিন", "Continue to pay deposit") }}
     </form>
+
+    {# Order summary: follows the package and number of units chosen (site.js setupOrderSummary). #}
+    <aside class="order-card" aria-labelledby="sum-title" data-order-summary
+      data-prices='{"complete": {{ p.kit_price_bdt }}, "detector_relay": {{ p.detector_relay_bdt }}}'
+      data-names='{"complete": "{{ t("সম্পূর্ণ হোম কিট", "Complete Home kit") }}", "detector_relay": "{{ t("ডিটেক্টর + রিলে", "Detector + Relay") }}"}'
+      data-deposit="{{ p.deposit_bdt }}" data-lang="{{ lang }}">
+      <h2 id="sum-title">{{ t("আপনার অর্ডার", "Your order") }}</h2>
+      <dl class="order-lines">
+        <dt><span data-sum-name>{{ t("সম্পূর্ণ হোম কিট", "Complete Home kit") }}</span> <span class="muted" data-sum-units></span></dt>
+        <dd class="num" data-sum-total>{{ t("৳" ~ num(p.kit_price_bdt), "BDT " ~ num(p.kit_price_bdt)) }}</dd>
+        <dt>{{ t("এখন জামানত (ফেরতযোগ্য)", "Deposit now (refundable)") }}</dt>
+        <dd class="num">{{ t("৳" ~ num(p.deposit_bdt), "BDT " ~ num(p.deposit_bdt)) }}</dd>
+        <dt class="order-rest">{{ t("ডেলিভারির সময় বাকি", "Rest at delivery") }}</dt>
+        <dd class="num order-rest" data-sum-rest>{{ t("৳" ~ num(p.kit_price_bdt - p.deposit_bdt), "BDT " ~ num(p.kit_price_bdt - p.deposit_bdt)) }}</dd>
+      </dl>
+      <p class="order-delivery">{{ icon("calendar") }}<span>{{ t(p.delivery_bn, p.delivery_en) }}</span></p>
+      <h3>{{ t("এরপর কী হবে", "What happens next") }}</h3>
+      <ol class="order-steps">
+        <li><strong>{{ t("তথ্য পাঠান", "Send your details") }}</strong><span>{{ t("এক মিনিটের মতো লাগে।", "About a minute.") }}</span></li>
+        <li><strong>{{ t("আমরা ফোন করি", "We call you") }}</strong><span>{{ t("সব বুঝিয়ে বলি; তারপর bKash, Nagad বা কার্ডে ৳" ~ num(p.deposit_bdt) ~ " জামানত।", "We explain everything, then you pay the BDT " ~ num(p.deposit_bdt) ~ " deposit by bKash, Nagad or card.") }}</span></li>
+        <li><strong>{{ t("পরীক্ষা ও সার্টিফিকেশন", "Testing and certification") }}</strong><span>{{ t("বুয়েট BRTC-তে স্বাধীন পরীক্ষা শেষ হয়; আমরা SMS-এ জানাই।", "Independent testing at BUET BRTC is completed; we keep you posted by SMS.") }}</span></li>
+        <li><strong>{{ t("ডেলিভারি ও বসানো", "Delivery and installation") }}</strong><span>{{ t("বাকি দাম দিন; চাইলে আমাদের দল বা ডিলার বসিয়ে দেবে।", "Pay the rest; our team or a dealer can install it for you.") }}</span></li>
+      </ol>
+      <p class="order-refund">{{ icon("shield") }}<span><strong>{{ t("জামানত পুরোটাই ফেরতযোগ্য", "Deposit fully refundable") }}</strong> {{ t("ডেলিভারির আগে যেকোনো সময়, যে মাধ্যমে দিয়েছেন সেখানেই।", "any time before delivery, back the way you paid.") }} <a href="{{ url('refund-policy') }}">{{ t("ফেরত নীতি", "Refund policy") }}</a></span></p>
+      {{ whatsapp(site, t, "order_card", "arrow-link", "প্রশ্ন আছে? WhatsApp-এ লিখুন", "Questions? Message us on WhatsApp") }}
+    </aside>
+    </div>
     {% endif %}
   </div>
 </section>
