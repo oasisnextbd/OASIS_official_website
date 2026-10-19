@@ -17,6 +17,17 @@ The product is a **4-stage system** (pitch deck, Team Dibyo Drishty):
    The fan needs mains power; the shut-off does not.
 4. **Live IoT telemetry** (optional Connected plan): dashboard and alerts.
 
+## Product line naming
+
+- The product line is **VenGuard by OASIS** (OASIS is the company, VenGuard the product brand customers
+  learn). Do not rename it a "platform".
+- Editions: **VenGuard Home** (on sale: pre-order), **VenGuard Pro (Commercial)** and **VenGuard Agro & Marine**
+  (both "in development" until the founders confirm them; no specifications or prices before that).
+- Parts: gas detector, smart exhaust relay, automatic valve actuator, Connected cloud plan (prices only from
+  `site.json` → `preorder`).
+- No insurance, compliance, manifold or hood-rating claims, dealer margin tiers or exclusive territories
+  until confirmed (CTO for hardware, founders for business terms).
+
 ## Logo
 
 Source of truth: **`docs/venguard/VenGuard_Logo_Guidelines.docx`** (Brand Identity Guidelines, Logo

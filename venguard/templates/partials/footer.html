@@ -38,15 +38,17 @@
       <nav aria-label="{{ t('পণ্য', 'Product') }}">
         <h2>{{ t("পণ্য", "Product") }}</h2>
         <ul>
+          <li><a href="{{ url('products') }}">{{ t("সব পণ্য: VenGuard by OASIS", "All products: VenGuard by OASIS") }}</a></li>
           <li><a href="{{ url('home-kit') }}">{{ t("VenGuard হোম কিট", "VenGuard Home kit") }}</a></li>
           <li><a href="{{ url('how-it-works') }}">{{ t("কীভাবে কাজ করে", "How it works") }}</a></li>
           <li><a href="{{ url('pre-order') }}" data-track="cta_preorder_click" data-position="footer">{{ t("প্রি-অর্ডার", "Pre-order") }}</a></li>
-          <li><a href="{{ url('landlords-restaurants') }}">{{ t("বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants") }}</a></li>
-          <li><a href="{{ url('dealers') }}">{{ t("ডিলার হোন", "Become a dealer") }}</a></li>
-          <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (শীঘ্রই)", "Agro and Marine (coming soon)") }}</a></li>
+          <li><a href="{{ url('landlords-restaurants') }}">{{ t("ব্যবসার জন্য", "For businesses") }}</a></li>
+          <li><a href="{{ url('landlords') }}">{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</a></li>
+          <li><a href="{{ url('restaurants') }}">{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</a></li>
+          <li><a href="{{ url('dealers') }}">{{ t("ডিলার ও ইনস্টলার", "Dealers and installers") }}</a></li>
+          <li><a href="{{ url('agro-marine') }}">{{ t("এগ্রো ও মেরিন (তৈরি হচ্ছে)", "Agro and Marine (in development)") }}</a></li>
+          <li><a href="{{ url('app-guide') }}">{{ t("অ্যাপ ট্যুর", "App tour") }}</a></li>
           <li><a href="{{ site.app.web_url }}#/welcome/{{ lang }}" data-track="app_open_click" data-position="footer">{{ t("VenGuard অ্যাপ: সাইন ইন", "VenGuard app: sign in") }}</a></li>
-          <li><a href="{{ site.app.apk_url }}" data-track="app_apk_click" data-position="footer">{{ t("অ্যান্ড্রয়েড অ্যাপ ডাউনলোড", "Download for Android") }}</a></li>
-          <li><a href="{{ url('app-guide') }}">{{ t("অ্যাপ ব্যবহারের নির্দেশিকা", "How to use the app") }}</a></li>
         </ul>
       </nav>
       <nav aria-label="{{ t('প্রতিষ্ঠান', 'Company') }}">

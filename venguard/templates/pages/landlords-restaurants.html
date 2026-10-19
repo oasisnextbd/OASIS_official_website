@@ -1,73 +1,43 @@
 {% extends "base.html" %}
 {% from "partials/macros.html" import icon %}
 {% import "partials/forms.html" as f %}
-{% set page_title = t("বাড়িওয়ালা ও রেস্তোরাঁর জন্য VenGuard — একাধিক রান্নাঘর, এক জায়গা থেকে", "VenGuard for landlords and restaurants — many kitchens, one view") %}
-{% set page_desc = t("বহু-ইউনিট ভবন ও বাণিজ্যিক রান্নাঘরের জন্য স্বয়ংক্রিয় গ্যাস বন্ধের ব্যবস্থা। কোটেশনের জন্য অনুরোধ পাঠান।", "Automatic gas shut-off for multi-unit buildings and commercial kitchens. Request a quote.") %}
+{#- "For businesses" hub. Keeps the old /landlords-restaurants/ address (and its #landlords and #restaurants
+    anchors) working; each audience has its own page. -#}
+{% set page_title = t("ব্যবসার জন্য VenGuard — ভবন, রেস্তোরাঁ, ডিলার", "VenGuard for businesses — buildings, restaurants, dealers") %}
+{% set page_desc = t("বাড়িওয়ালা ও ডেভেলপার, রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর, ডিলার ও ইনস্টলার, খামার ও নৌযানের জন্য VenGuard। বিনামূল্যে সাইট নিরাপত্তা মূল্যায়নের অনুরোধ করুন।", "VenGuard for landlords and developers, restaurants and commercial kitchens, dealers and installers, farms and vessels. Request a free site safety assessment.") %}
 {% block content %}
-{{ f.page_head(t, url, "বাড়িওয়ালা ও রেস্তোরাঁ", "Landlords and restaurants", "অনেক রান্নাঘর মানে অনেক ঝুঁকি। VenGuard প্রতিটি রান্নাঘরে নিজে থেকেই কাজ করার জন্য তৈরি, আর ঐচ্ছিক ড্যাশবোর্ডে সব এক জায়গায় দেখা যাবে।", "More kitchens means more risk. VenGuard is designed to act on its own in every kitchen, and the optional dashboard shows them all in one place.") }}
+{{ f.page_head(t, url, "ব্যবসার জন্য VenGuard", "VenGuard for businesses", "আপনার ধরন বেছে নিন, অথবা সরাসরি বিনামূল্যে সাইট নিরাপত্তা মূল্যায়নের অনুরোধ করুন।", "Choose what fits you, or go straight to a free site safety assessment.") }}
 
-<section class="section" id="landlords">
-  <div class="wrap split">
-    <div>
-      {{ icon("building", "", 44) }}
-      <h2 class="mt-1">{{ t("বাড়িওয়ালা ও ডেভেলপারদের জন্য", "For landlords and building developers") }}</h2>
-      <ul>
-        <li>{{ t("প্রতিটি ফ্ল্যাটে আলাদা সুরক্ষা — ভাড়াটিয়া বাসায় না থাকলেও।", "Protection in every flat, even when tenants are out.") }}</li>
-        <li>{{ t("কেন্দ্রীয় গ্যাস লাইনের ভবনেও প্রতিটি রান্নাঘরের জন্য সমাধান নিয়ে কথা বলুন।", "Talk to us about each kitchen on buildings with piped gas too.") }}</li>
-        <li>{{ t("ঐচ্ছিক কানেক্টেড ড্যাশবোর্ডে সব ইউনিটের অবস্থা।", "Optional Connected dashboard showing every unit.") }}</li>
-        <li>{{ t("একসাথে অনেক ইউনিটের জন্য বিশেষ দাম ও ইনস্টলেশন।", "Volume pricing and installation for many units.") }}</li>
-      </ul>
-    </div>
-    <div>
-      <div class="dash" aria-label="{{ t('ড্যাশবোর্ডের নমুনা ছবি', 'Dashboard preview illustration') }}">
-        <div class="dash-head"><span>{{ t("রোজ ভিউ টাওয়ার — ১২টি ইউনিট", "Rose View Tower — 12 units") }}</span><span>{{ icon("chart", "", 20) }}</span></div>
-        <div class="dash-row"><span>{{ t("ফ্ল্যাট ২এ", "Flat 2A") }}</span><span class="dash-ok">{{ t("স্বাভাবিক", "Normal") }}</span></div>
-        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৩বি", "Flat 3B") }}</span><span class="dash-ok">{{ t("স্বাভাবিক", "Normal") }}</span></div>
-        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৪এ", "Flat 4A") }}</span><span><strong>{{ t("ভালভ বন্ধ — নিরাপদে গ্যাস বন্ধ হয়েছে", "Valve closed — gas shut off safely") }}</strong></span></div>
-        <div class="dash-row"><span>{{ t("ফ্ল্যাট ৫সি", "Flat 5C") }}</span><span class="muted">{{ t("ব্যাটারি শীঘ্রই বদলাতে হবে", "Battery change due soon") }}</span></div>
-        <div class="dash-note">{{ t("নমুনা ছবি। কানেক্টেড ড্যাশবোর্ড পরবর্তী ধাপে আসবে।", "Illustration only. The Connected dashboard comes in a later phase.") }}</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section section--alt" id="restaurants">
+<section class="section" aria-label="{{ t('ধরন বেছে নিন', 'Choose your path') }}">
   <div class="wrap">
-    {{ icon("restaurant", "", 44) }}
-    <h2 class="mt-1">{{ t("রেস্তোরাঁর মালিকদের জন্য", "For restaurant owners") }}</h2>
-    <div class="grid grid--3">
-      <div class="card"><h3>{{ t("কর্মীদের সুরক্ষা", "Protect your staff") }}</h3><p class="muted">{{ t("ব্যস্ত রান্নাঘরে কেউ গন্ধ খেয়াল না করলেও VenGuard গ্যাস বন্ধ করার জন্য তৈরি।", "In a busy kitchen, VenGuard is designed to shut off gas even when nobody notices a smell.") }}</p></div>
-      <div class="card"><h3>{{ t("রাতে বন্ধ থাকার সময়ও", "Overnight, when you're closed") }}</h3><p class="muted">{{ t("দোকান বন্ধ, কেউ নেই — সুরক্ষা চালু।", "Shop shut, nobody there — protection still on.") }}</p></div>
-      <div class="card"><h3>{{ t("একাধিক রান্নাঘর", "Several kitchens") }}</h3><p class="muted">{{ t("কয়টি চুলা ও সিলিন্ডার আছে জানালে আমরা কোটেশন দেব।", "Tell us how many stoves and cylinders, and we will quote.") }}</p></div>
+    <div class="grid grid--2 paths">
+      <a class="card path" id="landlords" href="{{ url('landlords') }}" data-track="b2b_click" data-position="hub_landlords">
+        {{ icon("building", "icon") }}
+        <h2>{{ t("বাড়িওয়ালা ও ডেভেলপার", "Landlords and developers") }}</h2>
+        <p>{{ t("বহু-ইউনিট ভবনের প্রতিটি ফ্ল্যাটে স্বয়ংক্রিয় গ্যাস বন্ধ, নতুন ভবনে শুরু থেকেই পরিকল্পনা।", "Automatic gas shut-off in every flat of a multi-unit building, planned into new buildings from the start.") }}</p>
+        <span class="arrow-link">{{ t("দেখুন", "See more") }} {{ icon("arrow", "", 18) }}</span>
+      </a>
+      <a class="card path" id="restaurants" href="{{ url('restaurants') }}" data-track="b2b_click" data-position="hub_restaurants">
+        {{ icon("restaurant", "icon") }}
+        <h2>{{ t("রেস্তোরাঁ ও বাণিজ্যিক রান্নাঘর", "Restaurants and commercial kitchens") }}</h2>
+        <p>{{ t("একাধিক সিলিন্ডার ও বড় এগজস্ট হুডসহ রান্নাঘরে কর্মীদের সুরক্ষা।", "Staff safety in kitchens with several cylinders and large exhaust hoods.") }}</p>
+        <span class="arrow-link">{{ t("দেখুন", "See more") }} {{ icon("arrow", "", 18) }}</span>
+      </a>
+      <a class="card path" href="{{ url('dealers') }}" data-track="b2b_click" data-position="hub_dealers">
+        {{ icon("dealer", "icon") }}
+        <h2>{{ t("ডিলার ও ইনস্টলার", "Dealers and installers") }}</h2>
+        <p>{{ t("এলপিজি ডিলার, হার্ডওয়্যার দোকান ও টেকনিশিয়ান: VenGuard বিক্রি করুন ও বসান।", "LPG dealers, hardware shops and technicians: sell and install VenGuard.") }}</p>
+        <span class="arrow-link">{{ t("আবেদন করুন", "Apply") }} {{ icon("arrow", "", 18) }}</span>
+      </a>
+      <a class="card path" href="{{ url('agro-marine') }}" data-track="b2b_click" data-position="hub_agro_marine">
+        {{ icon("agro", "icon") }}
+        <h2>{{ t("খামার ও নৌযান", "Farms and vessels") }}</h2>
+        <p>{{ t("পোল্ট্রি খামার ও নৌযানের জন্য VenGuard তৈরি হচ্ছে।", "VenGuard for poultry farms and vessels is in development.") }}</p>
+        <span class="arrow-link">{{ t("অপেক্ষার তালিকা", "Join the waitlist") }} {{ icon("arrow", "", 18) }}</span>
+      </a>
     </div>
   </div>
 </section>
 
-<section class="section">
-  <div class="wrap">
-    <h2>{{ t("কোটেশনের অনুরোধ", "Request a quote") }}</h2>
-    <form class="form" data-vg-form="enquiry" novalidate {{ f.thanks_messages(t) }}>
-      {{ f.hidden(t) }}
-      {{ f.choices(t, "kitchen_type", "আপনি কে?", "You are a", [("landlord", t("বাড়িওয়ালা / ডেভেলপার", "Landlord / developer")), ("restaurant", t("রেস্তোরাঁ", "Restaurant")), ("other_business", t("অন্য ব্যবসা", "Other business"))], true) }}
-      <div class="form-grid form-grid--2">
-        {{ f.field(t, "name", "আপনার নাম", "Your name", "text", true, "name") }}
-        {{ f.phone(t) }}
-      </div>
-      <div class="form-grid form-grid--2">
-        {{ f.field(t, "organisation", "ভবন বা ব্যবসার নাম", "Building or business name", "text", false, "organization") }}
-        {{ f.field(t, "email", "ইমেইল", "Email", "email", false, "email", attrs='data-validate="email" data-msg-invalid="' ~ t("সঠিক ইমেইল ঠিকানা লিখুন।", "Please enter a valid email address.") ~ '"') }}
-      </div>
-      <div class="form-grid form-grid--2">
-        {{ f.field(t, "area", "এলাকা", "Area", "text", true, "address-level3") }}
-        {{ f.districts(t) }}
-      </div>
-      {{ f.field(t, "units", "কয়টি রান্নাঘর বা ইউনিট?", "How many kitchens or units?", "number", true, "", inputmode="numeric", attrs='min="1" max="9999" data-validate="units" data-msg-invalid="' ~ t("একটি সঠিক সংখ্যা লিখুন।", "Please enter a valid number.") ~ '"') }}
-      {{ f.field(t, "message", "আর কিছু জানাতে চান?", "Anything else we should know?", "textarea") }}
-      {{ f.heard(t) }}
-      {{ f.consent(t, url) }}
-      {{ f.status() }}
-      {{ f.submit(t, "কোটেশন চাই", "Request a quote") }}
-    </form>
-  </div>
-</section>
+{{ f.assessment_form(t, url, site) }}
 {% endblock %}

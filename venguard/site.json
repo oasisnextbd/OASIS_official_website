@@ -34,6 +34,10 @@
       "state": "done"
     },
     {
+      "key": "preorders",
+      "state": "current"
+    },
+    {
       "key": "testing",
       "state": "current"
     },
@@ -42,8 +46,8 @@
       "state": "next"
     },
     {
-      "key": "preorders",
-      "state": "current"
+      "key": "delivery",
+      "state": "next"
     }
   ],
   "evidence": {
