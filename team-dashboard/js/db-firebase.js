@@ -100,6 +100,8 @@ export async function connect(cfg) {
         set: (p, v) => d.set(at(p), v),
         push: (p, v) => d.push(at(p), v),
         remove: (p) => d.remove(at(p)),
+        /** Have the server delete p if this session's connection drops (tab closed, network gone). */
+        removeOnDisconnect: (p) => d.onDisconnect(at(p)).remove(),
         onValue: (p, cb, err) => d.onValue(at(p), (s) => cb(s.val()), err),
         onChildAdded: (p, cb, err) => d.onChildAdded(at(p), (s) => cb(s.key, s.val()), err),
         serverTime: () => d.serverTimestamp(),

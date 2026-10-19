@@ -1,11 +1,14 @@
 /* Runs emulators in this browser tab. Each one signs in as its device (its own session, in memory) and
    talks to the device database exactly like real firmware does (backend/connected-firebase/DEVICE_API.md,
-   "Free plan (Spark) edition"): state when something changes, a heartbeat every 60 s, events, and
-   "close" commands from the app (act, acknowledge once, clear). An emulator runs while this tab is open;
-   after the tab closes the app shows the device offline within 3 minutes. */
+   "Free plan (Spark) edition"): state when something changes, a heartbeat every 20 s, events, and
+   "close" commands from the app (act, acknowledge once, clear). An emulator runs while this tab is open.
+   Offline in the app: Stop or closing the tab removes the heartbeat, so it shows within seconds;
+   "Go offline" acts like a power cut or lost Wi-Fi (no goodbye), so it shows within about a minute. */
 
 import { newDevice, step, startLeak, remoteClose, regulatorOff, manualReset, stateOf, stateChanged, BATTERY_LOW } from "./emusim.js";
 
+/** Heartbeat period; the app counts a device offline after 65 s without one (three missed beats). */
+const HEARTBEAT_MS = 20000;
 const running = new Map();
 const listeners = new Set();
 export const onEmulatorChange = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
@@ -44,11 +47,12 @@ export async function startEmulator(db, emu) {
   try {
     await sendState(run, true);
     await heartbeat(run);
+    await s.removeOnDisconnect(`hb/${id}`);
   } catch (e) {
     await stopEmulator(id);
     throw new Error(`${id} signed in but may not write its data (${(e && e.code) || e}). Check that the device database rules are published.`);
   }
-  run.timers.push(setInterval(() => tick(run).catch(fail("update")), 1000), setInterval(() => heartbeat(run).catch(fail("heartbeat")), 60000));
+  run.timers.push(setInterval(() => tick(run).catch(fail("update")), 1000), setInterval(() => heartbeat(run).catch(fail("heartbeat")), HEARTBEAT_MS));
   run.status = "running";
   note(run, "Connected. It now behaves like a real device.");
   emit(id);
@@ -61,7 +65,10 @@ export async function stopEmulator(id) {
   run.stops.forEach((u) => { try { u(); } catch (e) { /* already off */ } });
   running.delete(id);
   emit(id);
-  if (run.session) await run.session.close();
+  if (!run.session) return;
+  // A planned stop says goodbye: without a heartbeat the app shows the device offline straight away.
+  try { await run.session.remove(`hb/${id}`); } catch (e) { /* the disconnect clean-up removes it */ }
+  await run.session.close();
 }
 
 export async function stopAllEmulators() {
@@ -138,7 +145,7 @@ export async function act(id, what) {
   if (what === "test") await report(run, ["test"]);
   if (what === "offline") {
     run.online = !run.online;
-    note(run, run.online ? "Back online" : "Offline: no heartbeat or data; the app shows it offline after about 3 minutes");
+    note(run, run.online ? "Back online" : "Offline, like a power cut or lost Wi-Fi: no heartbeat or data. The app shows it offline within about a minute");
     if (run.online) { await heartbeat(run); await sendState(run, true); }
   }
   emit(id);

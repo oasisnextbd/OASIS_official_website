@@ -26,7 +26,7 @@ export default {
     const manage = can("emulators:manage");
     const list = S.data.emulators.slice().sort((a, b) => a.id.localeCompare(b.id));
     return `<div class="topline"><div><h1>Emulators</h1>
-        <div class="sub">Test devices for the founders. Each acts exactly like a real VenGuard detector, valve and relay, through the same database and rules, so you can test the app as a customer. It runs while this page is open; close the page and the app shows it offline within 3 minutes.</div></div>
+        <div class="sub">Test devices for the founders. Each acts exactly like a real VenGuard detector, valve and relay, through the same database and rules, so you can test the app as a customer. It runs while this page is open. Stop it or close the page and the app shows it offline within seconds; "Go offline" acts like a power cut and shows within about a minute.</div></div>
       <div class="actions">${manage ? `<button class="btn primary" data-act="emu:new">${ICON.plus}Create emulator</button>` : ""}</div></div>
       ${!list.length ? `<div class="banner">${ICON.info}<div>${manage ? "No emulators yet. Create one for each founder (four in all), then assign each to its founder." : "No emulator is assigned to you yet. Ask the company account to assign one."}</div></div>` : ""}
       <div class="emu-grid">${list.map((e) => card(e, manage)).join("")}</div>`;

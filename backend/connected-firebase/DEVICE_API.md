@@ -100,7 +100,14 @@ The database rules only let a device touch its own paths.
 | `/devices/<id>/ack/<commandId>` | **PUT** `{"result":"closed"}` / `"already_closed"` / `"failed"` | After acting on a command |
 | `/devices/<id>/state` | **PUT** the full state (below) | Only when it changes, and on every boot |
 | `/devices/<id>/events/<push id>` | **POST** `{"type":"test"}` / `{"type":"battery_low","level":14}` / `{"type":"tamper"}` | When it happens |
-| `/hb/<id>` | **PUT** `{".sv":"timestamp"}` | Every 60 s |
+| `/hb/<id>` | **PUT** `{".sv":"timestamp"}` | Every 20 s |
+| `/hb/<id>` | **DELETE** | On a planned shutdown or restart (optional goodbye) |
+
+Offline in the app: a device counts as offline when its heartbeat is more than **65 s** old (three
+missed beats), so a power cut or lost Wi-Fi shows within about a minute. A device that is switched off
+on purpose can DELETE its heartbeat first; the app then shows it offline at once. (Devices on the REST API
+cannot use the Realtime Database's on-disconnect clean-up; the team dashboard's emulators do.) Cost on the
+free plan: about 130,000 tiny heartbeat writes per device a month, well inside the Spark limits for the pilot.
 
 State object (rules reject anything else):
 

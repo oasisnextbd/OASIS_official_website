@@ -3,7 +3,7 @@
 import { test, before, after, beforeEach } from "node:test";
 import { readFileSync } from "node:fs";
 import { initializeTestEnvironment, assertSucceeds, assertFails } from "@firebase/rules-unit-testing";
-import { ref, set, get, update, push, remove, serverTimestamp } from "firebase/database";
+import { ref, set, get, update, push, remove, serverTimestamp, onDisconnect, goOffline } from "firebase/database";
 
 const ID = "VG-0001A3";
 const CODE = "K7Q2M9XW4TPA";
@@ -155,4 +155,23 @@ test("an emulator acts as its device once registered, like real firmware", async
   await assertFails(set(ref(emu, `devices/${ID}/state`), state));
   await assertSucceeds(set(ref(owner(), "devices/VG-EMU01/owners/owner-uid"), "ABCDEFGHJKMN"));
   await assertSucceeds(get(ref(owner(), "devices/VG-EMU01/state")));
+});
+
+test("heartbeat: a device may say goodbye (delete its heartbeat); nobody else may", async () => {
+  await assertSucceeds(set(ref(device(), `hb/${ID}`), serverTimestamp()));
+  await assertFails(remove(ref(env.authenticatedContext("someone-else").database(), `hb/${ID}`)));
+  await assertSucceeds(remove(ref(device(), `hb/${ID}`)));
+});
+
+test("heartbeat: the server removes it when the device's connection drops (dashboard emulators)", async () => {
+  const db = device();
+  await set(ref(db, `hb/${ID}`), serverTimestamp());
+  await assertSucceeds(onDisconnect(ref(db, `hb/${ID}`)).remove());
+  goOffline(db);
+  let left = true;
+  for (let i = 0; i < 40 && left; i++) {
+    await new Promise((r) => setTimeout(r, 100));
+    await env.withSecurityRulesDisabled(async (ctx) => { left = (await get(ref(ctx.database(), `hb/${ID}`))).exists(); });
+  }
+  if (left) throw new Error("heartbeat still there after the connection dropped");
 });
