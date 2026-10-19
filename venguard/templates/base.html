@@ -74,7 +74,7 @@
 {% if slug not in ['pre-order', 'pre-order/thank-you'] and site.preorder.open %}
 <div class="mobile-cta">
   {{ preorder_btn(t, url, site, "mobile_sticky") }}
-  <a class="btn btn--secondary btn--icon" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="mobile_sticky" aria-label="{{ t('ডেমো অ্যাপ নিন', 'Get Demo App') }}">{{ icon("download") }}</a>
+  <a class="btn btn--secondary btn--icon" href="{{ site.app.apk_url }}" download data-app-link data-track="app_apk_click" data-position="mobile_sticky" aria-label="{{ t('অ্যান্ড্রয়েড অ্যাপ নিন', 'Get the Android app') }}">{{ icon("download") }}</a>
   {{ whatsapp(site, t, "mobile_sticky", "btn btn--secondary btn--icon", icon_only=true) }}
 </div>
 {% endif %}
