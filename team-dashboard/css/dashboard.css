@@ -317,3 +317,22 @@ table.tot tr:last-child th, table.tot tr:last-child td { border-bottom: 0; }
   .nav { mask-image: linear-gradient(90deg, #000 85%, transparent); -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); padding-right: 24px; }
 }
 .kpi .value.long { font-size: 1.35rem; line-height: 1.3; }
+
+/* Emulators (js/views/emulators.js). Device states use the device-safety colours, as in the app. */
+.emu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 16px; }
+.emu .panel-head h2 { display: flex; align-items: baseline; gap: 10px; }
+.emu-assign { max-width: 360px; margin: 6px 0 4px; }
+.emu-read { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.emu-read > div { display: grid; gap: 2px; padding: 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); }
+.emu-read span { font-size: .75rem; color: var(--muted); }
+.emu-read strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .emu-read { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.emu-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.emu-log { list-style: none; margin: 12px 0 0; padding: 10px 12px; max-height: 180px; overflow-y: auto; border-radius: 10px; background: var(--panel-2); font-size: .84rem; display: grid; gap: 4px; }
+.emu-state { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; border: 1px solid var(--line); color: var(--muted); }
+.emu-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.emu-state--safe { color: #167A45; border-color: #1E9E5A; }
+.emu-state--caution { color: #7A5B00; border-color: #F5C400; background: #FFF6CC; }
+.emu-state--danger { color: #fff; background: #D7263D; border-color: #D7263D; }
+:root[data-theme="dark"] .emu-state--safe { color: #3CC47F; }
+:root[data-theme="dark"] .emu-state--caution { color: #F5C400; background: rgb(245 196 0 / .14); }

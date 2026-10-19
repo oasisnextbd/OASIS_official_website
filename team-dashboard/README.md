@@ -65,6 +65,21 @@ nothing until they sign in.
 - **Settings & team**: company details for invoices, authorised signatures, website switches (pre-orders
   on or off, price shown, notice bar: the website reads them within 10 minutes), the team
   list, and an activity log of every change.
+- **Emulators** (founders only): test devices that behave exactly like a real VenGuard (detector, valve,
+  relay) through the same device database and rules, so founders test the app as customers.
+  - The company account clicks **Create emulator** (IDs `VG-EMU01` … `VG-EMU99`) and assigns each to a
+    founder. Each founder sees only their own; Support and Marketing don't see the section.
+  - The founder adds it in the VenGuard app (**+** → device ID and sticker code shown on the card), then
+    presses **Start**: it reports state, heartbeat and events, and obeys "Close the gas now" from the app.
+    Buttons: start a leak, turn the regulator off (detector + relay kit), lift the reset lever, low
+    battery, test button, go offline.
+  - It runs while that dashboard page is open (`js/emulator.js`; device model `js/emusim.js`, a copy of
+    the app's `sim.ts`, tested in `tests/emusim.test.mjs`). Close the page and the app shows it offline
+    within 3 minutes.
+  - Creating one makes a device sign-in (Firebase Auth, email/password), writes `deviceAuth`, `claimCodes`
+    and `devices/<id>/meta` in the Realtime Database (allowed for the company account and emulator IDs
+    only, see `database.rules.json`) and keeps the sign-in in Firestore `emulators/<id>`, readable only by
+    the company account and the assigned founder. **Remove** deletes all three.
 - **VenGuard app** (under Settings): a notice shown at the top of the Android app (English only, in both app languages),
   and a minimum app version. New screens reach installed apps by themselves (in-app updates, see the
   venguard-app README); set a minimum version only when a release needs the new APK, and older apps
@@ -91,9 +106,11 @@ folder to `_site/team/` and puts `config.json` into the page.
 | `js/views/*.js` | one file per section; each exports `{ id, label, icon, deps, render() }` |
 | `config.json` | owner email, website URL, Firebase web config (public values, not secrets) |
 | `tests/calc.test.mjs` | `node --test team-dashboard/tests/calc.test.mjs` |
+| `js/emulator.js`, `js/emusim.js` | the Emulators section: runs test devices in the page; `node --test team-dashboard/tests/emusim.test.mjs` |
 
 Collections in Firestore: `team`, `orders`, `invoices`, `counters`, `inventory`, `stockMoves`, `products`,
-`promos`, `marketing`, `dealers`, `subscriptions`, `signatories`, `settings` (`company`, `website`, `app`) and `activity`.
+`promos`, `marketing`, `dealers`, `subscriptions`, `emulators`, `signatories`, `settings` (`company`, `website`, `app`)
+and `activity`. The Emulators section also writes to the Realtime Database (device registrations only).
 
 To add a section, write `js/views/name.js` and add it to `VIEWS` in `js/app.js`. Put any new database write
 in `store.js`, and give it a rule in `firestore.rules` with a test.
@@ -125,6 +142,10 @@ npm run test:firestore
    - Settings → **Authorised signature**.
    - Inventory → **Add the VenGuard devices**, then **Stock in / out** with what you have.
    - Settings → **Team** → add people.
+
+For the Emulators section also: Realtime Database → **Rules**: replace with
+`backend/connected-firebase/database.rules.json` and **Publish**; Authentication → Sign-in method →
+**Email/Password** on (devices and emulators sign in with it).
 
 Google sign-in is already on in the project, and `oasisnextbd.github.io` is an authorised domain.
 Everything stays on the free Spark plan.

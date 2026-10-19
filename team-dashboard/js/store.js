@@ -9,7 +9,7 @@ export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], settings: { company: {}, website: {}, app: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], settings: { company: {}, website: {}, app: {} },
   },
   loaded: new Set(),
 };
@@ -27,7 +27,8 @@ const CAN = {
 };
 export function can(what) {
   if (!S.me) return false;
-  if (what === "team") return !!S.me.owner;
+  if (what === "team" || what === "emulators:manage") return !!S.me.owner;
+  if (what === "emulators") return S.me.role === "founder";
   return (CAN[what] || []).includes(S.me.role);
 }
 
@@ -58,6 +59,11 @@ export function start(onChange, onError) {
   }
   for (const id of ["company", "website", "app"]) {
     stops.push(S.db.watchDoc("settings", id, (d) => { S.data.settings[id] = d || {}; onChange("settings"); }, onError));
+  }
+  // Emulators: the company account sees all; a founder only the ones assigned to them (the rules allow no more).
+  if (can("emulators")) {
+    const o = S.me.owner ? {} : { where: ["assigned_to", "==", S.me.email] };
+    stops.push(S.db.watch("emulators", (rows) => { S.data.emulators = rows; S.loaded.add("emulators"); onChange("emulators"); }, o, onError));
   }
 }
 export function stop() { stops.forEach((s) => s && s()); stops = []; S.loaded.clear(); }
@@ -410,4 +416,62 @@ export async function addCurrentServices() {
     ["Google account oasisnextbd@gmail.com", "Accounts", "https://myaccount.google.com", "Owns Firebase, Search Console and the dashboard. Keep 2-step verification on."],
   ];
   for (const [name, category, url, notes] of list) if (!have.has(name)) await saveSub(null, { name, category, cycle: "free", currency: "BDT", url, notes, remind_days: 30 });
+}
+
+/* ---------- device emulators (founders' tests) ----------
+   An emulator is a test device that runs in the dashboard (js/emulator.js) and behaves like a real one,
+   through the same device database and rules. The company account creates one: a device sign-in, its
+   sticker code and kit in the device database (rules: only IDs VG-EMU01 to VG-EMU99), and a record here
+   that only the company account and the assigned founder can read. Never for real customers' devices. */
+const DEVICE_DOMAIN = "venguard-connected.firebaseapp.com";
+function randomText(alphabet, n) {
+  const a = new Uint32Array(n);
+  crypto.getRandomValues(a);
+  return Array.from(a, (x) => alphabet[x % alphabet.length]).join("");
+}
+export async function createEmulator(kit) {
+  if (!can("emulators:manage")) throw new Error("Only the company account creates emulators.");
+  kit = kit === "detector_relay" ? "detector_relay" : "complete";
+  const taken = new Set(S.data.emulators.map((e) => e.id));
+  for (let n = 1; n <= 99; n++) {
+    const id = "VG-EMU" + String(n).padStart(2, "0");
+    if (taken.has(id)) continue;
+    const email = `${id.toLowerCase()}@${DEVICE_DOMAIN}`;
+    const password = randomText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 32);
+    const code = randomText("ABCDEFGHJKMNPQRSTUVWXYZ23456789", 12);   // no 0/O/1/I/L: easy to type
+    let uid;
+    try { uid = await S.db.createDeviceUser(email, password); }
+    catch (e) { if (e && e.code === "auth/email-already-in-use") continue; throw e; }
+    await S.db.set("emulators", id, { device_id: id, email, password, code, kit, uid, assigned_to: "", ready: false, created_at: nowIso(), created_by: by() });
+    await finishEmulator(id);
+    log("emulator_create", id, kit);
+    return id;
+  }
+  throw new Error("All emulator IDs are in use. Remove one first.");
+}
+/** Registers the device in the device database (also used to retry if that step failed). */
+export async function finishEmulator(id) {
+  const e = S.data.emulators.find((x) => x.id === id) || await S.db.get("emulators", id);
+  if (!e) throw new Error("Emulator not found.");
+  try {
+    await S.db.rtdbUpdate({ [`deviceAuth/${id}`]: e.uid, [`claimCodes/${id}`]: e.code, [`devices/${id}/meta`]: { kit: e.kit } });
+  } catch (err) {
+    throw new Error("The device database refused it. Publish the latest backend/connected-firebase/database.rules.json (Firebase console → Realtime Database → Rules), then press Finish setup.");
+  }
+  await S.db.update("emulators", id, { ready: true });
+}
+export async function assignEmulator(id, email) {
+  if (!can("emulators:manage")) throw new Error("Only the company account assigns emulators.");
+  await S.db.update("emulators", id, { assigned_to: String(email || "").toLowerCase(), updated_at: nowIso(), updated_by: by() });
+  log("emulator_assign", id, email || "nobody");
+}
+/** Removes the device sign-in, its database entries and the record. Apps that added it see it offline. */
+export async function removeEmulator(id) {
+  if (!can("emulators:manage")) throw new Error("Only the company account removes emulators.");
+  const e = S.data.emulators.find((x) => x.id === id);
+  if (!e) return;
+  try { const s = await S.db.deviceSession(e.email, e.password); await s.deleteUser(); await s.close(); } catch (err) { /* sign-in already gone */ }
+  try { await S.db.rtdbUpdate({ [`deviceAuth/${id}`]: null, [`claimCodes/${id}`]: null, [`devices/${id}/meta`]: null }); } catch (err) { /* rules not published: entries stay, harmless */ }
+  await S.db.del("emulators", id);
+  log("emulator_remove", id, "");
 }

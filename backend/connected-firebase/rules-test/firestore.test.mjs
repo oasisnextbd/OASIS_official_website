@@ -184,3 +184,23 @@ test("activity log: members add their own entries only, and nobody edits it", as
   await assertFails(setDoc(doc(support(), "activity/a2"), { user: OWNER, action: "x" }));
   await assertFails(updateDoc(doc(founder(), "activity/a1"), { action: "y" }));
 });
+
+test("emulators: the company account manages them; a founder reads only their own; nobody else", async () => {
+  const emu = { device_id: "VG-EMU01", email: "vg-emu01@x", password: "p", code: "ABCDEFGHJKMN", kit: "complete", assigned_to: "founder@gmail.com" };
+  await assertSucceeds(setDoc(doc(owner(), "emulators/VG-EMU01"), emu));
+  await assertSucceeds(setDoc(doc(owner(), "emulators/VG-EMU02"), { ...emu, device_id: "VG-EMU02", assigned_to: "" }));
+  await assertFails(setDoc(doc(owner(), "emulators/VG-0001A3"), { ...emu, device_id: "VG-0001A3" }));
+  await assertFails(setDoc(doc(owner(), "emulators/VG-EMU03"), { ...emu, device_id: "VG-EMU04" }));
+  await assertSucceeds(getDoc(doc(founder(), "emulators/VG-EMU01")));
+  await assertFails(getDoc(doc(founder(), "emulators/VG-EMU02")));
+  const { query, where } = await import("firebase/firestore");
+  await assertSucceeds(getDocs(query(collection(founder(), "emulators"), where("assigned_to", "==", "founder@gmail.com"))));
+  await assertFails(getDocs(collection(founder(), "emulators")));
+  await assertSucceeds(getDocs(collection(owner(), "emulators")));
+  for (const db of [support(), marketing(), stranger(), gone(), anon()]) await assertFails(getDoc(doc(db, "emulators/VG-EMU01")));
+  await assertFails(updateDoc(doc(founder(), "emulators/VG-EMU01"), { assigned_to: "x@gmail.com" }));
+  await assertSucceeds(updateDoc(doc(owner(), "emulators/VG-EMU01"), { assigned_to: "support@gmail.com" }));
+  await assertFails(getDoc(doc(support(), "emulators/VG-EMU01")));   // support is not a founder
+  await assertFails(deleteDoc(doc(founder(), "emulators/VG-EMU01")));
+  await assertSucceeds(deleteDoc(doc(owner(), "emulators/VG-EMU01")));
+});

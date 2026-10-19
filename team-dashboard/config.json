@@ -1,11 +1,12 @@
 {
-  "_readme": "Settings for the team dashboard, put into the page by scripts/build.py. owner = the company Google account (must match ownerEmail() in backend/connected-firebase/firestore.rules). firebase = web config of the venguard-connected project, the same as the app's src/lib/firebase.ts. These values are not secrets.",
+  "_readme": "Settings for the team dashboard, put into the page by scripts/build.py. owner = the company Google account (must match ownerEmail() in backend/connected-firebase/firestore.rules). firebase = web config of the venguard-connected project, the same as the app's src/lib/firebase.ts. These values are not secrets. databaseURL is the Realtime Database the devices and the app use (needed by the Emulators section).",
   "owner": "oasisnextbd@gmail.com",
   "siteUrl": "https://oasisnextbd.github.io/OASIS_official_website/VENGuard",
   "firebase": {
     "apiKey": "AIzaSyBhorrXE1tw7IH1CqUpvOYNgQaKpW4xOoA",
     "authDomain": "venguard-connected.firebaseapp.com",
     "projectId": "venguard-connected",
-    "appId": "1:879846682462:web:7ae3b1f81bbefcdab0e9cf"
+    "appId": "1:879846682462:web:7ae3b1f81bbefcdab0e9cf",
+    "databaseURL": "https://venguard-connected-default-rtdb.asia-southeast1.firebasedatabase.app"
   }
 }
