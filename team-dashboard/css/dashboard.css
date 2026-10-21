@@ -368,3 +368,33 @@ table.tot tr:last-child th, table.tot tr:last-child td { border-bottom: 0; }
 .zoom figcaption { margin-top: 8px; font-size: .85rem; color: var(--muted); text-align: center; }
 .zoom-x { position: sticky; top: 8px; float: right; margin: 8px 8px 0 0; z-index: 1; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, .2); }
 .zoom-x:hover { border-color: var(--accent-ink); }
+
+/* Tasks, My work, online status (views/tasks.js, overview.js) */
+.btn.sm { padding: 5px 12px; font-size: .84rem; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.small { font-size: .85rem; }
+.mywork { margin-bottom: 16px; }
+.mywork-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1100px) { .mywork-cols { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .mywork-cols { grid-template-columns: 1fr; } }
+.mywork-col h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+.tasklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.task { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); display: grid; gap: 6px; }
+.task p { margin: 0; }
+.task-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.task-details { color: var(--ink); white-space: pre-wrap; font-size: .9rem; }
+.task-note { font-size: .88rem; background: var(--panel-2); border-radius: 8px; padding: 6px 8px; }
+.task--overdue { border-color: var(--ink); border-style: dashed; }
+.task--returned { border-left: 3px solid var(--ink); }
+.task--approved { opacity: .72; }
+.task .btn { justify-self: start; }
+.review .task { grid-template-columns: 1fr; }
+.online-dot { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.online-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #16A34A; box-shadow: 0 0 0 3px rgba(22, 163, 74, .18); }
+.team-strip { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: center; padding: 10px 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); font-size: .9rem; }
+.presence-note { margin: 6px 0 0; font-size: .74rem; color: var(--muted); line-height: 1.35; }
+.task-files { display: flex; flex-wrap: wrap; gap: 6px; }
+.file-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2); color: var(--ink); font: inherit; font-size: .82rem; cursor: pointer; text-decoration: none; }
+.file-chip:hover { border-color: var(--accent-ink); }
+.file-chip svg { width: 14px; height: 14px; flex: none; }
+.file-chip span:first-of-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }

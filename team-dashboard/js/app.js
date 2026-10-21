@@ -1,10 +1,12 @@
 /* Start-up, sign-in, navigation and re-drawing. Each section of the dashboard is a module in
-   js/views/ that exports { id, label, icon, deps, render, badge?, visible? }; add one to VIEWS to add a section. */
+   js/views/ that exports { id, label, icon, deps, render, badge?, visible?, guest? }; add one to VIEWS to add a section.
+   Guests see only the sections marked guest: true (the database rules keep them out of the rest). */
 
 import { $, esc, toast, on, closeDrawer, ICON } from "./ui.js";
-import { S, whoAmI, start, stop, ROLES } from "./store.js";
+import { S, whoAmI, start, stop, ROLES, startPresence, stopPresence } from "./store.js";
 import { R } from "./redraw.js";
 import overview from "./views/overview.js";
+import tasks from "./views/tasks.js";
 import orders from "./views/orders.js";
 import invoices from "./views/invoices.js";
 import inventory from "./views/inventory.js";
@@ -18,7 +20,7 @@ import emulators from "./views/emulators.js";
 import manual from "./views/manual.js";
 import { stopAllEmulators } from "./emulator.js";
 
-const VIEWS = [overview, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual];
+const VIEWS = [overview, tasks, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));
@@ -49,6 +51,7 @@ let view = VIEWS[0];
     $("#app").classList.remove("signed-out");
     renderMe(); pickView(); renderNav(); draw();
     start((col) => schedule(col), (err) => dbError(err));
+    startPresence();
   });
 })();
 
@@ -77,13 +80,13 @@ on.act("signin", () => S.db.auth.signIn().catch((e) => {
   if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;
   signInScreen(c === "auth/popup-blocked" ? "The browser blocked the sign-in window. Allow pop-ups for this page, then try again." : `Sign-in didn't work (${c || e}). Please try again.`);
 }));
-on.act("signout", async () => { stop(); await stopAllEmulators(); await S.db.auth.signOut(); if (!DEMO) location.reload(); });
+on.act("signout", async () => { await stopPresence(); stop(); await stopAllEmulators(); await S.db.auth.signOut(); if (!DEMO) location.reload(); });
 
 /* ---------- navigation ---------- */
-function visibleViews() { return VIEWS.filter((v) => !v.visible || v.visible()); }
+function visibleViews() { return VIEWS.filter((v) => (S.me && S.me.role === "guest" ? v.guest : true) && (!v.visible || v.visible())); }
 function pickView() {
   const want = location.hash.slice(1) || (() => { try { return localStorage.getItem("vg_dash_view"); } catch (e) { return ""; } })();
-  view = visibleViews().find((v) => v.id === want) || VIEWS[0];
+  view = visibleViews().find((v) => v.id === want) || visibleViews()[0];
 }
 function renderNav() {
   $("#nav").innerHTML = visibleViews().map((v) => {
@@ -93,7 +96,7 @@ function renderNav() {
 }
 on.act("nav", (t) => go(t.dataset.view));
 function go(id, keepScroll) {
-  view = visibleViews().find((v) => v.id === id) || VIEWS[0];
+  view = visibleViews().find((v) => v.id === id) || visibleViews()[0];
   try { localStorage.setItem("vg_dash_view", view.id); } catch (e) {}
   history.replaceState(null, "", "#" + view.id);
   renderNav(); draw();
@@ -103,7 +106,8 @@ window.addEventListener("hashchange", () => { if (S.me && location.hash.slice(1)
 
 function renderMe() {
   const u = S.me;
-  $("#me").innerHTML = `<strong>${esc(u.name || u.email)}</strong>${u.name ? `<span class="muted">${esc(u.email)}</span><br>` : ""}<span class="role">${esc(u.owner ? "Owner" : ROLES[u.role] || u.role)}</span>`;
+  $("#me").innerHTML = `<strong>${esc(u.name || u.email)}</strong>${u.name ? `<span class="muted">${esc(u.email)}</span><br>` : ""}<span class="role">${esc(u.owner ? "Owner" : ROLES[u.role] || u.role)}</span>${u.until ? `<span class="muted"> until ${esc(u.until)}</span>` : ""}
+    ${u.owner ? "" : '<p class="presence-note">Your online status (dashboard open or not) is visible to the company account.</p>'}`;
   $("#signOutBtn").hidden = false;
 }
 

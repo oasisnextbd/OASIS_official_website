@@ -137,3 +137,58 @@ export function ratingSummary(rows, key) {
   }
   return { n, avg: n ? Math.round((sum / n) * 10) / 10 : null, dist };
 }
+
+/* ---------- tasks (views/tasks.js) and who is online ---------- */
+export const TASK_KINDS = { daily: "Daily", weekly: "Weekly", monthly: "Monthly", milestone: "Milestone" };
+export const TASK_STATUS = { open: "To do", submitted: "Submitted", approved: "Approved", returned: "Sent back" };
+/** Where a task stands today ("YYYY-MM-DD"): approved | submitted | returned | overdue | open. */
+export function taskState(t, today) {
+  if (t.status === "approved" || t.status === "submitted") return t.status;
+  if (t.due && t.due < today) return "overdue";
+  return t.status === "returned" ? "returned" : "open";
+}
+/** One person's work by kind (Daily, Weekly, Monthly, Milestone): what still needs doing or reviewing,
+    plus what was approved in the last 7 days; soonest due first. */
+export function myWork(tasks, today) {
+  const weekAgo = new Date(new Date(today + "T00:00:00Z") - 7 * 864e5).toISOString().slice(0, 10);
+  const out = { daily: [], weekly: [], monthly: [], milestone: [] };
+  for (const t of tasks) {
+    if (!out[t.kind]) continue;
+    if (t.status === "approved" && String(t.reviewed_at || "").slice(0, 10) < weekAgo) continue;
+    out[t.kind].push(t);
+  }
+  const rank = { overdue: 0, returned: 1, open: 2, submitted: 3, approved: 4 };
+  for (const k in out) out[k].sort((a, b) => rank[taskState(a, today)] - rank[taskState(b, today)] || String(a.due).localeCompare(String(b.due)));
+  return out;
+}
+/** Submitted on or before the due date (Dhaka time, UTC+6, end of that day). */
+export function onTime(t) {
+  if (!t.submitted_at || !t.due) return false;
+  const end = Date.parse(t.due + "T23:59:59+06:00");
+  return Date.parse(t.submitted_at) <= end;
+}
+/** HR summary for one month ("YYYY-MM", by due date): per person, how many were assigned, submitted on time,
+    submitted late, approved, sent back at least once, and still not done after the due date. */
+export function taskStats(tasks, month, today) {
+  const per = {};
+  for (const t of tasks) {
+    if (String(t.due).slice(0, 7) !== month) continue;
+    const p = per[t.assignee] = per[t.assignee] || { assignee: t.assignee, name: t.assignee_name || "", assigned: 0, onTime: 0, late: 0, approved: 0, sentBack: 0, overdue: 0 };
+    p.assigned++;
+    if (t.submitted_at) onTime(t) ? p.onTime++ : p.late++;
+    if (t.status === "approved") p.approved++;
+    if ((t.returned_count || 0) > 0) p.sentBack++;
+    if (taskState(t, today) === "overdue") p.overdue++;
+  }
+  return Object.values(per).sort((a, b) => a.assignee.localeCompare(b.assignee));
+}
+/** Online when the dashboard said so in the last 3 minutes (it writes about once a minute). */
+export function presenceOf(p, now = Date.now()) {
+  if (!p || !p.last_seen) return { online: false, seen: null };
+  const seen = Date.parse(p.last_seen);
+  return { online: p.online !== false && now - seen < 3 * 60e3, seen };
+}
+/** Today's date in Dhaka (UTC+6), "YYYY-MM-DD": due dates are Dhaka days. */
+export const dhakaToday = (now = Date.now()) => new Date(now + 6 * 3600e3).toISOString().slice(0, 10);
+/** End of a "YYYY-MM-DD" day in Dhaka (UTC+6), in ms: the team list's access end date. */
+export const endOfDayDhaka = (d) => Date.parse(d + "T23:59:59+06:00");

@@ -6,12 +6,14 @@ import { CHANNELS, channelOf } from "../calc.js";
 import { R } from "../redraw.js";
 import { openOrder } from "./orders.js";
 import { renewalsDue } from "./subscriptions.js";
+import { myWorkPanel } from "./tasks.js";
+import { presenceOf } from "../calc.js";
 
 let range = 30;
 const inRange = (iso) => !range || (Date.now() - new Date(iso)) / 864e5 <= range;
 
 export default {
-  id: "overview", label: "Overview", icon: "overview", deps: ["orders", "invoices", "inventory", "marketing", "subscriptions"],
+  id: "overview", label: "Overview", icon: "overview", deps: ["orders", "invoices", "inventory", "marketing", "subscriptions", "tasks", "presence"],
   render() {
     const all = S.data.orders, L = all.filter((o) => inRange(o.submitted_at));
     const inv = S.data.invoices.filter((i) => i.status === "issued");
@@ -26,7 +28,7 @@ export default {
     const seg = [[7, "7 days"], [30, "30 days"], [90, "90 days"], [0, "All time"]].map(([v, l]) => `<button type="button" data-act="ov:range" data-v="${v}" aria-pressed="${range === v}">${l}</button>`).join("");
     const due = renewalsDue();
     const renewals = due.length ? `<div class="banner">${ICON.info}<div><strong>Renewal${due.length > 1 ? "s" : ""} coming up:</strong> ${due.map((s) => esc(s.name) + (s.renews_on ? " (" + esc(s.renews_on) + ")" : "")).join(", ")}. <button class="linkish" data-act="nav" data-view="subscriptions">Open Subscriptions</button></div></div>` : "";
-    return `${renewals}<div class="topline"><div><h1>Overview</h1><div class="sub">${fmtN(L.length)} orders and leads, ${label}</div></div><div class="seg" role="group" aria-label="Period">${seg}</div></div>
+    return `${renewals}${S.me.owner ? teamStrip() : myWorkPanel(false)}<div class="topline"><div><h1>Overview</h1><div class="sub">${fmtN(L.length)} orders and leads, ${label}</div></div><div class="seg" role="group" aria-label="Period">${seg}</div></div>
       <div class="kpis">${kpi("Invoiced sales", money(invR.reduce((s, i) => s + i.total, 0)), fmtN(invR.length) + " invoices", true)}
         ${kpi("Collected", money(invR.reduce((s, i) => s + (i.paid || 0), 0)), money(inv.reduce((s, i) => s + Math.max(0, i.due || 0), 0)) + " still to collect (all invoices)")}
         ${kpi("Orders & leads", fmtN(L.length), fmtN(L.filter((o) => o.form_type === "preorder").length) + " pre-orders")}
@@ -40,6 +42,14 @@ export default {
         <section class="panel followup"><h2>Needs a call</h2>${follow.length ? `<ul>${follow.map((o) => `<li data-act="ov:open" data-id="${esc(o.id)}" tabindex="0"><span><strong>${esc(o.name)}</strong><br><span class="type">${esc(TYPE[o.form_type] || "")} · ${esc(o.district || "")}</span></span><span style="text-align:right">${pill(o.status, STATUS[o.status])}<br><span class="type">${ago(o.submitted_at)}</span></span></li>`).join("")}</ul>` : '<p class="muted">Everyone older than a day has been contacted.</p>'}</section></div>`;
   },
 };
+/* Company account: who is at the dashboard now, and work waiting for review (details in Tasks). */
+function teamStrip() {
+  const online = S.data.presence.filter((p) => p.id !== S.me.email && presenceOf(p).online)
+    .map((p) => { const m = S.data.team.find((t) => t.id === p.id); return (m && m.name) || p.id; });
+  const review = S.data.tasks.filter((t) => t.status === "submitted").length;
+  return `<div class="team-strip"><span>${online.length ? `<span class="online-dot">Online now: ${esc(online.join(", "))}</span>` : '<span class="muted">Nobody else is at the dashboard right now</span>'}</span>
+    <span>${review ? `<strong>${fmtN(review)}</strong> task${review > 1 ? "s" : ""} waiting for your review · ` : ""}<button class="linkish" data-act="nav" data-view="tasks">Open Tasks</button></span></div>`;
+}
 on.act("ov:range", (t) => { range = +t.dataset.v; R.draw(); });
 on.act("ov:open", (t) => openOrder(t.dataset.id));
 

@@ -49,7 +49,7 @@ function teamPanel() {
     <div class="table-wrap flat"><table><thead><tr><th>Person</th><th>Role</th><th></th></tr></thead><tbody>
     ${team.length ? team.map((m) => { const isOwner = m.id === owner, gone = m.active !== true && !isOwner;
       return `<tr class="no-hover"><td class="name"><strong>${esc(m.name || m.id)}</strong><br><span class="type">${esc(m.id)}</span></td>
-        <td>${isOwner ? "Owner" : esc(ROLES[m.role] || m.role)}${gone ? " (removed)" : ""}</td>
+        <td>${isOwner ? "Owner" : esc(ROLES[m.role] || m.role)}${gone ? " (removed)" : ""}${m.until && !gone ? `<br><span class="type">${m.until_ms && Date.now() > m.until_ms ? "ended" : "until"} ${esc(m.until)}</span>` : ""}</td>
         <td>${m.id === S.me.email ? '<span class="type">You</span>' : manage && !isOwner ? (gone ? `<button class="btn" data-act="set:memberback" data-id="${esc(m.id)}">Add back</button>` : `<button class="btn" data-act="set:memberedit" data-id="${esc(m.id)}">Change</button>`) : ""}</td></tr>`; }).join("")
       : emptyRow(3, "No one yet.")}</tbody></table></div>
     <p class="sub">${manage ? "People sign in with the Google account added here. Ask everyone to switch on 2-step verification." : `Only ${esc(owner)} can add or remove team members.`}</p></section>`;
@@ -144,7 +144,9 @@ function memberForm(m) {
   m = m || {};
   drawer(m.id ? "Change " + (m.name || m.id) : "Add a person", `<form data-form="set:member" class="stack">
     ${field("email", "Google account email", m.id || "", m.id ? "readonly" : 'type="email" required autofocus placeholder="name@gmail.com"')}${field("name", "Name", m.name)}
-    ${select("role", "Role", [["support", "Support: orders, invoices, stock"], ["marketing", "Marketing: promo codes and costs; views the rest"], ["founder", "Founder: everything except the team list"]], m.role || "support")}
+    ${select("role", "Role", [["support", "Support: orders, invoices, stock"], ["marketing", "Marketing: promo codes and costs; views the rest"], ["founder", "Founder: everything except the team list"], ["guest", "Guest: only their emulator, their tasks and the manual; no company data"]], m.role || "support")}
+    ${field("until", "Access ends (optional; recommended for guests)", m.until || "", 'type="date"')}
+    <p class="type">After this day they can no longer sign in or read anything. Leave empty for no end date.</p>
     <div class="actions"><button class="btn primary" type="submit">${m.id ? "Save" : "Add to team"}</button>
     ${m.id ? `<button class="btn" type="button" data-act="set:memberremove" data-id="${esc(m.id)}">Remove from team</button>` : ""}</div></form>`);
 }

@@ -2,14 +2,14 @@
    functions below; nothing else writes to the database. Live updates come in through watch(),
    so a change made by one person shows up for everyone straight away. */
 
-import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo, nextRenewal, CYCLES } from "./calc.js";
+import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo, nextRenewal, CYCLES, TASK_KINDS, endOfDayDhaka } from "./calc.js";
 import { nowIso, today } from "./ui.js";
 
 export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], ratings: [], settings: { company: {}, website: {}, app: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], ratings: [], tasks: [], presence: [], settings: { company: {}, website: {}, app: {} },
   },
   loaded: new Set(),
 };
@@ -18,7 +18,7 @@ export const STATUSES = ["new", "payment_pending", "contacted", "paid", "refunde
 export const STATUS = { new: "New", payment_pending: "Payment pending", contacted: "Contacted", paid: "Deposit paid", refunded: "Refunded", installed: "Installed", not_interested: "Not interested" };
 export const TYPE = { preorder: "Pre-order", enquiry: "Site assessment request", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
 export const PACKAGE = { complete: "Complete kit", detector_relay: "Detector + Relay" };
-export const ROLES = { founder: "Founder", support: "Support", marketing: "Marketing" };
+export const ROLES = { founder: "Founder", support: "Support", marketing: "Marketing", guest: "Guest" };
 
 /* ---------- who may do what (the same rules are enforced in firestore.rules) ---------- */
 const CAN = {
@@ -28,8 +28,9 @@ const CAN = {
 };
 export function can(what) {
   if (!S.me) return false;
-  if (what === "team" || what === "emulators:manage") return !!S.me.owner;
-  if (what === "emulators") return S.me.role === "founder";
+  if (what === "team" || what === "emulators:manage" || what === "tasks:manage" || what === "presence") return !!S.me.owner;
+  // Guests (outside reviewers, testers): their assigned emulator, their tasks and the manual; no company data.
+  if (what === "emulators") return S.me.role === "founder" || S.me.role === "guest";
   return (CAN[what] || []).includes(S.me.role);
 }
 
@@ -43,7 +44,8 @@ export async function whoAmI(user) {
     return { email: owner, name: (row && row.name) || user.name || "", role: "founder", owner: true };
   }
   if (!row || row.active !== true) throw new Error(`Your account (${user.email}) is not on the VenGuard team list. Ask ${owner} to add you.`);
-  return { email: user.email, name: row.name || "", role: row.role, owner: false };
+  if (row.until_ms && Date.now() > row.until_ms) throw new Error(`Your access ended on ${row.until}. Ask ${owner} if you need it again.`);
+  return { email: user.email, name: row.name || "", role: row.role, owner: false, until: row.until || "" };
 }
 
 /* ---------- live data ---------- */
@@ -56,12 +58,19 @@ const WATCH = {
 let stops = [];
 export function start(onChange, onError) {
   stop();
-  for (const [col, o] of Object.entries(WATCH)) {
-    stops.push(S.db.watch(col, (rows) => { S.data[col] = rows; S.loaded.add(col); onChange(col); }, o, onError));
+  const keep = (col) => (rows) => { S.data[col] = rows; S.loaded.add(col); onChange(col); };
+  if (S.me.role === "guest") {
+    // Guests read no company data (the rules refuse it); only their own team row, to notice removal.
+    stops.push(S.db.watchDoc("team", S.me.email, (d) => keep("team")(d ? [d] : []), onError));
+  } else {
+    for (const [col, o] of Object.entries(WATCH)) stops.push(S.db.watch(col, keep(col), o, onError));
+    for (const id of ["company", "website", "app"]) {
+      stops.push(S.db.watchDoc("settings", id, (d) => { S.data.settings[id] = d || {}; onChange("settings"); }, onError));
+    }
   }
-  for (const id of ["company", "website", "app"]) {
-    stops.push(S.db.watchDoc("settings", id, (d) => { S.data.settings[id] = d || {}; onChange("settings"); }, onError));
-  }
+  // Tasks: the company account sees all; everyone else only their own (the rules allow no more).
+  stops.push(S.db.watch("tasks", keep("tasks"), S.me.owner ? {} : { where: ["assignee", "==", S.me.email] }, onError));
+  if (can("presence")) stops.push(S.db.watch("presence", keep("presence"), {}, onError));
   // Emulators: the company account sees all; a founder only the ones assigned to them (the rules allow no more).
   if (can("emulators")) {
     const o = S.me.owner ? {} : { where: ["assigned_to", "==", S.me.email] };
@@ -376,9 +385,86 @@ export async function saveMember(m) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Enter a valid email address.");
   if (email === String(S.cfg.owner).toLowerCase()) throw new Error("The company account always stays on the team as founder.");
   if (!ROLES[m.role]) throw new Error("Choose a role.");
-  await S.db.set("team", email, { email, name: m.name || "", role: m.role, active: m.active !== false, updated_at: nowIso(), updated_by: by() });
-  log("team_update", email, m.role + (m.active === false ? " (removed)" : ""));
+  const row = { email, name: m.name || "", role: m.role, active: m.active !== false, updated_at: nowIso(), updated_by: by() };
+  // Optional last day of access (guests especially): after it, the rules let them read nothing.
+  if (m.until) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(m.until)) throw new Error("Choose a valid end date.");
+    Object.assign(row, { until: m.until, until_ms: endOfDayDhaka(m.until) });
+  }
+  await S.db.set("team", email, row);
+  log("team_update", email, m.role + (m.until ? " until " + m.until : "") + (m.active === false ? " (removed)" : ""));
 }
+
+/* ---------- tasks (company account assigns and reviews; each person submits their own) ---------- */
+export async function saveTask(id, v) {
+  if (!can("tasks:manage")) throw new Error("Only the company account assigns tasks.");
+  const title = String(v.title || "").trim();
+  if (!title) throw new Error("Give the task a title.");
+  const person = S.data.team.find((m) => m.id === v.assignee && m.active === true);
+  if (!person) throw new Error("Choose who the task is for.");
+  if (!TASK_KINDS[v.kind]) throw new Error("Choose daily, weekly, monthly or milestone.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v.due || "")) throw new Error("Choose a due date.");
+  const data = { title: title.slice(0, 200), details: String(v.details || "").slice(0, 2000), assignee: person.id, assignee_name: (person.name || "").slice(0, 80), kind: v.kind, due: v.due };
+  if (id) { await S.db.update("tasks", id, data); log("task_edit", id, title); return id; }
+  const nid = await S.db.add("tasks", { ...data, status: "open", created_at: nowIso(), created_by: by(), returned_count: 0 });
+  log("task_assign", nid, `${title} → ${person.id}`);
+  return nid;
+}
+/** Max files per task and bytes per file: each file is one database document (1 MB limit, data: URL ≈ +33 %). */
+export const TASK_FILES_MAX = 5, TASK_FILE_BYTES = 700 * 1024;
+/** Submit a task as done: a note, an optional link (e.g. Google Drive) and files ({name, type, size, data}). */
+export async function submitTask(id, note, link, files = []) {
+  const t = S.data.tasks.find((x) => x.id === id);
+  if (!t || t.assignee !== S.me.email) throw new Error("This task is not yours.");
+  const had = t.files || [];
+  if (had.length + files.length > TASK_FILES_MAX) throw new Error(`Up to ${TASK_FILES_MAX} files per task.`);
+  link = String(link || "").trim();
+  if (link && !/^https?:\/\//i.test(link)) throw new Error("The link must start with https://");
+  const added = [];
+  for (const f of files) {
+    if (f.size > TASK_FILE_BYTES) throw new Error(`${f.name} is too large (max 700 KB). Share a link instead.`);
+    const fid = await S.db.add("taskFiles", { task_id: id, name: f.name.slice(0, 160), type: (f.type || "application/octet-stream").slice(0, 120), size: f.size, data: f.data, assignee: S.me.email, uploaded_by: S.me.email, uploaded_at: nowIso() });
+    added.push({ id: fid, name: f.name.slice(0, 160), type: f.type || "", size: f.size });
+  }
+  await S.db.update("tasks", id, clean({ status: "submitted", submitted_at: nowIso(), submit_note: String(note || "").slice(0, 1000), link: link.slice(0, 500), files: [...had, ...added] }));
+  log("task_submit", id, t.title + (added.length ? ` (${added.length} file${added.length > 1 ? "s" : ""})` : ""));
+}
+/** One attached file as a data: URL (the company account, or the person who attached it). */
+export async function taskFile(fileId) {
+  const f = await S.db.get("taskFiles", fileId);
+  if (!f) throw new Error("This file is no longer available.");
+  return f;
+}
+export async function reviewTask(id, approve, note) {
+  if (!can("tasks:manage")) throw new Error("Only the company account reviews tasks.");
+  const t = S.data.tasks.find((x) => x.id === id);
+  if (!t) return;
+  const v = { status: approve ? "approved" : "returned", reviewed_at: nowIso(), review_note: String(note || "").slice(0, 1000) };
+  if (!approve) v.returned_count = (t.returned_count || 0) + 1;
+  await S.db.update("tasks", id, v);
+  log(approve ? "task_approve" : "task_send_back", id, t.title);
+}
+export async function deleteTask(id) {
+  if (!can("tasks:manage")) throw new Error("Only the company account deletes tasks.");
+  const t = S.data.tasks.find((x) => x.id === id);
+  for (const f of (t && t.files) || []) await S.db.del("taskFiles", f.id).catch(() => {});
+  await S.db.del("tasks", id);
+  log("task_delete", id, "");
+}
+
+/* ---------- who is at the dashboard (read by the company account only) ---------- */
+let presenceTimer = 0;
+const beat = (online) => S.me ? S.db.set("presence", S.me.email, { email: S.me.email, last_seen: nowIso(), online }).catch(() => {}) : Promise.resolve();
+const bye = () => { beat(false); };
+export function startPresence() {
+  stopPresenceTimer();
+  beat(true);
+  presenceTimer = setInterval(() => beat(true), 60000);
+  window.addEventListener("pagehide", bye);
+}
+function stopPresenceTimer() { if (presenceTimer) clearInterval(presenceTimer); presenceTimer = 0; window.removeEventListener("pagehide", bye); }
+/** On sign-out: say "offline" while still signed in. */
+export async function stopPresence() { stopPresenceTimer(); await beat(false); }
 
 /* ---------- subscriptions & renewals ---------- */
 const SUB_FIELDS = ["name", "category", "currency", "cycle", "renews_on", "paid_by", "payment_method", "account", "url", "notes"];

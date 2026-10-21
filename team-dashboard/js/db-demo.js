@@ -87,6 +87,23 @@ function sample() {
       "oasisnextbd@gmail.com": { email: "oasisnextbd@gmail.com", name: "Demo founder", role: "founder", active: true },
       "support@example.com": { email: "support@example.com", name: "Support desk", role: "support", active: true },
       "marketing@example.com": { email: "marketing@example.com", name: "Marketing", role: "marketing", active: true },
+      "engineer.friend@example.com": { email: "engineer.friend@example.com", name: "Guest engineer", role: "guest", active: true, until: day(-30), until_ms: now + 30 * 864e5 },
+    },
+    // Tasks and online status (views/tasks.js): made up for the demo and the manual's pictures.
+    tasks: {
+      t1: { title: "Call every new website lead", details: "Use the Orders list; write what each person said in Team notes.", assignee: "support@example.com", assignee_name: "Support desk", kind: "daily", due: day(0), status: "open", created_at: iso(0.3), created_by: "oasisnextbd@gmail.com", returned_count: 0 },
+      t2: { title: "Post the installation video on Facebook", details: "", assignee: "marketing@example.com", assignee_name: "Marketing", kind: "weekly", due: day(-2), status: "submitted", submitted_at: iso(0.1), submit_note: "Posted at 6 pm. Reach and clicks are in the report.", link: "https://www.facebook.com/", files: [{ id: "demofile1", name: "post-report.txt", type: "text/plain", size: 96 }], created_at: iso(4), created_by: "oasisnextbd@gmail.com", returned_count: 0 },
+      t3: { title: "Count the stock and update Inventory", details: "Detectors, valves, relays.", assignee: "support@example.com", assignee_name: "Support desk", kind: "weekly", due: day(1), status: "open", created_at: iso(6), created_by: "oasisnextbd@gmail.com", returned_count: 0 },
+      t4: { title: "Monthly marketing cost report", details: "Every spend entered in Marketing costs, with receipts.", assignee: "marketing@example.com", assignee_name: "Marketing", kind: "monthly", due: day(-9), status: "returned", review_note: "Two Facebook receipts are missing.", submitted_at: iso(1), reviewed_at: iso(0.5), created_at: iso(12), created_by: "oasisnextbd@gmail.com", returned_count: 1 },
+      t5: { title: "Review the relay wiring and the install guide", details: "Test with your emulator; write suggestions.", assignee: "engineer.friend@example.com", assignee_name: "Guest engineer", kind: "milestone", due: day(-14), status: "open", created_at: iso(1), created_by: "oasisnextbd@gmail.com", returned_count: 0 },
+      t6: { title: "Answer WhatsApp messages within 2 hours", details: "", assignee: "support@example.com", assignee_name: "Support desk", kind: "daily", due: day(1), status: "approved", submitted_at: iso(1.2), reviewed_at: iso(1), created_at: iso(2), created_by: "oasisnextbd@gmail.com", returned_count: 0 },
+    },
+    taskFiles: {
+      demofile1: { task_id: "t2", name: "post-report.txt", type: "text/plain", size: 96, data: "data:text/plain;base64,RmFjZWJvb2sgcG9zdCwgMjEgT2N0b2JlcgpSZWFjaDogNCwxMjAgcGVvcGxlCkNsaWNrcyB0byB0aGUgd2Vic2l0ZTogODYKKG1hZGUtdXAgZGVtbyByZXBvcnQpCg==", assignee: "marketing@example.com", uploaded_by: "marketing@example.com", uploaded_at: iso(0.1) },
+    },
+    presence: {
+      "support@example.com": { email: "support@example.com", last_seen: iso(0.0003), online: true },
+      "marketing@example.com": { email: "marketing@example.com", last_seen: iso(0.12), online: false },
     },
     inventory: {
       DET: { sku: "DET", name: "Gas detector", stock: 24, low_at: 10, unit_cost: 0 },
