@@ -265,6 +265,23 @@ html[lang="bn"] .label { font: 600 .92rem/1.3 var(--font-bn); letter-spacing: 0;
   .header-actions .btn--primary, .header-actions .wa-link { display: none; }
   .logo-img { height: 31px; }
 }
+/* Narrow phones (about 400 px or less, or a large text-size setting): keep the header on one row.
+   The language switch shows only the other language; logo and buttons get a little smaller. */
+@media (max-width: 400px) {
+  .site-header .wrap { gap: 8px; }
+  .header-actions { gap: 6px; }
+  .logo-img { height: 27px; }
+  .lang-switch a[aria-current="true"] { display: none; }
+  .lang-switch a { padding: 7px 11px; }
+  .icon-btn { width: 38px; height: 38px; }
+  .icon-btn svg { width: 19px; height: 19px; }
+}
+@media (max-width: 300px) {
+  .logo-img { height: 23px; }
+  .header-actions { gap: 4px; }
+  .lang-switch a { padding: 7px 8px; }
+  .icon-btn { width: 36px; height: 36px; }
+}
 .site-notice { background: var(--caution); color: var(--navy); font-weight: 600; font-size: .95rem; padding: 10px 0; }
 
 /* 7 · App strip (home hero; the hero itself is section 18) ----------------- */
