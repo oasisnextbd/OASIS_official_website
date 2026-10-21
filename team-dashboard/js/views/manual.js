@@ -6,6 +6,7 @@
 import { esc, ICON } from "../ui.js";
 import { S } from "../store.js";
 
+// Picture sizes are fixed (dashboard 1100×688, app 540×1171) so the page does not jump while they load.
 const APP = "../VENGuard/assets/img/app-guide/en/";
 const M = "manual/";
 
@@ -143,6 +144,8 @@ const SECTIONS = [
     pics: [[M + "19-team.webp", "Team list"], [M + "20-add-person.webp", "Add a person"]] },
 ];
 
+/** Wide screens show the contents open beside the manual; phones get a folded "Contents" button that scrolls away. */
+const wideScreen = () => matchMedia("(min-width: 961px)").matches;
 const EDITION = { owner: "Company account edition", founder: "Founder edition", support: "Support edition", marketing: "Marketing edition", guest: "Guest edition" };
 const sees = (s) => s.who.includes(S.me.owner ? "founder" : S.me.role) || (S.me.owner && s.who.includes("owner"));
 
@@ -154,12 +157,12 @@ export default {
     return `<div class="topline"><div><h1>Manual</h1>
         <div class="sub">${esc(EDITION[key] || "Team edition")}: the parts of the dashboard your role uses, step by step. In the pictures, the orange rings and numbers show what to press; they match the numbered steps. Pictures use made-up data.</div></div></div>
       <div class="manual">
-        <nav class="manual-toc panel tight" aria-label="Manual contents"><strong>Contents</strong><ol>${list.map((s) => `<li><a href="#m-${s.id}" data-manual="${s.id}">${esc(s.title)}</a></li>`).join("")}</ol>
-          <p class="sub">Customers' guide to the app: <a href="../VENGuard/en/app-guide/" target="_blank" rel="noopener">website → How to use the app</a></p></nav>
+        <nav class="manual-toc panel tight" aria-label="Manual contents"><details${wideScreen() ? " open" : ""}><summary><strong>Contents</strong><span class="type"> · ${list.length} sections</span></summary><ol>${list.map((s) => `<li><a href="#m-${s.id}" data-manual="${s.id}">${esc(s.title)}</a></li>`).join("")}</ol>
+          <p class="sub">Customers' guide to the app: <a href="../VENGuard/en/app-guide/" target="_blank" rel="noopener">website → How to use the app</a></p></details></nav>
         <div class="manual-body">${list.map((s, i) => `<section class="panel manual-sec" id="m-${s.id}">
           <h2><span class="manual-num">${i + 1}</span>${esc(s.title)}</h2>
           <ol class="manual-steps">${s.steps.map((t) => `<li>${t}</li>`).join("")}</ol>
-          <div class="manual-pics">${s.pics.map(([src, alt], n) => `<figure><a href="${src}" data-zoom title="Open larger"><img src="${src}" alt="${esc(alt)}" loading="lazy"></a><figcaption>Picture ${n + 1}: ${esc(alt)}</figcaption></figure>`).join("")}</div>
+          <div class="manual-pics">${s.pics.map(([src, alt], n) => `<figure><a href="${src}" data-zoom title="Open larger"><img src="${src}" alt="${esc(alt)}" ${src.startsWith(APP) ? 'width="540" height="1171"' : 'width="1100" height="688"'} loading="lazy"></a><figcaption>Picture ${n + 1}: ${esc(alt)}</figcaption></figure>`).join("")}</div>
         </section>`).join("")}</div></div>`;
   },
 };
@@ -169,6 +172,8 @@ document.addEventListener("click", (e) => {
   const a = e.target.closest("a[data-manual]");
   if (!a) return;
   e.preventDefault();
+  const list = a.closest("details");
+  if (list && !wideScreen()) list.open = false;   // phones: fold the contents again
   document.getElementById("m-" + a.dataset.manual)?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
