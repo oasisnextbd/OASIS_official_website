@@ -38,7 +38,7 @@ function connect(email) {
     async deviceSession(e, p) {
       const { a, au } = deviceApp(); await A.signInWithEmailAndPassword(au, e, p);
       const r = D.getDatabase(a); D.connectDatabaseEmulator(r, "127.0.0.1", 9000); const at = (x) => D.ref(r, x);
-      return { uid: au.currentUser.uid, set: (x, v) => D.set(at(x), v), push: (x, v) => D.push(at(x), v), remove: (x) => D.remove(at(x)),
+      return { uid: au.currentUser.uid, set: (x, v) => D.set(at(x), v), push: (x, v) => D.push(at(x), v), remove: (x) => D.remove(at(x)), removeOnDisconnect: (x) => D.onDisconnect(at(x)).remove(),
         onValue: (x, cb, err) => D.onValue(at(x), (s) => cb(s.val()), err), onChildAdded: (x, cb, err) => D.onChildAdded(at(x), (s) => cb(s.key, s.val()), err),
         serverTime: () => D.serverTimestamp(), deleteUser: () => A.deleteUser(au.currentUser), async close() { await deleteApp(a); } };
     },

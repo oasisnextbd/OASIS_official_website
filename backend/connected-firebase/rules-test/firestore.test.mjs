@@ -24,6 +24,8 @@ beforeEach(async () => {
     await setDoc(doc(db, "team/support@gmail.com"), { email: "support@gmail.com", name: "S", role: "support", active: true });
     await setDoc(doc(db, "team/marketing@gmail.com"), { email: "marketing@gmail.com", name: "M", role: "marketing", active: true });
     await setDoc(doc(db, "team/gone@gmail.com"), { email: "gone@gmail.com", name: "G", role: "founder", active: false });
+    await setDoc(doc(db, "team/guest@gmail.com"), { email: "guest@gmail.com", name: "Guest", role: "guest", active: true, until: "2099-12-31", until_ms: 4102444799000 });
+    await setDoc(doc(db, "team/expired@gmail.com"), { email: "expired@gmail.com", name: "Old guest", role: "guest", active: true, until: "2020-01-31", until_ms: 1580515199000 });
     await setDoc(doc(db, "orders/VG-261018-AAAA"), { name: "Rahim", phone: "01712345678", status: "new" });
     await setDoc(doc(db, "invoices/INV-2026-0001"), { status: "issued", total: 100 });
     await setDoc(doc(db, "inventory/DET"), { sku: "DET", name: "Detector", stock: 10, unit_cost: 900 });
@@ -221,4 +223,99 @@ test("ratings: a signed-out visitor can give and change stars, never read them; 
   for (const db of [stranger(), gone()]) await assertFails(getDocs(collection(db, "ratings")));
   await assertFails(deleteDoc(doc(support(), id)));
   await assertSucceeds(deleteDoc(doc(founder(), id)));
+});
+
+
+const guest = () => as("guest@gmail.com"), expired = () => as("expired@gmail.com");
+
+test("guests: no company data at all; only their own team row and their assigned emulator", async () => {
+  for (const path of ["orders/VG-261018-AAAA", "invoices/INV-2026-0001", "inventory/DET", "settings/company", "signatories/s1", "promos/OLD5", "team/founder@gmail.com"]) {
+    await assertFails(getDoc(doc(guest(), path)));
+  }
+  for (const col of ["orders", "invoices", "inventory", "marketing", "dealers", "ratings", "subscriptions", "activity", "team"]) {
+    await assertFails(getDocs(collection(guest(), col)));
+  }
+  await assertSucceeds(getDoc(doc(guest(), "team/guest@gmail.com")));
+  await assertFails(updateDoc(doc(guest(), "orders/VG-261018-AAAA"), { status: "paid" }));
+  await assertFails(setDoc(doc(guest(), "team/guest@gmail.com"), { email: "guest@gmail.com", name: "G", role: "founder", active: true }));
+  const emu = { device_id: "VG-EMU05", email: "e@x", password: "p", code: "ABCDEFGHJKMN", kit: "complete", assigned_to: "guest@gmail.com" };
+  await assertSucceeds(setDoc(doc(owner(), "emulators/VG-EMU05"), emu));
+  await assertSucceeds(setDoc(doc(owner(), "emulators/VG-EMU06"), { ...emu, device_id: "VG-EMU06", assigned_to: "founder@gmail.com" }));
+  await assertSucceeds(getDoc(doc(guest(), "emulators/VG-EMU05")));
+  await assertFails(getDoc(doc(guest(), "emulators/VG-EMU06")));
+  const { query, where } = await import("firebase/firestore");
+  await assertSucceeds(getDocs(query(collection(guest(), "emulators"), where("assigned_to", "==", "guest@gmail.com"))));
+});
+
+test("an expired guest (past the end date) gets nothing, not even their emulator", async () => {
+  await assertSucceeds(setDoc(doc(owner(), "emulators/VG-EMU07"), { device_id: "VG-EMU07", email: "e@x", password: "p", code: "ABCDEFGHJKMN", kit: "complete", assigned_to: "expired@gmail.com" }));
+  await assertFails(getDoc(doc(expired(), "emulators/VG-EMU07")));
+  await assertFails(setDoc(doc(expired(), "presence/expired@gmail.com"), { email: "expired@gmail.com", last_seen: "2026-10-21T10:00:00Z", online: true }));
+});
+
+test("team list: only the company account adds a guest, with an end date", async () => {
+  const g = { email: "friend@gmail.com", name: "Friend", role: "guest", active: true, until: "2026-11-30", until_ms: 1764525599000 };
+  await assertSucceeds(setDoc(doc(owner(), "team/friend@gmail.com"), g));
+  await assertFails(setDoc(doc(founder(), "team/friend2@gmail.com"), { ...g, email: "friend2@gmail.com" }));
+  await assertFails(setDoc(doc(owner(), "team/friend3@gmail.com"), { ...g, email: "friend3@gmail.com", until_ms: "soon" }));
+  await assertFails(setDoc(doc(owner(), "team/friend4@gmail.com"), { ...g, email: "friend4@gmail.com", role: "boss" }));
+});
+
+test("online status: each person writes only their own; only the company account reads them", async () => {
+  const p = (e) => ({ email: e, last_seen: "2026-10-21T10:00:00Z", online: true });
+  await assertSucceeds(setDoc(doc(support(), "presence/support@gmail.com"), p("support@gmail.com")));
+  await assertSucceeds(setDoc(doc(guest(), "presence/guest@gmail.com"), p("guest@gmail.com")));
+  await assertFails(setDoc(doc(support(), "presence/founder@gmail.com"), p("founder@gmail.com")));
+  await assertFails(setDoc(doc(support(), "presence/support@gmail.com"), { ...p("support@gmail.com"), page: "orders" }));
+  await assertFails(setDoc(doc(stranger(), "presence/stranger@gmail.com"), p("stranger@gmail.com")));
+  await assertSucceeds(getDocs(collection(owner(), "presence")));
+  for (const db of [founder(), support(), marketing(), guest()]) await assertFails(getDocs(collection(db, "presence")));
+});
+
+test("tasks: the company account assigns and reviews; each person sees and submits only their own", async () => {
+  const t = { title: "Call 10 leads", details: "From the website", assignee: "support@gmail.com", assignee_name: "S", kind: "daily",
+    due: "2026-10-21", status: "open", created_at: "2026-10-21T08:00:00Z", created_by: "oasisnextbd@gmail.com", returned_count: 0 };
+  await assertSucceeds(setDoc(doc(owner(), "tasks/t1"), t));
+  await assertSucceeds(setDoc(doc(owner(), "tasks/t2"), { ...t, assignee: "guest@gmail.com", kind: "milestone", due: "2026-11-30" }));
+  await assertFails(setDoc(doc(founder(), "tasks/t3"), t));                                   // founders do not assign
+  await assertFails(setDoc(doc(owner(), "tasks/t4"), { ...t, kind: "yearly" }));
+  await assertFails(setDoc(doc(owner(), "tasks/t5"), { ...t, due: "21/10/2026" }));
+  const { query, where } = await import("firebase/firestore");
+  await assertSucceeds(getDocs(query(collection(support(), "tasks"), where("assignee", "==", "support@gmail.com"))));
+  await assertFails(getDocs(collection(support(), "tasks")));
+  await assertFails(getDoc(doc(support(), "tasks/t2")));
+  await assertSucceeds(getDoc(doc(guest(), "tasks/t2")));
+  await assertFails(getDoc(doc(founder(), "tasks/t1")));
+  // submit: only status → submitted, a note and the time
+  await assertFails(updateDoc(doc(support(), "tasks/t1"), { status: "approved" }));
+  await assertFails(updateDoc(doc(support(), "tasks/t1"), { status: "submitted", submitted_at: "2026-10-21T17:00:00Z", due: "2026-12-31" }));
+  await assertFails(updateDoc(doc(founder(), "tasks/t1"), { status: "submitted", submitted_at: "2026-10-21T17:00:00Z" }));
+  await assertSucceeds(updateDoc(doc(support(), "tasks/t1"), { status: "submitted", submitted_at: "2026-10-21T17:00:00Z", submit_note: "Done, 10 called" }));
+  await assertFails(updateDoc(doc(support(), "tasks/t1"), { status: "submitted", submit_note: "again" }));   // already submitted
+  // review by the company account; a returned task can be submitted again
+  await assertSucceeds(updateDoc(doc(owner(), "tasks/t1"), { status: "returned", review_note: "Add the notes", reviewed_at: "2026-10-21T18:00:00Z", returned_count: 1 }));
+  await assertSucceeds(updateDoc(doc(support(), "tasks/t1"), { status: "submitted", submitted_at: "2026-10-21T19:00:00Z", submit_note: "Notes added" }));
+  await assertSucceeds(updateDoc(doc(owner(), "tasks/t1"), { status: "approved", reviewed_at: "2026-10-21T20:00:00Z" }));
+  await assertFails(deleteDoc(doc(support(), "tasks/t1")));
+  await assertSucceeds(deleteDoc(doc(owner(), "tasks/t1")));
+});
+
+
+test("task files: the assignee attaches proof while the task is open; only they and the company account read it", async () => {
+  const t = { title: "Stock count", assignee: "support@gmail.com", kind: "weekly", due: "2026-10-24", status: "open", created_at: "x", created_by: "oasisnextbd@gmail.com", returned_count: 0 };
+  await assertSucceeds(setDoc(doc(owner(), "tasks/tf"), t));
+  const f = { task_id: "tf", name: "count.pdf", type: "application/pdf", size: 1200, data: "data:application/pdf;base64,AAAA", assignee: "support@gmail.com", uploaded_by: "support@gmail.com", uploaded_at: "2026-10-21T10:00:00Z" };
+  await assertSucceeds(setDoc(doc(support(), "taskFiles/f1"), f));
+  await assertFails(setDoc(doc(marketing(), "taskFiles/f2"), { ...f, assignee: "marketing@gmail.com", uploaded_by: "marketing@gmail.com" }));   // not their task
+  await assertFails(setDoc(doc(support(), "taskFiles/f3"), { ...f, data: "x".repeat(1000001) }));                                          // too big
+  await assertFails(setDoc(doc(support(), "taskFiles/f4"), { ...f, task_id: "nope" }));                                                   // no such task
+  await assertSucceeds(getDoc(doc(support(), "taskFiles/f1")));
+  await assertSucceeds(getDoc(doc(owner(), "taskFiles/f1")));
+  await assertFails(getDoc(doc(marketing(), "taskFiles/f1")));
+  await assertFails(getDoc(doc(founder(), "taskFiles/f1")));
+  await assertSucceeds(updateDoc(doc(support(), "tasks/tf"), { status: "submitted", submitted_at: "2026-10-21T10:01:00Z", submit_note: "Done", link: "https://drive.google.com/x",
+    files: [{ id: "f1", name: "count.pdf", type: "application/pdf", size: 1200 }] }));
+  await assertFails(setDoc(doc(support(), "taskFiles/f5"), f));                                                                           // already submitted
+  await assertFails(deleteDoc(doc(support(), "taskFiles/f1")));
+  await assertSucceeds(deleteDoc(doc(owner(), "taskFiles/f1")));
 });

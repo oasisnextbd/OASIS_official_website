@@ -16,10 +16,14 @@ nothing until they sign in.
 
 | Role | Can |
 |---|---|
-| Owner (company account) | everything, including the team list |
+| Owner (company account) | everything, including the team list, assigning and reviewing tasks, and seeing who is online |
 | Founder | everything except the team list: orders, invoices (including cancelling), stock, packages, promo codes, costs, dealers, company details, signatures, website settings, deleting spam ratings |
 | Support | add and update orders; issue, change and re-sign invoices; record payments; stock in and out |
 | Marketing | promo codes and marketing costs; sees everything else |
+| Guest | people outside the company (a reviewing engineer, a tester): **no company data at all** (orders, customers, invoices, stock, costs, ratings, settings, the team list). Only the emulator assigned to them, their own tasks and the manual. Give them an **Access ends** date: after it the rules refuse everything |
+
+Everyone except the company account sees **My work** (their own tasks) and can submit them. Any person can
+have an end date (`until`, `until_ms` on their team row); the rules check it on every read.
 
 ## What it does
 
@@ -56,6 +60,18 @@ nothing until they sign in.
   - What was spent per channel.
   - Orders, paying customers and invoiced sales per channel, cost per order, cost per paying customer,
     and taka back per taka spent.
+- **Tasks** (`js/views/tasks.js`): the company account assigns work to one person (daily, weekly, monthly or a
+  milestone, with a due date). It shows on that person's Overview and under **My work**; they press **Submit as
+  done** with a note, attached files (proof of work) and/or a link. The company account approves or sends it
+  back with a note. A monthly summary per person (assigned, on time, late, approved, sent back, overdue) is
+  exported as CSV for HR. Due dates are Dhaka days (`dhakaToday`, `onTime` in `js/calc.js`, tested).
+  - Files: kept in this free Firestore database, one document per file (`taskFiles`, a data: URL), at most
+    5 per task and 700 KB each (photos are shrunk in the browser). Firebase Storage would need the paid plan.
+    The free plan stores 1 GB in all: about 1,400 files at the limit, many more at normal sizes. Bigger files:
+    the person shares a link (Google Drive). Deleting a task deletes its files.
+- **Who is online** (`presence` collection): each signed-in person's dashboard writes "last seen" about once
+  a minute and "offline" on sign-out. Only the company account reads it (Tasks → People, and Overview).
+  Everyone sees a note under their name saying so. It records only whether the dashboard is open.
 - **Ratings**: the 1–5 stars visitors give in the website footer for the VenGuard device, the website, and
   our service and support. Averages, how the stars are spread, pages, and every rating. Anonymous; one record
   per browser, so changing stars does not count twice. Everyone on the team sees them; founders delete spam.

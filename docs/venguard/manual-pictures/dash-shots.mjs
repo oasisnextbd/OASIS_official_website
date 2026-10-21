@@ -55,7 +55,7 @@ await shot("10-stock", [[drawer.locator("select").first(), 1], [drawer.locator('
 await closeDrawer();
 
 await go("promos"); await hideDemo();
-await shot("11-promos", [[p.getByRole("button", { name: "New code" }), 1], [p.locator('[data-act="promo:toggle"]').first(), 2]]);
+await shot("11-promos", [[p.getByRole("button", { name: "New code" }), 1]]);
 await go("marketing"); await hideDemo();
 await shot("12-marketing", [[p.getByRole("button", { name: "Add a cost" }), 1]]);
 await go("ratings"); await hideDemo();
@@ -77,7 +77,7 @@ await p.evaluate(async () => {
     { id: "VG-EMU02", device_id: "VG-EMU02", code: "K7Q2M9XW4TPA", kit: "complete", assigned_to: "founder2@gmail.com", ready: true },
   ];
   const e = await import("/team/js/emulator.js");
-  const fake = { async deviceSession() { return { set: async () => {}, push: async () => {}, remove: async () => {}, onValue: () => () => {}, onChildAdded: () => () => {}, serverTime: () => 0, close: async () => {} }; } };
+  const fake = { async deviceSession() { return { set: async () => {}, push: async () => {}, remove: async () => {}, removeOnDisconnect: async () => {}, onValue: () => () => {}, onChildAdded: () => () => {}, serverTime: () => 0, close: async () => {} }; } };
   await e.startEmulator(fake, m.S.data.emulators[0]);
 });
 await go("emulators"); await hideDemo();
@@ -94,7 +94,29 @@ await shot("18-app-notice", [[drawer.locator('input[name="notice_en"]'), 1], [dr
 await closeDrawer();
 const team = p.locator('[data-act="set:member"]');
 await team.scrollIntoViewIfNeeded(); await p.waitForTimeout(300);
-await shot("19-team", [[team, 1], [p.locator('[data-act="set:memberedit"]').first(), 2], [p.locator('[data-act="set:memberremove"]').first(), 3]]);
+await shot("19-team", [[team, 1], [p.locator('[data-act="set:memberedit"]').first(), 2]]);
 await team.click(); await p.waitForTimeout(400);
 await shot("20-add-person", [[drawer.locator('input[type="email"], input[name="email"]').first(), 1], [drawer.locator("select").first(), 2], [drawer.locator('button[type="submit"]'), 3]]);
+await closeDrawer();
+
+// Tasks (company account): review, people and online status, assign, HR summary
+await go("tasks"); await hideDemo();
+await shot("25-tasks", [[p.getByRole("button", { name: "Assign a task" }), 1], [p.locator('[data-act="task:approve"]').first(), 2], [p.locator('[data-act="task:back"]').first(), 3], [p.locator(".online-dot").first(), 4, 6]]);
+await p.getByRole("button", { name: "Assign a task" }).click(); await p.waitForTimeout(400);
+await p.fill("#f_title", "Prepare the BUET test samples"); await p.selectOption("#f_assignee", "support@example.com"); await p.selectOption("#f_kind", "milestone");
+await shot("26-assign-task", [[drawer.locator("#f_title"), 1], [drawer.locator("#f_assignee"), 2], [drawer.locator("#f_kind"), 3], [drawer.locator("#f_due"), 4], [drawer.locator('button[type="submit"]'), 5]]);
+await closeDrawer();
+await p.locator('[data-change="task:month"]').scrollIntoViewIfNeeded(); await p.evaluate(() => scrollBy(0, 200)); await p.waitForTimeout(300);
+await shot("27-hr-summary", [[p.locator('[data-change="task:month"]'), 1], [p.locator('[data-act="task:csv"]'), 2]]);
+
+// My work, as a support person (the menu label and Overview change for everyone but the company account)
+await p.evaluate(async () => { const m = await import("/team/js/store.js"); m.S.me = { email: "support@example.com", name: "Support desk", role: "support", owner: false }; });
+await go("overview"); await hideDemo();
+await p.evaluate(() => { const me = document.querySelector("#me"); me.innerHTML = '<strong>Support desk</strong><span class="muted">support@example.com</span><br><span class="role">Support</span><p class="presence-note">Your online status (dashboard open or not) is visible to the company account.</p>'; });
+await shot("23-mywork", [[p.locator('[data-act="task:submit"]').first(), 1]]);
+await p.locator('[data-act="task:submit"]').first().click(); await p.waitForTimeout(400);
+await p.fill("#f_note", "Called 6 leads; notes are in each order.");
+await drawer.locator("#f_files").setInputFiles({ name: "call-log.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 demo") });
+await shot("24-submit", [[drawer.locator("#f_note"), 1], [drawer.locator("#f_files"), 2], [drawer.locator("#f_link"), 3], [drawer.locator('button[type="submit"]'), 4]]);
+await closeDrawer();
 await b.close();

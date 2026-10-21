@@ -1,6 +1,6 @@
 /* Emulators: test devices for the founders. Each behaves like a real VenGuard (detector, valve, relay)
    through the same device database and rules, so the app on a founder's phone cannot tell the
-   difference. Only founders see this section; each founder sees the emulator assigned to them, the
+   difference. Founders and guests see this section; each sees only the emulator assigned to them, the
    company account sees and assigns all. An emulator runs while this page is open (js/emulator.js). */
 
 import { esc, toast, drawer, closeDrawer, on, busy, select, opts, copyText, ICON } from "../ui.js";
@@ -11,13 +11,15 @@ import { THRESHOLD, canReset } from "../emusim.js";
 const KIT = { complete: "Complete kit", detector_relay: "Detector + Relay" };
 const founders = () => {
   const owner = String(S.cfg.owner).toLowerCase();
-  const rows = S.data.team.filter((t) => t.active === true && t.role === "founder").map((t) => [t.id, t.name ? `${t.name} (${t.id})` : t.id]);
+  // Founders, and guests (outside testers) whose access has not ended.
+  const rows = S.data.team.filter((t) => t.active === true && (t.role === "founder" || (t.role === "guest" && !(t.until_ms && Date.now() > t.until_ms))))
+    .map((t) => [t.id, `${t.name || t.id}${t.role === "guest" ? " — guest" : ""} (${t.id})`]);
   if (!rows.some(([id]) => id === owner)) rows.unshift([owner, `Company account (${owner})`]);
   return rows;
 };
 
 export default {
-  id: "emulators", label: "Emulators", icon: "emulators", deps: ["emulators", "team"],
+  guest: true, id: "emulators", label: "Emulators", icon: "emulators", deps: ["emulators", "team"],
   visible: () => can("emulators"),
   badge: () => runningCount(),
   render() {

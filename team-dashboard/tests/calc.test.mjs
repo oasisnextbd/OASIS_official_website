@@ -71,3 +71,32 @@ test("ratings: average, count and spread per kind; missing or invalid stars are 
   assert.deepEqual(ratingSummary(rows, "product"), { n: 1, avg: 4, dist: [0, 0, 0, 1, 0] });
   assert.deepEqual(ratingSummary([], "service"), { n: 0, avg: null, dist: [0, 0, 0, 0, 0] });
 });
+
+test("tasks: state, grouping by kind, on time, monthly summary", async () => {
+  const { taskState, myWork, onTime, taskStats } = await import("../js/calc.js");
+  const today = "2026-10-21";
+  const T = (o) => ({ assignee: "a@x", kind: "daily", due: today, status: "open", ...o });
+  assert.equal(taskState(T({}), today), "open");
+  assert.equal(taskState(T({ due: "2026-10-20" }), today), "overdue");
+  assert.equal(taskState(T({ due: "2026-10-20", status: "submitted" }), today), "submitted");
+  assert.equal(taskState(T({ status: "returned" }), today), "returned");
+  const w = myWork([T({ id: 1, due: "2026-10-22" }), T({ id: 2, due: "2026-10-19" }), T({ id: 3, kind: "milestone", due: "2026-12-01" }),
+    T({ id: 4, status: "approved", reviewed_at: "2026-10-01T10:00:00Z" }), T({ id: 5, status: "approved", reviewed_at: "2026-10-20T10:00:00Z" }), T({ id: 6, kind: "yearly" })], today);
+  assert.deepEqual(w.daily.map((t) => t.id), [2, 1, 5]);          // overdue first, old approvals hidden
+  assert.deepEqual(w.milestone.map((t) => t.id), [3]);
+  assert.equal(onTime(T({ submitted_at: "2026-10-21T17:30:00Z" })), true);    // 23:30 in Dhaka
+  assert.equal(onTime(T({ submitted_at: "2026-10-21T18:30:00Z" })), false);   // 00:30 next day in Dhaka
+  const s = taskStats([T({ submitted_at: "2026-10-21T10:00:00Z", status: "approved" }), T({ due: "2026-10-10", submitted_at: "2026-10-12T10:00:00Z", status: "submitted", returned_count: 1 }),
+    T({ due: "2026-10-15" }), T({ assignee: "b@x", due: "2026-11-02" })], "2026-10", today);
+  assert.deepEqual(s, [{ assignee: "a@x", name: "", assigned: 3, onTime: 1, late: 1, approved: 1, sentBack: 1, overdue: 1 }]);
+});
+
+test("online status and access end date", async () => {
+  const { presenceOf, endOfDayDhaka } = await import("../js/calc.js");
+  const now = Date.parse("2026-10-21T10:00:00Z");
+  assert.equal(presenceOf({ last_seen: "2026-10-21T09:59:00Z", online: true }, now).online, true);
+  assert.equal(presenceOf({ last_seen: "2026-10-21T09:50:00Z", online: true }, now).online, false);
+  assert.equal(presenceOf({ last_seen: "2026-10-21T09:59:30Z", online: false }, now).online, false);
+  assert.equal(presenceOf(null, now).online, false);
+  assert.equal(new Date(endOfDayDhaka("2026-11-30")).toISOString(), "2026-11-30T17:59:59.000Z");
+});
