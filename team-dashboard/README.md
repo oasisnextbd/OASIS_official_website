@@ -69,6 +69,10 @@ have an end date (`until`, `until_ms` on their team row); the rules check it on 
     5 per task and 700 KB each (photos are shrunk in the browser). Firebase Storage would need the paid plan.
     The free plan stores 1 GB in all: about 1,400 files at the limit, many more at normal sizes. Bigger files:
     the person shares a link (Google Drive). Deleting a task deletes its files.
+- **Profile** (`js/views/profile.js`): the button at the bottom of the menu (top right on phones) opens it: name
+  (each person may correct only their own name; the rules allow nothing else on their team row), email, role
+  and what it may do, end date, work this month, Day / Night / Automatic theme (saved per browser), the
+  online-status note, and Sign out. The company account opens anyone's profile from Tasks → People.
 - **Who is online** (`presence` collection): each signed-in person's dashboard writes "last seen" about once
   a minute and "offline" on sign-out. Only the company account reads it (Tasks → People, and Overview).
   Everyone sees a note under their name saying so. It records only whether the dashboard is open.

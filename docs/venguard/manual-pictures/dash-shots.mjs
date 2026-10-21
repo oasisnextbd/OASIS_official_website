@@ -23,7 +23,9 @@ await p.evaluate(async () => {
   await m.saveSettings("company", { legal_name: "OASIS Next (example)", address: "Dhaka (example)", invoice_prefix: "INV" });
 });
 await p.waitForTimeout(400); await hideDemo();
-await shot("02-overview", [[p.locator("#nav"), 1, 4], [p.locator("#me"), 2, 4], [p.locator("#themeBtn"), 3, 3]]);
+await shot("02-overview", [[p.locator("#nav"), 1, 4], [p.locator("#me"), 2, 4]]);
+await p.locator("#me").click(); await p.waitForTimeout(400); await hideDemo();
+await shot("28-profile", [[p.locator('[data-act="profile:name"]'), 1], [p.locator('#main .seg'), 2, 4], [p.locator('#main [data-act="signout"]'), 3]]);
 
 await go("orders"); await hideDemo();
 await shot("03-orders", [[p.getByRole("button", { name: "Add order" }), 1], [p.locator('#main input[type="search"], #main input[data-input]').first(), 2], [p.locator('tr[data-act="order:open"]').first(), 3, 2]]);
@@ -112,7 +114,7 @@ await shot("27-hr-summary", [[p.locator('[data-change="task:month"]'), 1], [p.lo
 // My work, as a support person (the menu label and Overview change for everyone but the company account)
 await p.evaluate(async () => { const m = await import("/team/js/store.js"); m.S.me = { email: "support@example.com", name: "Support desk", role: "support", owner: false }; });
 await go("overview"); await hideDemo();
-await p.evaluate(() => { const me = document.querySelector("#me"); me.innerHTML = '<strong>Support desk</strong><span class="muted">support@example.com</span><br><span class="role">Support</span><p class="presence-note">Your online status (dashboard open or not) is visible to the company account.</p>'; });
+await p.evaluate(async () => { const { R } = await import("/team/js/redraw.js"); R.renderMe(); });
 await shot("23-mywork", [[p.locator('[data-act="task:submit"]').first(), 1]]);
 await p.locator('[data-act="task:submit"]').first().click(); await p.waitForTimeout(400);
 await p.fill("#f_note", "Called 6 leads; notes are in each order.");

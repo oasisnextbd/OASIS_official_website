@@ -19,6 +19,14 @@ export const STATUS = { new: "New", payment_pending: "Payment pending", contacte
 export const TYPE = { preorder: "Pre-order", enquiry: "Site assessment request", dealer: "Dealer application", waitlist: "Agro / Marine waitlist", contact: "Contact message" };
 export const PACKAGE = { complete: "Complete kit", detector_relay: "Detector + Relay" };
 export const ROLES = { founder: "Founder", support: "Support", marketing: "Marketing", guest: "Guest" };
+/** What each role may do, in plain words (Profile and the team form). Same rules as firestore.rules. */
+export const ROLE_INFO = {
+  owner: "Everything, including the team list, assigning and reviewing tasks, and seeing who is online.",
+  founder: "Everything except the team list: orders, invoices (including cancelling), stock, packages, promo codes, costs, dealers, settings, and an emulator.",
+  support: "Orders and leads, invoices and payments, stock in and out. Sees the rest.",
+  marketing: "Promo codes and marketing costs. Sees the rest.",
+  guest: "Only your emulator, your tasks and the manual. No company data.",
+};
 
 /* ---------- who may do what (the same rules are enforced in firestore.rules) ---------- */
 const CAN = {
@@ -393,6 +401,15 @@ export async function saveMember(m) {
   }
   await S.db.set("team", email, row);
   log("team_update", email, m.role + (m.until ? " until " + m.until : "") + (m.active === false ? " (removed)" : ""));
+}
+
+/** Profile: correct your own display name (the rules allow nothing else on your team row). */
+export async function saveMyName(name) {
+  name = String(name || "").trim().slice(0, 80);
+  if (!name) throw new Error("Type your name.");
+  await S.db.update("team", S.me.email, { name, updated_at: nowIso(), updated_by: by() });
+  S.me.name = name;
+  log("profile_name", S.me.email, name);
 }
 
 /* ---------- tasks (company account assigns and reviews; each person submits their own) ---------- */

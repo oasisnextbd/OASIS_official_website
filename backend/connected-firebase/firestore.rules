@@ -80,7 +80,11 @@ service cloud.firestore {
         && request.resource.data.active is bool
         && (!('until_ms' in request.resource.data) || request.resource.data.until_ms is int)
         && smallText(request.resource.data, 'until', 10)
-        && smallText(request.resource.data, 'name', 80);
+        && smallText(request.resource.data, 'name', 80)
+        // Profile: anyone on the list may correct their own display name, and nothing else.
+        || (anyone() && who == email() && changes().hasOnly(['name', 'updated_at', 'updated_by'])
+          && request.resource.data.updated_by == email()
+          && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80);
       allow delete: if false;   // remove = active: false, so the history stays readable
     }
 
