@@ -141,7 +141,7 @@ function peopleTable() {
   if (!list.length) return '<p class="muted">Add people in Settings & team first.</p>';
   return `<div class="table-wrap flat"><table><thead><tr><th>Person</th><th>Role</th><th>Dashboard</th><th class="num">To do</th><th class="num">Overdue</th><th class="num">To review</th></tr></thead><tbody>
     ${list.map((m) => { const mine = S.data.tasks.filter((t) => t.assignee === m.id), p = presenceOf(pres[m.id]);
-      return `<tr class="no-hover"><td><strong>${esc(m.name || m.id)}</strong><br><span class="type">${esc(m.id)}</span></td><td>${esc(ROLES[m.role] || m.role)}${m.until ? `<br><span class="type">until ${esc(m.until)}</span>` : ""}</td>
+      return `<tr data-act="person:open" data-id="${esc(m.id)}" tabindex="0" title="Open ${esc(m.name || m.id)}'s profile"><td><strong>${esc(m.name || m.id)}</strong><br><span class="type">${esc(m.id)}</span></td><td>${esc(ROLES[m.role] || m.role)}${m.until ? `<br><span class="type">until ${esc(m.until)}</span>` : ""}</td>
         <td>${p.online ? '<span class="online-dot">Online now</span>' : `<span class="type">${p.seen ? "Last seen " + esc(ago(new Date(p.seen).toISOString())) : "Not seen yet"}</span>`}</td>
         <td class="num">${fmtN(mine.filter((t) => ["open", "returned"].includes(taskState(t, t0))).length)}</td><td class="num">${fmtN(mine.filter((t) => taskState(t, t0) === "overdue").length)}</td>
         <td class="num">${fmtN(mine.filter((t) => t.status === "submitted").length)}</td></tr>`; }).join("")}</tbody></table></div>

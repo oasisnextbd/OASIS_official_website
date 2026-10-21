@@ -15,17 +15,17 @@ const SECTIONS = [
     steps: [
       "Open the dashboard link and press <b>Sign in with Google</b> (picture 1, 1). Choose the Google account the company account added to the team; other accounts are refused.",
       "The sections you can use are on the left (picture 2, 1). A number next to a section means something needs you: new orders, low stock, a renewal.",
-      "Your name and role are at the bottom left (2). Your role decides what you can change; everything else you can only look at.",
-      "Switch Day and Night here (3). <b>Sign out</b> on shared computers: it also deletes the copy of the data kept in this browser.",
+      "Your name and role are at the bottom left (2; top right on a phone). Press it for your <b>Profile</b> (picture 3): correct your name (1), choose Day, Night or Automatic (2), see what your role may do and your work this month, and <b>Sign out</b> (3). Sign out on shared computers: it also deletes the copy of the data kept in this browser.",
+      "Your role decides what you can change; everything else you can only look at.",
     ],
-    pics: [[M + "01-signin.webp", "Team sign-in page"], [M + "02-overview.webp", "Overview with the menu, your role and the theme button marked"]] },
+    pics: [[M + "01-signin.webp", "Team sign-in page"], [M + "02-overview.webp", "Overview with the menu and your profile button marked"], [M + "28-profile.webp", "Your profile"]] },
 
   { id: "mywork", title: "My work: your tasks", who: ["founder", "support", "marketing", "guest"],
     steps: [
       "The company account gives you tasks: for <b>today</b>, <b>this week</b>, <b>this month</b>, or a <b>milestone</b>. They are at the top of Overview and under <b>My work</b> in the menu (picture 1). The number next to My work is how many are still to do.",
       "Overdue tasks have a dashed border and come first. A task <b>sent back</b> shows the company account's note: fix it, then submit again.",
       "When a task is done press <b>Submit as done</b> (1). Write what you did (picture 2, 1), attach the proof (2): a PDF, Word or Excel file, a CSV, a text file or photos, up to 5 files of 700 KB each (photos are made smaller automatically), or paste a link to a bigger file such as a Google Drive folder (3). Then <b>Submit</b> (4). The company account approves it or sends it back.",
-      "Your online status (whether your dashboard is open) is visible to the company account, and nothing else about what you do. It says so under your name, bottom left.",
+      "Your online status (whether your dashboard is open) is visible to the company account, and nothing else about what you do. Your Profile says so too.",
     ],
     pics: [[M + "23-mywork.webp", "My work on Overview"], [M + "24-submit.webp", "Submit as done"]] },
 
@@ -33,7 +33,7 @@ const SECTIONS = [
     steps: [
       "Menu → <b>Tasks</b>. <b>Assign a task</b> (picture 1, 1): what to do (picture 2, 1), who it is for (2), daily, weekly, monthly or milestone (3), the due date (4), then <b>Assign</b> (5). It appears on their Overview at once.",
       "Submitted tasks wait in <b>Waiting for your review</b>: read their note, open the attached files or link (click a file to open or download it), then <b>Approve</b> (picture 1, 2) or <b>Send back</b> (3) with what needs to change. Deleting a task also deletes its files.",
-      "<b>People</b> (4): who is at the dashboard right now (Online now, or when they were last seen) and each person's tasks to do, overdue and to review. Overview also shows who is online.",
+      "<b>People</b> (4): who is at the dashboard right now (Online now, or when they were last seen) and each person's tasks to do, overdue and to review. Click a person to open their profile. Overview also shows who is online.",
       "Click a task in <b>All tasks</b> to change or delete it. <b>Monthly summary (for HR)</b> (picture 3): pick the month (1) and <b>Export CSV</b> (2) for a spreadsheet: assigned, on time, late, approved, sent back, overdue.",
     ],
     pics: [[M + "25-tasks.webp", "Tasks for the company account"], [M + "26-assign-task.webp", "Assign a task"], [M + "27-hr-summary.webp", "Monthly summary for HR"]] },

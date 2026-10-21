@@ -319,3 +319,15 @@ test("task files: the assignee attaches proof while the task is open; only they 
   await assertFails(deleteDoc(doc(support(), "taskFiles/f1")));
   await assertSucceeds(deleteDoc(doc(owner(), "taskFiles/f1")));
 });
+
+test("profile: each person may change only their own display name", async () => {
+  const by = (e) => ({ updated_at: "2026-10-21T10:00:00Z", updated_by: e });
+  await assertSucceeds(updateDoc(doc(support(), "team/support@gmail.com"), { name: "Support Desk", ...by("support@gmail.com") }));
+  await assertSucceeds(updateDoc(doc(guest(), "team/guest@gmail.com"), { name: "Friend (engineer)", ...by("guest@gmail.com") }));
+  await assertFails(updateDoc(doc(support(), "team/support@gmail.com"), { role: "founder", ...by("support@gmail.com") }));
+  await assertFails(updateDoc(doc(support(), "team/support@gmail.com"), { name: "S", active: true, until_ms: 9e15, ...by("support@gmail.com") }));
+  await assertFails(updateDoc(doc(guest(), "team/guest@gmail.com"), { until_ms: 9999999999999, ...by("guest@gmail.com") }));
+  await assertFails(updateDoc(doc(support(), "team/marketing@gmail.com"), { name: "X", ...by("support@gmail.com") }));
+  await assertFails(updateDoc(doc(expired(), "team/expired@gmail.com"), { name: "Still here", ...by("expired@gmail.com") }));
+  await assertFails(updateDoc(doc(support(), "team/support@gmail.com"), { name: "", ...by("support@gmail.com") }));
+});

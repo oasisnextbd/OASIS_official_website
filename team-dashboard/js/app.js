@@ -18,9 +18,10 @@ import ratings from "./views/ratings.js";
 import settings from "./views/settings.js";
 import emulators from "./views/emulators.js";
 import manual from "./views/manual.js";
+import profile, { initials, themePref, setTheme } from "./views/profile.js";
 import { stopAllEmulators } from "./emulator.js";
 
-const VIEWS = [overview, tasks, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual];
+const VIEWS = [overview, tasks, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual, profile];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));
@@ -58,15 +59,16 @@ let view = VIEWS[0];
 /* ---------- signed out ---------- */
 function signInScreen(msg) {
   S.me = null;
-  $("#app").classList.add("signed-out"); $("#signOutBtn").hidden = true; $("#nav").innerHTML = ""; $("#me").innerHTML = "";
+  $("#app").classList.add("signed-out"); $("#nav").innerHTML = ""; $("#me").hidden = true; $("#me").innerHTML = "";
   $("#main").innerHTML = `<section class="signin"><h1>Team sign-in</h1>
     <p class="sub">Sign in with the Google account that was added to the VenGuard team. If this browser has several Google accounts, you choose which one to use.</p>
     ${msg ? `<div class="banner error">${ICON.info}<div>${esc(msg)}</div></div>` : ""}
     <button class="btn primary" type="button" data-act="signin">Sign in with Google</button>
-    ${DEMO ? '<p class="sub" style="margin-top:14px">Demo mode: made-up data, nothing is saved.</p>' : ""}</section>`;
+    ${DEMO ? '<p class="sub" style="margin-top:14px">Demo mode: made-up data, nothing is saved.</p>' : ""}
+    <p><button class="linkish" type="button" data-act="signin:theme">${themePref() === "dark" || (themePref() === "auto" && matchMedia("(prefers-color-scheme: dark)").matches) ? "Day theme" : "Night theme"}</button></p></section>`;
 }
 function noAccess(msg) {
-  $("#app").classList.add("signed-out"); $("#signOutBtn").hidden = false;
+  $("#app").classList.add("signed-out");
   $("#main").innerHTML = `<section class="signin"><h1>No access</h1><div class="banner error">${ICON.info}<div>${esc(msg)}</div></div>
     <button class="btn" type="button" data-act="signout">Use another account</button></section>`;
 }
@@ -89,7 +91,9 @@ function pickView() {
   view = visibleViews().find((v) => v.id === want) || visibleViews()[0];
 }
 function renderNav() {
-  $("#nav").innerHTML = visibleViews().map((v) => {
+  const me = $("#me");
+  if (me) me.setAttribute("aria-current", view && view.id === "profile" ? "page" : "false");
+  $("#nav").innerHTML = visibleViews().filter((v) => v.nav !== false).map((v) => {
     const b = v.badge ? v.badge() : 0;
     return `<button type="button" data-act="nav" data-view="${v.id}" aria-current="${v === view ? "page" : "false"}">${ICON[v.icon]}<span class="lbl">${esc(v.label)}</span>${b ? `<span class="count num">${b}</span>` : ""}</button>`;
   }).join("");
@@ -105,11 +109,13 @@ function go(id, keepScroll) {
 window.addEventListener("hashchange", () => { if (S.me && location.hash.slice(1) !== view.id) go(location.hash.slice(1)); });
 
 function renderMe() {
-  const u = S.me;
-  $("#me").innerHTML = `<strong>${esc(u.name || u.email)}</strong>${u.name ? `<span class="muted">${esc(u.email)}</span><br>` : ""}<span class="role">${esc(u.owner ? "Owner" : ROLES[u.role] || u.role)}</span>${u.until ? `<span class="muted"> until ${esc(u.until)}</span>` : ""}
-    ${u.owner ? "" : '<p class="presence-note">Your online status (dashboard open or not) is visible to the company account.</p>'}`;
-  $("#signOutBtn").hidden = false;
+  const u = S.me, b = $("#me");
+  b.innerHTML = `<span class="avatar" aria-hidden="true">${esc(initials(u.name, u.email))}</span><span class="me-text"><strong>${esc(u.name || u.email)}</strong><span class="role">${esc(u.owner ? "Owner" : ROLES[u.role] || u.role)}</span></span>`;
+  b.title = "Profile, theme and sign out";
+  b.setAttribute("aria-label", `Profile: ${u.name || u.email}`);
+  b.hidden = false;
 }
+R.renderMe = renderMe;
 
 /* ---------- drawing ---------- */
 let pending = new Set(), frame = 0;
@@ -152,14 +158,8 @@ function draw() {
   view.mounted && view.mounted();
 }
 
-/* ---------- Day / Night switch (saved per browser, like the website) ---------- */
-(function themeSwitch() {
-  const btn = $("#themeBtn"), root = document.documentElement;
-  const isDark = () => { const t = root.getAttribute("data-theme"); return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
-  const sync = () => { const d = isDark(); btn.setAttribute("aria-pressed", String(d)); btn.lastChild.textContent = d ? "Day theme" : "Night theme"; };
-  btn.addEventListener("click", () => { const next = isDark() ? "light" : "dark"; root.setAttribute("data-theme", next); try { localStorage.setItem("vg_dash_theme", next); } catch (e) {} sync(); });
-  sync();
-})();
+/* ---------- Day / Night: chosen on the Profile page (or the sign-in screen), saved per browser ---------- */
+on.act("signin:theme", () => { const dark = themePref() === "dark" || (themePref() === "auto" && matchMedia("(prefers-color-scheme: dark)").matches); setTheme(dark ? "light" : "dark"); signInScreen(); });
 
 on.act("close", () => closeDrawer());
 R.draw = draw;
