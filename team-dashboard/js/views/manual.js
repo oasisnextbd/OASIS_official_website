@@ -15,7 +15,7 @@ const SECTIONS = [
     steps: [
       "Open the dashboard link and press <b>Sign in with Google</b> (picture 1, 1). Choose the Google account the company account added to the team; other accounts are refused.",
       "The sections you can use are on the left (picture 2, 1). A number next to a section means something needs you: new orders, low stock, a renewal.",
-      "Your name and role are at the bottom left (2; top right on a phone). Press it for your <b>Profile</b> (picture 3): correct your name (1), choose Day, Night or Automatic (2), see what your role may do and your work this month, and <b>Sign out</b> (3). Sign out on shared computers: it also deletes the copy of the data kept in this browser.",
+      "Your name and role are at the top left, under the logo (2; the round badge at the top right on a phone). Press it for your <b>Profile</b> (picture 3): correct your name (1), choose Day, Night or Automatic (2), see what your role may do and your work this month, and <b>Sign out</b> (3). Sign out on shared computers: it also deletes the copy of the data kept in this browser.",
       "Your role decides what you can change; everything else you can only look at.",
     ],
     pics: [[M + "01-signin.webp", "Team sign-in page"], [M + "02-overview.webp", "Overview with the menu and your profile button marked"], [M + "28-profile.webp", "Your profile"]] },
