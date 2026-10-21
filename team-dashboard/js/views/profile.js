@@ -1,6 +1,6 @@
 /* Profile: who you are on the dashboard (name, email, role, access end date), what your role may do,
-   your work this month, the theme, and Sign out. Opened from the profile button at the bottom of the
-   menu (top right on phones). The company account can also open anyone's profile from Tasks → People. */
+   your work this month, the theme, and Sign out. Opened from the profile button at the top of the
+   menu, under the logo (top right on phones). The company account can also open anyone's profile from Tasks → People. */
 
 import { esc, fmtN, ago, toast, drawer, on, busy, field, ICON } from "../ui.js";
 import { S, ROLES, ROLE_INFO, saveMyName } from "../store.js";
