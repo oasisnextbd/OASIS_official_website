@@ -1,0 +1,6 @@
+{
+  "name": "rod-bondhu-firmware-bench",
+  "private": true,
+  "description": "Runs solar_dryer_cloud.ino on a computer against a local MQTT broker and tests the live app end to end.",
+  "dependencies": { "aedes": "0.51.3", "mqtt": "4.3.7", "websocket-stream": "5.5.2" }
+}

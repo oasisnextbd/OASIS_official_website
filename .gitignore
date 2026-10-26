@@ -17,3 +17,6 @@ Thumbs.db
 .vscode/
 .idea/
 __pycache__/
+
+# Rod Bondhu firmware: real PIN and dryer Wi-Fi password
+rodbondhu/firmware/**/secrets.h

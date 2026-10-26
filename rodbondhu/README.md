@@ -14,6 +14,7 @@ rodbondhu/
 ├── assets/            css/, js/, fonts/, img/ (published as-is)
 ├── app/index.html     the live app: one self-contained page (MQTT over WebSocket, demo mode)
 └── tools/build.py     renders every page in both languages, copies assets and the app
+└── firmware/          ESP32 sketch (not published) + a no-hardware test bench, see firmware/README.md
 ```
 
 Build and preview from the repository root:
@@ -32,7 +33,8 @@ python3 -m http.server 8000 -d _site     # http://localhost:8000/Rod_Bondhu/
 | Team | `site.json → team` |
 | Contacts | `site.json → contact` (same values as `venguard/site.json`) |
 | Add a page | `templates/pages/<name>.html` + `PAGES` in `tools/build.py` + `nav` in `templates/partials/header.html` |
-| App: MQTT topic | `TOPIC_BASE` in `app/index.html` (must match the ESP32 firmware) |
+| App: MQTT topic | `TOPIC_BASE` in `app/index.html` and `firmware/solar_dryer_cloud/solar_dryer_cloud.ino` (must match) |
+| Firmware or app protocol change | run `firmware/test/run.sh` (21 end-to-end checks, no hardware) |
 
 ## Rules
 
