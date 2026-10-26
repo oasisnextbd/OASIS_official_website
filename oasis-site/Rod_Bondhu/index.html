@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f4d3a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rod Bondhu">
+<title>Rod Bondhu | Smart Solar Dryer</title>
+<meta name="description" content="Rod Bondhu: a smart mixed-mode solar dryer that clears humid air by itself. Live readings from the BUET prototype.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f4d3a'/%3E%3Ccircle cx='32' cy='30' r='11' fill='%23f2a516'/%3E%3Cg stroke='%23f2a516' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M32 8v5M32 47v5M10 30h5M49 30h5M16.5 14.5l3.5 3.5M44 42l3.5 3.5M16.5 45.5l3.5-3.5M44 18l3.5-3.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f3ea;--card:#fff;--ink:#1c2a23;--muted:#5d6b63;--line:#e0dccf;--track:#ece7da;
+--brand:#1f4d3a;--brand-ink:#fff;--sun:#d97f06;--sun-soft:#fdf0d8;--air:#3a6f9e;--leaf:#2c8553;--alert:#c0392b;--alert-soft:#fbe7e3;
+--shade:rgba(44,133,83,.14);color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#111714;--card:#1a221e;--ink:#e6ede9;--muted:#9aa9a1;--line:#2c3732;--track:#25302a;
+--brand:#173a2c;--brand-ink:#f3efe4;--sun:#f2a53a;--sun-soft:#3a2c14;--air:#80b2df;--leaf:#5cc48a;--alert:#ef7b64;--alert-soft:#3a1d18;
+--shade:rgba(92,196,138,.16);color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:16px/1.5 "Hind Siliguri",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit}
+.top{background:var(--brand);color:var(--brand-ink);padding:calc(10px + env(safe-area-inset-top,0px)) 16px 12px;position:sticky;top:0;z-index:5}
+.top-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;flex:none}
+.brand{flex:1;min-width:0}
+.brand b{display:block;white-space:nowrap;font-size:1.3rem;line-height:1.1;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:.82rem;opacity:.8}
+.lang{border:1px solid rgba(255,255,255,.4);background:transparent;color:var(--brand-ink);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:600;cursor:pointer}
+.pill{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.12);white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#c9c2b0}
+.pill.ok .dot{background:#6fe09e;box-shadow:0 0 0 3px rgba(111,224,158,.25)}
+.pill.bad .dot{background:#ff8c75}
+.pill.demo{background:#f2a516;color:#2a1c00}.pill.demo .dot{background:#2a1c00}
+.demobar{background:#f2a516;color:#2a1c00;font-size:.88rem;font-weight:600}
+.demobar div{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.demobar button{border:1px solid #2a1c00;background:transparent;border-radius:8px;padding:3px 10px;font-weight:600;cursor:pointer;color:#2a1c00}
+main{max-width:760px;margin:0 auto;padding:14px 14px 20px}
+.view[hidden]{display:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+h2{font-size:1.02rem;margin:0 0 10px;font-weight:700}
+.note{border:1px solid var(--alert);background:var(--alert-soft);border-radius:14px;padding:10px 14px;margin:0 0 12px;font-size:.93rem}
+.note button{margin-top:8px;border:0;background:var(--ink);color:var(--card);border-radius:8px;padding:6px 12px;font-weight:600;cursor:pointer}
+.hero{display:flex;gap:14px;align-items:center}
+.sunic{width:62px;height:62px;flex:none;border-radius:50%;background:var(--sun-soft);display:grid;place-items:center}
+.sunic svg{width:40px;height:40px}
+.hero.warn .sunic{background:var(--alert-soft)}
+.headline{font-size:1.35rem;font-weight:700;line-height:1.2;margin:0}
+.say{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.fan{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--track);font-weight:600;font-size:.9rem;white-space:nowrap;margin-top:10px}
+.fan svg{width:20px;height:20px;fill:currentColor}
+.fan.on{background:var(--leaf);color:var(--card)}
+.fan.on svg{animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.fan.on svg{animation:none}}
+.mode{color:var(--muted);font-size:.85rem;margin-left:8px}
+.lbl{color:var(--muted);font-size:.9rem}
+.big{font-size:2.9rem;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.big small{font-size:1rem;font-weight:500;color:var(--muted)}
+.meter{margin:18px 0 6px;position:relative}
+.track{display:flex;height:14px;border-radius:7px;overflow:hidden}
+.z{height:100%}.z.off{background:var(--track)}.z.band{background:repeating-linear-gradient(135deg,var(--track) 0 5px,var(--line) 5px 10px)}.z.on{background:var(--shade);border-left:2px solid var(--leaf)}
+.mark{position:absolute;top:-6px;width:4px;height:26px;margin-left:-2px;border-radius:2px;background:var(--ink);transition:left .6s ease;left:0}
+.ticks{position:relative;height:18px;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ticks span{position:absolute;transform:translateX(-50%);top:3px}
+.zones{display:flex;font-size:.78rem;color:var(--muted);margin-top:2px}
+.zones div{padding-right:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.side{border-left:4px solid var(--sun);padding-left:12px}
+.side.out{border-color:var(--air)}
+.side h2{margin-bottom:2px;font-size:.95rem}
+.temp{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.temp small{font-size:.95rem;font-weight:500;color:var(--muted)}
+dl{margin:8px 0 0}dl div{display:flex;justify-content:space-between;gap:6px;font-size:.9rem;padding:3px 0;border-top:1px solid var(--line)}
+dt{color:var(--muted)}dd{margin:0;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat small{color:var(--muted);font-size:.82rem;display:block;line-height:1.3}
+.stat.hl{background:var(--sun-soft);border-color:transparent}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--track);padding:5px;border-radius:12px}
+.seg button{font-weight:600;border:0;border-radius:9px;padding:11px 6px;background:transparent;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.hint{color:var(--muted);font-size:.86rem;margin:10px 0 0}
+.leg{display:flex;gap:14px;font-size:.82rem;color:var(--muted);margin:-4px 0 6px;flex-wrap:wrap}
+.leg i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.leg i.box{height:10px;background:var(--shade);border:1px solid var(--leaf)}
+canvas{display:block;width:100%;height:200px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+label.f{display:block;margin-top:14px;font-size:.9rem;color:var(--muted)}
+input[type=number]{font:inherit;width:120px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-top:4px}
+.btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{font-weight:600;font-size:.94rem;text-align:center;flex:1;min-width:140px;padding:11px 12px;border-radius:10px;background:var(--ink);color:var(--card);border:1px solid var(--ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.sun{background:#f2a516;border-color:#f2a516;color:#2a1c00}
+ul.res{margin:0;padding:0;list-style:none}
+ul.res li{padding:9px 0;border-top:1px solid var(--line);font-size:.94rem}
+ul.res li:first-child{border-top:0}
+ul.res b{color:var(--leaf)}
+.about p{margin:8px 0 0;font-size:.95rem}
+code{font-size:.88rem}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+.tabs div{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs button{border:0;background:transparent;padding:8px 2px 9px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button[aria-selected="true"]{color:var(--brand)}
+@media (prefers-color-scheme:dark){.tabs button[aria-selected="true"]{color:#f2a516}}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--air);outline-offset:2px}
+footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
+@media (max-width:400px){.big{font-size:2.4rem}.temp{font-size:1.65rem}.stat b{font-size:1.15rem}.brand span{display:none}}
+</style></head><body>
+
+<header class="top"><div class="top-in">
+  <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="28" r="11" fill="#f2a516"/>
+    <g stroke="#f2a516" stroke-width="4" stroke-linecap="round"><path d="M32 6v5M32 45v4M10 28h5M49 28h5M16.5 12.5l3.5 3.5M44 40l3.5 3.5M16.5 43.5l3.5-3.5M44 16l3.5-3.5"/></g>
+    <path d="M14 58c6-6 12-8 18-8s12 2 18 8" stroke="#8fd3a8" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+  <div class="brand"><b data-t="name">Rod Bondhu</b><span data-t="sub">Smart solar dryer</span></div>
+  <div class="pill" id="pill"><span class="dot"></span><span id="pillTxt">Connecting</span></div>
+  <button class="lang" id="lang" aria-label="Change language">বাংলা</button>
+</div></header>
+<div class="demobar" id="demobar" hidden><div><span data-t="demoBar"></span><span id="simClock"></span><button id="goLive" data-t="goLive"></button></div></div>
+
+<main>
+<p class="note" id="note" hidden><span id="noteTxt"></span><br><button id="noteDemo" data-t="showDemo" hidden></button></p>
+
+<!-- HOME -->
+<div class="view" id="v-home">
+  <section class="card"><div class="hero" id="hero">
+    <div class="sunic" id="heroIc"></div>
+    <div><p class="headline" id="headline">--</p><p class="say" id="say"></p></div></div>
+    <div><span class="fan" id="fanBox"><svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 10.2C11.6 6 12.6 2.6 15.2 2.9c2.4.3 2 4.4-3.2 7.3z"/>
+      <path d="M12 10.2C11.6 6 12.6 2.6 15.2 2.9c2.4.3 2 4.4-3.2 7.3z" transform="rotate(120 12 12)"/>
+      <path d="M12 10.2C11.6 6 12.6 2.6 15.2 2.9c2.4.3 2 4.4-3.2 7.3z" transform="rotate(240 12 12)"/>
+      <circle cx="12" cy="12" r="2.2"/></svg><span id="fanTxt">--</span></span><span class="mode" id="mode"></span></div>
+  </section>
+
+  <section class="card" aria-live="polite">
+    <div class="lbl" data-t="moist"></div>
+    <div class="big"><span id="dw">--</span><small> <span data-t="gkg"></span></small></div>
+    <div class="meter"><div class="track"><div class="z off" id="zOff"></div><div class="z band" id="zBand"></div><div class="z on" id="zOn"></div></div><div class="mark" id="mark"></div></div>
+    <div class="ticks"><span id="tOff"></span><span id="tOn"></span></div>
+    <div class="zones"><div id="lOff" data-t="zOff"></div><div id="lBand" data-t="zBand"></div><div id="lOn" data-t="zOn"></div></div>
+  </section>
+
+  <section class="card"><div class="pair">
+    <div class="side"><h2 data-t="inside"></h2>
+      <div class="temp"><span id="tin">--</span><small> &deg;C</small></div>
+      <dl><div><dt data-t="hum"></dt><dd id="rhin">--</dd></div><div><dt data-t="water"></dt><dd id="win">--</dd></div></dl></div>
+    <div class="side out"><h2 data-t="outside"></h2>
+      <div class="temp"><span id="tout">--</span><small> &deg;C</small></div>
+      <dl><div><dt data-t="hum"></dt><dd id="rhout">--</dd></div><div><dt data-t="water"></dt><dd id="wout">--</dd></div></dl></div>
+  </div></section>
+
+  <div class="stats" style="margin-bottom:12px">
+    <div class="stat"><b id="sess">--</b><small data-t="sDry"></small></div>
+    <div class="stat"><b id="wrem">--</b><small data-t="sWater"></small></div>
+    <div class="stat"><b id="wh">--</b><small data-t="sEnergy"></small></div>
+    <div class="stat hl"><b id="saved">--</b><small data-t="sSaved"></small></div>
+  </div>
+
+  <section class="card"><h2 data-t="ctlH"></h2>
+    <div class="seg" role="group" aria-label="Fan control">
+      <button data-m="auto" aria-pressed="true" data-t="auto"></button>
+      <button data-m="on" aria-pressed="false" data-t="on"></button>
+      <button data-m="off" aria-pressed="false" data-t="off"></button>
+    </div>
+    <p class="hint" data-t="ctlHint"></p>
+    <p class="hint" id="ctlMsg" aria-live="polite"></p>
+  </section>
+</div>
+
+<!-- CHARTS -->
+<div class="view" id="v-charts" hidden>
+  <section class="card"><h2 data-t="chT"></h2>
+    <div class="leg"><span><i style="background:var(--sun)"></i><span data-t="legIn"></span></span><span><i style="background:var(--air)"></i><span data-t="legOut"></span></span></div>
+    <canvas id="cT" aria-label="Temperature chart"></canvas></section>
+  <section class="card"><h2 data-t="chW"></h2>
+    <div class="leg"><span><i style="background:var(--ink)"></i><span data-t="legDw"></span></span><span><i class="box"></i><span data-t="legFan"></span></span></div>
+    <canvas id="cW" aria-label="Moisture difference chart"></canvas></section>
+  <section class="card"><h2 data-t="chH"></h2>
+    <div class="leg"><span><i style="background:var(--sun)"></i><span data-t="legIn"></span></span><span><i style="background:var(--air)"></i><span data-t="legOut"></span></span></div>
+    <canvas id="cH" aria-label="Humidity chart"></canvas>
+    <p class="hint" data-t="chartNote"></p></section>
+</div>
+
+<!-- BATCH -->
+<div class="view" id="v-batch" hidden>
+  <section class="card"><h2 data-t="fruitL"></h2>
+    <div class="chips" id="fruits"></div>
+    <label class="f"><span data-t="kgL"></span><br><input type="number" id="kg" min="0" step="0.1" inputmode="decimal" placeholder="2.0"></label>
+  </section>
+  <section class="card"><h2 data-t="batchH"></h2>
+    <div class="stats">
+      <div class="stat"><b id="bSess">--</b><small data-t="sDry"></small></div>
+      <div class="stat"><b id="bFan">--</b><small data-t="sFanTime"></small></div>
+      <div class="stat"><b id="bWater">--</b><small id="bWaterL" data-t="sWater"></small></div>
+      <div class="stat hl"><b id="bSaved">--</b><small data-t="sSaved"></small></div>
+    </div>
+    <p class="hint" data-t="savedNote"></p>
+    <div class="btns">
+      <button class="btn" id="csv" data-t="csv"></button>
+      <button class="btn ghost" id="reset" data-t="reset"></button>
+    </div>
+    <p class="hint" id="batchMsg" aria-live="polite"></p>
+  </section>
+</div>
+
+<!-- ABOUT -->
+<div class="view about" id="v-about" hidden>
+  <section class="card"><h2 data-t="howH"></h2>
+    <p data-t="how1"></p>
+    <p><code>&omega; = 0.622 p<sub>v</sub> / (P &minus; p<sub>v</sub>)</code>, <code>p<sub>v</sub> = RH/100 &times; p<sub>sat</sub>(T)</code></p>
+    <p data-t="how2"></p></section>
+  <section class="card"><h2 data-t="resH"></h2>
+    <ul class="res">
+      <li data-t="r1"></li><li data-t="r2"></li><li data-t="r3"></li><li data-t="r4"></li><li data-t="r5"></li>
+    </ul></section>
+  <section class="card"><h2 data-t="srcH"></h2>
+    <div class="seg" style="grid-template-columns:1fr 1fr" role="group">
+      <button id="srcLive" aria-pressed="true" data-t="srcLive"></button>
+      <button id="srcDemo" aria-pressed="false" data-t="srcDemo"></button>
+    </div>
+    <p class="hint" data-t="srcHint"></p>
+    <div id="simCtl" hidden>
+      <h2 style="margin-top:14px" data-t="simH"></h2>
+      <div class="btns" style="margin-top:0">
+        <button class="btn ghost" data-sim="hot" data-t="simHot"></button>
+        <button class="btn ghost" data-sim="fault" data-t="simFault"></button>
+        <button class="btn ghost" data-sim="" data-t="simNorm"></button>
+      </div>
+    </div>
+  </section>
+  <footer>Tasnim Al Hossain, Kajim Al Shahriar, Mohammad Omayer Ahamed<br><span data-t="dept"></span><br>Renewable Energy Fest 2026</footer>
+</div>
+</main>
+
+<nav class="tabs" aria-label="Sections"><div role="tablist">
+  <button role="tab" data-v="home" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span data-t="tHome"></span></button>
+  <button role="tab" data-v="charts" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span data-t="tCharts"></span></button>
+  <button role="tab" data-v="batch" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M3 15h18"/></svg><span data-t="tBatch"></span></button>
+  <button role="tab" data-v="about" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span data-t="tAbout"></span></button>
+</div></nav>
+
+<script src="https://cdn.jsdelivr.net/npm/mqtt@4.3.7/dist/mqtt.min.js"></script>
+<script>
+// ===================== Settings =====================
+// TOPIC_BASE must match the ESP32 code exactly.
+const BROKER='wss://broker.hivemq.com:8884/mqtt';
+const TOPIC_BASE='oasisnextbd/solar-dryer/x7k2';
+const AIRFLOW_KGS=0.047;            // CFD, fan at full speed (poster section 8)
+const ELEC_KW=2, TARIFF=[15.36,18.40]; // poster Table 1
+const FAN_W=8.4;
+const P_KPA=101.325;
+
+// ===================== Text =====================
+const TX={
+en:{name:'Rod Bondhu',sub:'Smart solar dryer',tHome:'Home',tCharts:'Charts',tBatch:'Batch',tAbout:'About',
+ moist:'Extra water in the dryer air',gkg:'g/kg',zOff:'Fan rests',zBand:'Hold',zOn:'Fan runs',
+ inside:'Inside the dryer',outside:'Outside air',hum:'Humidity',water:'Water in air',
+ sDry:'Drying time',sWater:'Water pushed out (est.)',sEnergy:'Fan energy, from the sun',sSaved:'Saved vs an electric dryer',sFanTime:'Fan run time',
+ ctlH:'Fan control',auto:'Auto',on:'On',off:'Off',
+ ctlHint:'Auto decides from the humidity readings. On and Off override it and need the control PIN. Overheat protection stays on in every mode.',
+ chT:'Temperature (°C)',legIn:'Inside',legOut:'Outside',chW:'Extra water in the dryer air (g/kg)',legDw:'Difference',legFan:'Fan running',
+ chH:'Relative humidity (%)',chartNote:'Charts fill in while this page is open.',
+ fruitL:'What are you drying?',kgL:'Fresh weight on the trays (kg)',batchH:'This batch',
+ savedNote:'Savings compare a 2 kW electric cabinet dryer running the same hours at Tk 15.36–18.40 per unit. Water pushed out uses the fan airflow from our CFD model, 0.047 kg/s.',
+ csv:'Download data (CSV)',reset:'Start new batch',
+ howH:'How Rod Bondhu decides',
+ how1:'One sensor sits inside the dryer and one in the outside air. Relative humidity alone is misleading because warm air holds more water, so both readings are turned into absolute humidity, the grams of water in each kilogram of air.',
+ how2:'When the dryer air carries 1.5 g/kg more water than the outside air, the fan pushes it out. Below 0.5 g/kg the fan rests so the dryer keeps its heat. The fan also runs if the chamber goes above 65 °C or a sensor stops responding. It all runs on a small solar panel and a battery.',
+ resH:'What our tests showed',
+ r1:'<b>97.5–100%</b> of the moisture removed in the dryer, against 90.6–96.2% in open sun.',
+ r2:'<b>Tk 0</b> running cost per batch. An electric cabinet dryer costs about Tk 490–740.',
+ r3:'<b>Clean:</b> an enclosed chamber and food-grade SS 304 trays keep out dust and insects.',
+ r4:'<b>No load-shedding worries:</b> the battery keeps the fan running.',
+ r5:'<b>Better fruit:</b> dried pineapple and banana kept better colour and texture.',
+ srcH:'Data source',srcLive:'Live dryer',srcDemo:'Demo simulation',
+ srcHint:'Demo mode plays a simulated drying day at 60× speed, so a full day takes a few minutes. While it runs, every screen is marked DEMO.',
+ simH:'Show a safety feature',simHot:'Overheat',simFault:'Sensor fault',simNorm:'Back to normal',
+ demoBar:'DEMO · simulated data at 60× speed, not the live dryer. ',goLive:'Go live',showDemo:'Show the demo instead',
+ dept:'Departments of Chemical and Mechanical Engineering, BUET',
+ pLive:'Live',pConn:'Connecting',pOff:'Dryer offline',pNo:'No connection',pWait:'Waiting',pDemo:'Demo',
+ nNo:'Cannot reach the data server. Check this phone’s internet connection.',
+ nOff:'The dryer is not sending data right now. Showing its last reading from {a}.',
+ nWait:'Waiting for the dryer. It needs to be switched on and connected to the internet.',
+ nLib:'The page could not load its connection library. Check the internet and reload.',
+ hFault:'Check a sensor',hHot:'Cooling the chamber',hMan:'Manual control',hFanOn:'Pushing out moist air',hFanOff:'Keeping the heat in',hWait:'Starting up',
+ sFault:'A sensor is not responding, so the fan stays on to keep moist air moving out. Check the sensor wires.',
+ sHot:'The chamber is above {t} °C. The fan is on to cool it and protect the fruit.',
+ sHeldOn:'The fan is held on from the app.',sHeldOff:'The fan is held off from the app.',sWaitR:'Waiting for the first reading.',
+ sHighOn:'Water from the fruit is building up in the air. The fan is pushing it out.',
+ sHighOff:'Moist air is building up. The fan will switch on within a minute.',
+ sLowOn:'The moist air is cleared. The fan will rest within a minute to keep the heat in.',
+ sLowOff:'Little moisture to remove right now. The fan rests so the dryer keeps its heat.',
+ sBand:'The reading is between the two limits, so the fan keeps its current state.',
+ fanOn:'Fan on',fanOff:'Fan off',
+ mAUTO:'Automatic',mMANUAL:'Manual',mHOT:'Overheat protection',mFAULT:'Sensor check',mSTART:'Starting',
+ cSent:'Command sent, waiting for the dryer.',cDone:'Done. The dryer confirmed the change.',cSame:'The dryer is already in that mode.',
+ cNone:'No confirmation from the dryer. Check the PIN and that the dryer is online, then try again.',cNot:'Not connected, so nothing was sent.',
+ cNew:'New batch started.',pin:'Enter the control PIN',confirmReset:'Start a new batch? This resets the timer and fan run time on the dryer.',
+ noData:'No data yet. Keep this page open while the dryer runs.',
+ ofKg:'≈ {p}% of the fresh weight',simT:' Simulated time {c}.',
+ ago_s:'{n} s ago',ago_m:'{n} min ago',ago_h:'{n} h ago',u_h:'h',u_m:'m',u_s:'s',u_g:'g',u_kg:'kg',tk:'Tk',
+ collecting:'Collecting data, the chart starts in a few seconds.',
+ fruits:{mango:'Mango',pineapple:'Pineapple',banana:'Banana',jackfruit:'Jackfruit',guava:'Guava',other:'Other'}},
+bn:{name:'রোদ বন্ধু',sub:'স্মার্ট সোলার ড্রায়ার',tHome:'হোম',tCharts:'চার্ট',tBatch:'ব্যাচ',tAbout:'পরিচিতি',
+ moist:'ভেতরের বাতাসে বাড়তি পানি',gkg:'গ্রাম/কেজি',zOff:'ফ্যান বিশ্রামে',zBand:'অপরিবর্তিত',zOn:'ফ্যান চলে',
+ inside:'ড্রায়ারের ভেতরে',outside:'বাইরের বাতাস',hum:'আর্দ্রতা',water:'বাতাসে পানি',
+ sDry:'শুকানোর সময়',sWater:'বের হওয়া পানি (আনুমানিক)',sEnergy:'ফ্যানের বিদ্যুৎ, সূর্য থেকে',sSaved:'বিদ্যুৎ-ড্রায়ারের তুলনায় সাশ্রয়',sFanTime:'ফ্যান চলার সময়',
+ ctlH:'ফ্যান নিয়ন্ত্রণ',auto:'অটো',on:'চালু',off:'বন্ধ',
+ ctlHint:'অটো মোডে আর্দ্রতা দেখে ড্রায়ার নিজেই সিদ্ধান্ত নেয়। চালু বা বন্ধ করতে কন্ট্রোল পিন লাগবে। বেশি গরম হলে সুরক্ষা সব মোডেই চালু থাকে।',
+ chT:'তাপমাত্রা (°C)',legIn:'ভেতরে',legOut:'বাইরে',chW:'ভেতরের বাতাসে বাড়তি পানি (গ্রাম/কেজি)',legDw:'পার্থক্য',legFan:'ফ্যান চলছে',
+ chH:'আপেক্ষিক আর্দ্রতা (%)',chartNote:'এই পেজ খোলা থাকলে চার্ট ভরে উঠবে।',
+ fruitL:'কী শুকাচ্ছেন?',kgL:'ট্রেতে তাজা ফলের ওজন (কেজি)',batchH:'এই ব্যাচ',
+ savedNote:'সাশ্রয়ের হিসাব: একই সময় ২ কিলোওয়াটের বিদ্যুৎ-ড্রায়ার চালালে প্রতি ইউনিট ১৫.৩৬–১৮.৪০ টাকা খরচ হতো। বের হওয়া পানির হিসাবে আমাদের CFD মডেলের ফ্যানের বাতাস প্রবাহ, ০.০৪৭ কেজি/সেকেন্ড, ধরা হয়েছে।',
+ csv:'ডেটা ডাউনলোড (CSV)',reset:'নতুন ব্যাচ শুরু',
+ howH:'রোদ বন্ধু কীভাবে সিদ্ধান্ত নেয়',
+ how1:'একটি সেন্সর ড্রায়ারের ভেতরে, আরেকটি বাইরের বাতাসে। শুধু আপেক্ষিক আর্দ্রতা দেখলে ভুল হয়, কারণ গরম বাতাস বেশি পানি ধরে রাখে। তাই দুই রিডিংকেই পরম আর্দ্রতায়, অর্থাৎ প্রতি কেজি বাতাসে কত গ্রাম পানি, তাতে রূপান্তর করা হয়।',
+ how2:'ভেতরের বাতাসে বাইরের চেয়ে ১.৫ গ্রাম/কেজি বেশি পানি থাকলে ফ্যান তা বের করে দেয়। ০.৫ গ্রাম/কেজির নিচে নামলে ফ্যান থামে, যাতে ভেতরের তাপ থাকে। ভেতরে ৬৫ °C ছাড়ালে বা কোনো সেন্সর বিকল হলেও ফ্যান চলে। সবকিছু চলে একটি ছোট সোলার প্যানেল আর ব্যাটারিতে।',
+ resH:'পরীক্ষায় যা পেয়েছি',
+ r1:'ড্রায়ারে <b>৯৭.৫–১০০%</b> পানি বের হয়েছে, খোলা রোদে ৯০.৬–৯৬.২%।',
+ r2:'প্রতি ব্যাচ চালানোর খরচ <b>০ টাকা</b>। বিদ্যুৎ-ড্রায়ারে প্রায় ৪৯০–৭৪০ টাকা।',
+ r3:'<b>পরিষ্কার:</b> ঢাকা চেম্বার আর ফুড-গ্রেড SS 304 ট্রে ধুলা ও পোকা থেকে রক্ষা করে।',
+ r4:'<b>লোডশেডিংয়ে চিন্তা নেই:</b> ব্যাটারিতে ফ্যান চলতে থাকে।',
+ r5:'<b>ভালো মানের ফল:</b> শুকানো আনারস ও কলার রং ও গঠন ভালো ছিল।',
+ srcH:'ডেটার উৎস',srcLive:'আসল ড্রায়ার',srcDemo:'ডেমো সিমুলেশন',
+ srcHint:'ডেমো মোডে একটি সিমুলেটেড দিন ৬০ গুণ দ্রুত চলে, তাই পুরো দিনের শুকানো কয়েক মিনিটে দেখা যায়। চলার সময় প্রতিটি পর্দায় "ডেমো" লেখা থাকে।',
+ simH:'সুরক্ষা ব্যবস্থা দেখান',simHot:'বেশি গরম',simFault:'সেন্সর বিকল',simNorm:'স্বাভাবিক',
+ demoBar:'ডেমো · ৬০ গুণ দ্রুত সিমুলেশন, আসল ড্রায়ারের ডেটা নয়। ',goLive:'লাইভে যান',showDemo:'বদলে ডেমো দেখান',
+ dept:'কেমিক্যাল ও মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট',
+ pLive:'লাইভ',pConn:'সংযোগ হচ্ছে',pOff:'ড্রায়ার অফলাইন',pNo:'সংযোগ নেই',pWait:'অপেক্ষা',pDemo:'ডেমো',
+ nNo:'ডেটা সার্ভারে পৌঁছানো যাচ্ছে না। ফোনের ইন্টারনেট সংযোগ দেখুন।',
+ nOff:'ড্রায়ার এখন ডেটা পাঠাচ্ছে না। শেষ রিডিং {a}।',
+ nWait:'ড্রায়ারের অপেক্ষায়। এটি চালু ও ইন্টারনেটে যুক্ত থাকতে হবে।',
+ nLib:'পেজটি সংযোগের লাইব্রেরি লোড করতে পারেনি। ইন্টারনেট দেখে আবার লোড করুন।',
+ hFault:'সেন্সর পরীক্ষা করুন',hHot:'চেম্বার ঠান্ডা করা হচ্ছে',hMan:'হাতে নিয়ন্ত্রণ',hFanOn:'ভেজা বাতাস বের করা হচ্ছে',hFanOff:'ভেতরের তাপ ধরে রাখা হচ্ছে',hWait:'চালু হচ্ছে',
+ sFault:'একটি সেন্সর সাড়া দিচ্ছে না, তাই ভেজা বাতাস বের করতে ফ্যান চালু রাখা হয়েছে। সেন্সরের তার দেখুন।',
+ sHot:'ভেতরের তাপমাত্রা {t} °C ছাড়িয়েছে। ফল রক্ষায় ফ্যান চালিয়ে ঠান্ডা করা হচ্ছে।',
+ sHeldOn:'অ্যাপ থেকে ফ্যান চালু রাখা হয়েছে।',sHeldOff:'অ্যাপ থেকে ফ্যান বন্ধ রাখা হয়েছে।',sWaitR:'প্রথম রিডিংয়ের অপেক্ষায়।',
+ sHighOn:'ফল থেকে বের হওয়া পানি বাতাসে জমছে। ফ্যান তা বাইরে বের করে দিচ্ছে।',
+ sHighOff:'ভেতরে ভেজা বাতাস জমছে। এক মিনিটের মধ্যে ফ্যান চালু হবে।',
+ sLowOn:'ভেজা বাতাস বেরিয়ে গেছে। তাপ ধরে রাখতে এক মিনিটের মধ্যে ফ্যান থামবে।',
+ sLowOff:'এখন সরানোর মতো আর্দ্রতা কম। তাপ ধরে রাখতে ফ্যান বিশ্রামে আছে।',
+ sBand:'রিডিং দুই সীমার মাঝামাঝি, তাই ফ্যান আগের অবস্থাতেই আছে।',
+ fanOn:'ফ্যান চলছে',fanOff:'ফ্যান বন্ধ',
+ mAUTO:'স্বয়ংক্রিয়',mMANUAL:'হাতে নিয়ন্ত্রণ',mHOT:'অতিরিক্ত গরম থেকে সুরক্ষা',mFAULT:'সেন্সর পরীক্ষা',mSTART:'চালু হচ্ছে',
+ cSent:'কমান্ড পাঠানো হয়েছে, ড্রায়ারের উত্তরের অপেক্ষায়।',cDone:'হয়েছে। ড্রায়ার পরিবর্তন নিশ্চিত করেছে।',cSame:'ড্রায়ার আগে থেকেই এই মোডে আছে।',
+ cNone:'ড্রায়ার থেকে নিশ্চিতকরণ আসেনি। পিন ঠিক আছে কি না এবং ড্রায়ার অনলাইনে আছে কি না দেখে আবার চেষ্টা করুন।',cNot:'সংযোগ নেই, তাই কমান্ড পাঠানো হয়নি।',
+ cNew:'নতুন ব্যাচ শুরু হয়েছে।',pin:'কন্ট্রোল পিন দিন',confirmReset:'নতুন ব্যাচ শুরু করবেন? ড্রায়ারের টাইমার ও ফ্যানের সময় শূন্য হবে।',
+ noData:'এখনো কোনো ডেটা নেই। ড্রায়ার চলার সময় পেজটি খোলা রাখুন।',
+ ofKg:'তাজা ওজনের প্রায় {p}%',simT:' সিমুলেটেড সময় {c}।',
+ ago_s:'{n} সেকেন্ড আগে',ago_m:'{n} মিনিট আগে',ago_h:'{n} ঘণ্টা আগে',u_h:'ঘ',u_m:'মি',u_s:'সে',u_g:'গ্রাম',u_kg:'কেজি',tk:'৳',
+ collecting:'ডেটা আসছে, কয়েক সেকেন্ডে চার্ট শুরু হবে।',
+ fruits:{mango:'আম',pineapple:'আনারস',banana:'কলা',jackfruit:'কাঁঠাল',guava:'পেয়ারা',other:'অন্যান্য'}}};
+
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem('rb_'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('rb_'+k,v)}catch(e){}}};
+let lang=store.get('lang')||'en';
+const t=(k,o)=>{let s=TX[lang][k];if(s==null)s=TX.en[k];if(o)for(const x in o)s=s.replace('{'+x+'}',o[x]);return s};
+const N=s=>lang==='bn'?String(s).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]):String(s);
+const f=(v,d)=>v==null||!isFinite(v)?'--':N(Number(v).toFixed(d));
+function dur(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60);
+ return N(h?h+' '+t('u_h')+' '+m+' '+t('u_m'):m+' '+t('u_m')+' '+(s%60)+' '+t('u_s'))}
+function ago(s){s=Math.round(s);return N(s<60?t('ago_s',{n:s}):s<3600?t('ago_m',{n:Math.round(s/60)}):t('ago_h',{n:Math.round(s/3600)}))}
+
+function applyLang(){
+ document.documentElement.lang=lang;
+ document.querySelectorAll('[data-t]').forEach(e=>{const s=t(e.dataset.t);if(/<b>/.test(s))e.innerHTML=s;else e.textContent=s});
+ $('lang').textContent=lang==='en'?'বাংলা':'English';
+ document.title=t('name')+' | '+(lang==='en'?'Smart Solar Dryer':'স্মার্ট সোলার ড্রায়ার');
+ renderFruits();if(last)render(last);else refreshStatus();draw();
+}
+
+// ===================== Psychrometrics (same as the ESP32) =====================
+const psat=T=>0.61121*Math.exp((18.678-T/234.5)*(T/(257.14+T)));
+const omega=(T,RH)=>{const pv=RH/100*psat(T);return 1000*0.622*pv/(P_KPA-pv)};
+
+// ===================== History + batch totals =====================
+const H={t:[],tin:[],tout:[],rhin:[],rhout:[],dw:[],fan:[]};const MAXP=1500;
+function clearH(){for(const k in H)H[k].length=0}
+function push(d){const n=H.t.length;if(n&&d.sess<=H.t[n-1])return;
+ H.t.push(d.sess);H.tin.push(d.tin);H.tout.push(d.tout);H.rhin.push(d.rhin);H.rhout.push(d.rhout);H.dw.push(d.dw);H.fan.push(d.fan);
+ if(H.t.length>MAXP)for(const k in H)H[k].shift()}
+let last=null,lastN=-1,lastSess=null,waterG=0,src='live';
+
+function ingest(d){
+ if(lastSess!=null&&d.sess<lastSess){clearH();waterG=0;lastN=-1}
+ // water pushed out by the fan: airflow x extra water x time
+ if(lastSess!=null&&d.sess>lastSess&&d.fan&&d.dw>0)waterG+=AIRFLOW_KGS*d.dw*Math.min(d.sess-lastSess,src==='demo'?120:30);
+ lastSess=d.sess;
+ if(d.n!==lastN){lastN=d.n;if(d.dw!=null)push(d)}
+ last=d;render(d);draw();checkPending(d);
+}
+
+// ===================== Render =====================
+const SUN='<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="8" fill="#f2a516"/><g stroke="#f2a516" stroke-width="3" stroke-linecap="round"><path d="M20 3v4M20 33v4M3 20h4M33 20h4M8 8l3 3M29 29l3 3M8 32l3-3M29 11l3-3"/></g></svg>';
+const DROP='<svg viewBox="0 0 40 40"><circle cx="15" cy="16" r="7" fill="#f2a516"/><path d="M27 10c4 6 7 10 7 14a7 7 0 01-14 0c0-4 3-8 7-14z" fill="#3a6f9e"/></svg>';
+const WARN='<svg viewBox="0 0 40 40"><path d="M20 5L37 34H3z" fill="none" stroke="#c0392b" stroke-width="3" stroke-linejoin="round"/><path d="M20 15v9M20 28.5v.5" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/></svg>';
+function meter(ON,OFF,dw){
+ const MIN=-1,MAX=Math.max(4,ON+2),R=MAX-MIN,p=v=>Math.min(100,Math.max(0,(v-MIN)/R*100));
+ $('zOff').style.width=p(OFF)+'%';$('zBand').style.width=(p(ON)-p(OFF))+'%';$('zOn').style.width=(100-p(ON))+'%';
+ $('lOff').style.width=p(OFF)+'%';$('lBand').style.width=(p(ON)-p(OFF))+'%';$('lOn').style.width=(100-p(ON))+'%';
+ $('tOff').style.left=p(OFF)+'%';$('tOn').style.left=p(ON)+'%';
+ $('tOff').textContent=f(OFF,1);$('tOn').textContent=f(ON,1);
+ if(dw!=null)$('mark').style.left=p(dw)+'%';
+ else $('mark').style.left=p(0)+'%';
+}
+function render(d){
+ const ON=d.on??1.5,OFF=d.off??0.5;
+ $('dw').textContent=f(d.dw,2);
+ $('tin').textContent=f(d.tin,1);$('tout').textContent=f(d.tout,1);
+ $('rhin').textContent=d.rhin==null?'--':f(d.rhin,0)+' %';
+ $('rhout').textContent=d.rhout==null?'--':f(d.rhout,0)+' %';
+ $('win').textContent=d.win==null?'--':f(d.win,1)+' '+t('gkg');
+ $('wout').textContent=d.wout==null?'--':f(d.wout,1)+' '+t('gkg');
+ $('fanBox').classList.toggle('on',!!d.fan);
+ $('fanTxt').textContent=d.fan?t('fanOn'):t('fanOff');
+ $('mode').textContent=t('m'+d.mode)||d.mode;
+ let s,h,ic=SUN,warn=false;
+ if(d.fault){s=t('sFault');h=t('hFault');ic=WARN;warn=true}
+ else if(d.mode==='HOT'){s=t('sHot',{t:N(d.tmax)});h=t('hHot');ic=WARN;warn=true}
+ else if(d.ctrl===1){s=t('sHeldOn');h=t('hMan')}
+ else if(d.ctrl===2){s=t('sHeldOff');h=t('hMan')}
+ else if(d.dw==null){s=t('sWaitR');h=t('hWait')}
+ else{h=d.fan?t('hFanOn'):t('hFanOff');if(d.fan)ic=DROP;
+  s=d.dw>ON?(d.fan?t('sHighOn'):t('sHighOff')):d.dw<OFF?(d.fan?t('sLowOn'):t('sLowOff')):t('sBand')}
+ $('headline').textContent=h;$('say').textContent=s;$('heroIc').innerHTML=ic;$('hero').classList.toggle('warn',warn);
+ meter(ON,OFF,d.dw);
+ const m=['auto','on','off'][d.ctrl];
+ document.querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m?'true':'false'));
+ // batch numbers
+ const hrs=d.sess/3600,lo=ELEC_KW*hrs*TARIFF[0],hi=ELEC_KW*hrs*TARIFF[1];
+ const saved=t('tk')+' '+N(Math.round(lo))+'–'+N(Math.round(hi));
+ const water=waterG>=1000?f(waterG/1000,2)+' '+t('u_kg'):f(waterG,0)+' '+t('u_g');
+ $('sess').textContent=dur(d.sess);$('bSess').textContent=dur(d.sess);
+ $('wh').textContent=f(d.wh,1)+' Wh';$('bFan').textContent=dur(d.fan_s);
+ $('saved').textContent=saved;$('bSaved').textContent=saved;
+ $('wrem').textContent=water;$('bWater').textContent=water;
+ const kg=parseFloat($('kg').value);
+ $('bWaterL').textContent=kg>0?t('sWater')+' · '+t('ofKg',{p:N(Math.round(waterG/(kg*10)))}):t('sWater');
+ if(src==='demo')$('simClock').textContent=t('simT',{c:N(simClock())});
+ refreshStatus();
+}
+
+// ===================== Charts =====================
+function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(r))),n=r/p;return(n<1.5?1:n<3?2:n<7?5:10)*p}
+function chart(cv,series,o){
+ const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w)return;
+ if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}
+ const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
+ const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim();
+ const L=40,Rm=10,T=8,B=22,pw=w-L-Rm,ph=h-T-B,xs=H.t;
+ c.font='12px system-ui,sans-serif';c.fillStyle=col('--muted');
+ if(xs.length<2){c.textAlign='left';c.textBaseline='middle';c.fillText(t('collecting'),L,T+ph/2);return}
+ const x0=xs[0],xr=Math.max(1,xs[xs.length-1]-x0);
+ let lo=Infinity,hi=-Infinity;
+ for(const s of series)for(const v of s.v)if(v!=null){if(v<lo)lo=v;if(v>hi)hi=v}
+ (o.include||[]).forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v});
+ if(!isFinite(lo))return;
+ const pad=(hi-lo)*0.12||1;lo-=pad;hi+=pad;
+ const X=v=>L+(v-x0)/xr*pw,Y=v=>T+(hi-v)/(hi-lo)*ph;
+ if(o.shade){c.fillStyle=col('--shade');for(let i=0;i<xs.length-1;i++)if(H.fan[i])c.fillRect(X(xs[i]),T,X(xs[i+1])-X(xs[i])+0.6,ph)}
+ const st=niceStep((hi-lo)/4);c.strokeStyle=col('--line');c.lineWidth=1;c.fillStyle=col('--muted');c.textAlign='right';c.textBaseline='middle';
+ for(let v=Math.ceil(lo/st)*st;v<=hi+1e-9;v+=st){const y=Y(v);c.beginPath();c.moveTo(L,y);c.lineTo(w-Rm,y);c.stroke();c.fillText(N(st<1?v.toFixed(1):v.toFixed(0)),L-6,y)}
+ c.textBaseline='top';
+ for(let k=0;k<=4;k++){const tt=x0+xr*k/4;
+  const lab=xr<300?Math.round(tt)+' '+t('u_s'):xr<7200?Math.round(tt/60)+' '+t('u_m'):(tt/3600).toFixed(1)+' '+t('u_h');
+  c.textAlign=k===0?'left':k===4?'right':'center';c.fillText(N(lab),X(tt),T+ph+6)}
+ (o.lines||[]).forEach(l=>{c.save();c.setLineDash([5,4]);c.strokeStyle=col(l.c);c.lineWidth=1.5;c.beginPath();c.moveTo(L,Y(l.v));c.lineTo(w-Rm,Y(l.v));c.stroke();c.restore()});
+ for(const s of series){c.strokeStyle=col(s.c);c.lineWidth=2;c.lineJoin='round';c.beginPath();let pen=false;
+  for(let i=0;i<xs.length;i++){const v=s.v[i];if(v==null){pen=false;continue}const x=X(xs[i]),y=Y(v);if(pen)c.lineTo(x,y);else c.moveTo(x,y);pen=true}c.stroke()}
+}
+function draw(){
+ if($('v-charts').hidden)return;
+ const ON=last?.on??1.5,OFF=last?.off??0.5;
+ chart($('cT'),[{v:H.tin,c:'--sun'},{v:H.tout,c:'--air'}],{});
+ chart($('cW'),[{v:H.dw,c:'--ink'}],{shade:true,include:[ON,OFF],lines:[{v:ON,c:'--leaf'},{v:OFF,c:'--muted'}]});
+ chart($('cH'),[{v:H.rhin,c:'--sun'},{v:H.rhout,c:'--air'}],{});
+}
+
+// ===================== Connection status =====================
+let client=null,online=null,lastMsg=0,lastTs=0,libFail=false;
+function setPill(cls,txt){$('pill').className='pill '+cls;$('pillTxt').textContent=txt}
+function showNote(txt,demoBtn){$('note').hidden=!txt;$('noteTxt').textContent=txt||'';$('noteDemo').hidden=!demoBtn}
+function refreshStatus(){
+ $('demobar').hidden=src!=='demo';
+ $('srcLive').setAttribute('aria-pressed',src==='live');$('srcDemo').setAttribute('aria-pressed',src==='demo');$('simCtl').hidden=src!=='demo';
+ if(src==='demo'){setPill('demo',t('pDemo'));showNote('');return}
+ if(libFail){setPill('bad',t('pNo'));showNote(t('nLib'),true);return}
+ if(!client){setPill('',t('pConn'));showNote('');return}
+ if(!client.connected){setPill('bad',t('pNo'));showNote(t('nNo'),true);return}
+ const age=lastTs?Date.now()/1000-lastTs:(lastMsg?(Date.now()-lastMsg)/1000:Infinity);
+ if(online===false||age>30){
+  if(isFinite(age)){setPill('bad',t('pOff'));showNote(t('nOff',{a:ago(age)}),true)}
+  else{setPill('',t('pWait'));showNote(t('nWait'),true)}
+  return}
+ setPill('ok',t('pLive'));showNote('');
+}
+
+// ===================== Live: MQTT =====================
+function connect(){
+ if(!window.mqtt){libFail=true;refreshStatus();return}
+ if(client)return;
+ client=mqtt.connect(BROKER,{clientId:'rb-'+Math.random().toString(16).slice(2,10),clean:true,reconnectPeriod:3000,connectTimeout:10000});
+ client.on('connect',()=>{client.subscribe([TOPIC_BASE+'/state',TOPIC_BASE+'/status']);refreshStatus()});
+ client.on('message',(topic,msg)=>{
+  const s=msg.toString();
+  if(topic.endsWith('/status'))online=(s==='online');
+  else{try{const d=JSON.parse(s);lastMsg=Date.now();lastTs=d.ts||0;if(src==='live')ingest(d)}catch(e){}}
+  if(src==='live')refreshStatus()});
+ ['close','offline','error'].forEach(ev=>client.on(ev,()=>{if(src==='live')refreshStatus()}));
+}
+function getPin(){let p=null;try{p=sessionStorage.getItem('rb_pin')}catch(e){}
+ if(!p){p=prompt(t('pin'));if(p){try{sessionStorage.setItem('rb_pin',p)}catch(e){}}}return p}
+function forgetPin(){try{sessionStorage.removeItem('rb_pin')}catch(e){}}
+let pending=null;
+function msg(k){const el=pending&&pending.cmd==='reset'?$('batchMsg'):$('ctlMsg');el.textContent=t(k)}
+function send(cmd){
+ if(src==='demo'){simCommand(cmd);return}
+ const out=cmd==='reset'?$('batchMsg'):$('ctlMsg');
+ if(!client||!client.connected){out.textContent=t('cNot');return}
+ if(cmd!=='reset'&&last&&['auto','on','off'][last.ctrl]===cmd){out.textContent=t('cSame');return}
+ const pin=getPin();if(!pin)return;
+ client.publish(TOPIC_BASE+'/cmd',pin+':'+cmd);
+ pending={cmd,at:Date.now(),sess:last?last.sess:Infinity};out.textContent=t('cSent');
+}
+function checkPending(d){if(!pending||src!=='live')return;
+ const ok=pending.cmd==='reset'?d.sess<pending.sess:['auto','on','off'][d.ctrl]===pending.cmd;
+ if(ok){msg(pending.cmd==='reset'?'cNew':'cDone');pending=null}}
+setInterval(()=>{if(pending&&Date.now()-pending.at>12000){msg('cNone');forgetPin();pending=null}
+ if(src==='live')refreshStatus()},2000);
+
+// ===================== Demo: simulated drying day =====================
+// One tick per real second = one simulated minute. The moisture source follows
+// the Page model, MR = exp(-k t^n), and the fan logic copies the ESP32.
+const SIM={timer:null};
+function simReset(){Object.assign(SIM,{min:0,tin:31,dw:0.2,fan:false,lastSw:-99,fanS:0,n:0,ctrl:0,inject:''})}
+function simClock(){const m=9*60+SIM.min,h=Math.floor(m/60)%24,mm=m%60;return(h<10?'0':'')+h+':'+(mm<10?'0':'')+mm}
+const noise=a=>(Math.random()-.5)*2*a;
+function simTick(){
+ const S=SIM;S.min++;
+ const hour=9+S.min/60,I=Math.max(0,Math.sin(Math.PI*(hour-6)/12));
+ const tout=28+5*I+noise(.15),rhout=Math.min(95,72-22*I+noise(.6));
+ let target=tout+24*I*(S.fan?.8:1);const hot=S.inject==='hot';if(hot)target=72;
+ S.tin+=(target-S.tin)*(hot?.35:.12);
+ const m=Math.max(S.min,1),k=.003,n=1.15;
+ const rate=k*n*Math.pow(m,n-1)*Math.exp(-k*Math.pow(m,n));
+ S.dw=Math.max(0,S.dw+rate*80*(.3+.7*I)-S.dw*(S.fan?.35:.05));
+ const wout=omega(tout,rhout),win=wout+S.dw,pv=win*P_KPA/(622+win),rhin=Math.min(99,100*pv/psat(S.tin));
+ const fault=S.inject==='fault',over=S.tin>65;let want=S.fan,urgent=false,mode='AUTO';
+ if(S.ctrl===1){want=true;mode='MANUAL';urgent=true}
+ else if(over){want=true;mode='HOT';urgent=true}
+ else if(S.ctrl===2){want=false;mode='MANUAL';urgent=true}
+ else if(fault){want=true;mode='FAULT';urgent=true}
+ else if(S.dw>1.5)want=true;else if(S.dw<0.5)want=false;
+ if(want!==S.fan&&(urgent||S.min-S.lastSw>=1)){S.fan=want;S.lastSw=S.min}
+ if(S.fan)S.fanS+=60;S.n++;
+ ingest({n:S.n,tin:fault?null:S.tin,rhin:fault?null:rhin,tout:fault?null:tout,rhout:fault?null:rhout,
+  win:fault?null:win,wout:fault?null:wout,dw:fault?null:S.dw,fan:S.fan?1:0,mode,ctrl:S.ctrl,fault,
+  on:1.5,off:0.5,tmax:65,sess:S.min*60,fan_s:S.fanS,wh:S.fanS/3600*FAN_W,ts:Date.now()/1000});
+}
+function simCommand(cmd){
+ if(cmd==='reset'){simReset();$('batchMsg').textContent=t('cNew')}
+ else{SIM.ctrl={auto:0,on:1,off:2}[cmd];$('ctlMsg').textContent=t('cDone')}
+ simTick();
+}
+function setSource(s){
+ if(s===src)return;src=s;clearH();last=null;lastN=-1;lastSess=null;waterG=0;pending=null;
+ $('ctlMsg').textContent='';$('batchMsg').textContent='';
+ clearInterval(SIM.timer);
+ if(s==='demo'){simReset();simTick();SIM.timer=setInterval(simTick,1000)}
+ else{connect();resetView()}
+ refreshStatus();draw();
+}
+function resetView(){['dw','tin','tout','rhin','rhout','win','wout','sess','wrem','wh','saved','bSess','bFan','bWater','bSaved'].forEach(i=>$(i).textContent='--');
+ $('headline').textContent=t('hWait');$('say').textContent=t('sWaitR');$('heroIc').innerHTML=SUN;$('mode').textContent='';$('fanTxt').textContent='--';$('fanBox').classList.remove('on');meter(1.5,0.5,null)}
+
+// ===================== Batch: fruit and CSV =====================
+let fruit=store.get('fruit')||'mango';
+function renderFruits(){const box=$('fruits');box.innerHTML='';
+ for(const k in TX.en.fruits){const b=document.createElement('button');b.textContent=t('fruits')[k];b.setAttribute('aria-pressed',k===fruit);
+  b.onclick=()=>{fruit=k;store.set('fruit',k);renderFruits()};box.appendChild(b)}}
+$('kg').value=store.get('kg')||'';
+$('kg').addEventListener('input',()=>{store.set('kg',$('kg').value);if(last)render(last)});
+$('csv').addEventListener('click',()=>{
+ if(!H.t.length){$('batchMsg').textContent=t('noData');return}
+ let s='# Rod Bondhu, '+TX.en.fruits[fruit]+(src==='demo'?', SIMULATED DEMO DATA':'')+'\ntime_s,T_in_C,RH_in_pct,T_out_C,RH_out_pct,dw_g_per_kg,fan_on\n';
+ const r=(v,d)=>v==null?'':Number(v).toFixed(d);
+ for(let i=0;i<H.t.length;i++)s+=[H.t[i],r(H.tin[i],2),r(H.rhin[i],1),r(H.tout[i],2),r(H.rhout[i],1),r(H.dw[i],2),H.fan[i]].join(',')+'\n';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));
+ a.download='rod_bondhu_'+fruit+(src==='demo'?'_demo':'')+'.csv';document.body.appendChild(a);a.click();a.remove()});
+$('reset').addEventListener('click',()=>{if(confirm(t('confirmReset')))send('reset')});
+
+// ===================== Wiring =====================
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.m)));
+document.querySelectorAll('[data-sim]').forEach(b=>b.addEventListener('click',()=>{SIM.inject=b.dataset.sim;showView('home')}));
+document.querySelectorAll('.tabs [data-v]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.v)));
+function showView(v){document.querySelectorAll('.view').forEach(e=>e.hidden=e.id!=='v-'+v);
+ document.querySelectorAll('.tabs [data-v]').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+ window.scrollTo(0,0);draw()}
+$('srcLive').addEventListener('click',()=>setSource('live'));
+$('srcDemo').addEventListener('click',()=>setSource('demo'));
+$('goLive').addEventListener('click',()=>setSource('live'));
+$('noteDemo').addEventListener('click',()=>setSource('demo'));
+$('lang').addEventListener('click',()=>{lang=lang==='en'?'bn':'en';store.set('lang',lang);applyLang()});
+window.addEventListener('resize',draw);
+
+applyLang();resetView();
+if(new URLSearchParams(location.search).has('demo')){src='';setSource('demo')}else connect();
+refreshStatus();
+</script></body></html>
