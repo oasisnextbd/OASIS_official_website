@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, page_head %}
+{% set page_title = t("তথ্যসূত্র ও হিসাব | রোদ বন্ধু", "Sources and data | Rod Bondhu") %}
+{% set page_desc = t("রোদ বন্ধুর সংখ্যাগুলোর উৎস: চালানোর খরচের হিসাব, CFD ও শুকানোর পরীক্ষার ডেটা এবং তথ্যসূত্র।", "Where Rod Bondhu’s numbers come from: the running-cost working, the CFD and drying-test data, and the references.") %}
+{% block content %}
+{{ page_head(t("তথ্যসূত্র ও ডেটা", "Sources and data"), t("সংখ্যাগুলো কোথা থেকে এল", "Where the numbers come from"), t("পোস্টার ও এই ওয়েবসাইটের প্রতিটি সংখ্যা এখানে যাচাই করা যায়: কোনটি পরিমাপ, কোনটি সিমুলেশন, কোনটি হিসাব আর কোনটি প্রকাশিত উৎস থেকে।", "Every number on the poster and this website can be checked here: which ones we measured, simulated, calculated or took from published sources.")) }}
+
+<section class="section" id="running-cost">
+  <div class="wrap narrow">
+    <p class="kicker">{{ t("হিসাব", "Working") }}</p>
+    <h2>{{ t("বিদ্যুৎ-ড্রায়ারের খরচ: প্রতি ব্যাচে ৳" ~ n("490–740"), "Electric dryer cost: Tk " ~ n("490–740") ~ " per batch") }}</h2>
+    <div class="calc">
+      <p><span>{{ t("ক্যাবিনেট ড্রায়ারের ক্ষমতা", "Cabinet dryer power") }}</span><b>{{ n("2") }} kW</b></p>
+      <p><span>{{ t("এক ব্যাচে চলার সময়", "Run time per batch") }}</span><b>{{ t(n("16–20") ~ " ঘণ্টা", n("16–20") ~ " h") }}</b></p>
+      <p><span>{{ t("বিদ্যুৎ খরচ", "Energy used") }}</span><b>{{ n("2 × 16–20 = 32–40") }} kWh</b></p>
+      <p><span>{{ t("প্রতি ইউনিটের দাম", "Price per unit (kWh)") }} [{{ n("2") }}]</span><b>{{ t("৳" ~ n("15.36–18.40"), "Tk " ~ n("15.36–18.40")) }}</b></p>
+      <p class="calc-total"><span>{{ t("প্রতি ব্যাচ খরচ", "Cost per batch") }}</span><b>{{ n("32 × 15.36 ≈ 492") }} {{ t("থেকে", "to") }} {{ n("40 × 18.40 = 736") }} → {{ t("প্রায় ৳" ~ n("490–740"), "≈ Tk " ~ n("490–740")) }}</b></p>
+    </div>
+    <p>{{ t("রোদ বন্ধু তাপ নেয় রোদ থেকে, আর ফ্যান ও কন্ট্রোলার চলে নিজস্ব সোলার প্যানেল ও ব্যাটারিতে। তাই প্রতি ব্যাচ চালানোর খরচ শূন্য। অ্যাপে “সাশ্রয়” একই হিসাব ব্যবহার করে, শুকানোর প্রকৃত সময় দিয়ে।", "Rod Bondhu takes its heat from the sun, and its fan and controller run on their own solar panel and battery, so the running cost per batch is nil. The app’s “Saved” figure uses the same working, with the actual drying hours.") }}</p>
+  </div>
+</section>
+
+<section class="section section--tint" id="cfd-check">
+  <div class="wrap narrow">
+    <p class="kicker">{{ t("CFD যাচাই", "CFD cross-check") }}</p>
+    <h2>{{ t("তিনটি স্বাধীন সংখ্যা, একই উত্তর", "Three separate numbers, one answer") }}</h2>
+    <p>{{ t("CFD মডেলে সর্বোচ্চ স্থির শুকানোর হার ধরা হয়েছিল " ~ n("0.33") ~ " কেজি/ঘণ্টা। মডেলের অন্য দুটি ফলাফল থেকেও প্রায় একই হার পাওয়া যায়:", "The CFD model was set to a maximum steady drying rate of " ~ n("0.33") ~ " kg/h. Two other results of the model give almost the same rate:") }}</p>
+    <div class="calc">
+      <p><span>{{ t("বাতাসের প্রবাহ × পানি বৃদ্ধি", "Air flow × water picked up") }}</span><b>{{ n("0.047") }} kg/s × {{ n("2.0") }} g/kg = {{ n("0.094") }} g/s ≈ <strong>{{ n("0.34") }} kg/h</strong></b></p>
+      <p><span>{{ t("বাষ্পীভবনের শক্তি ÷ সুপ্ত তাপ", "Evaporation power ÷ latent heat") }}</span><b>{{ n("221.5") }} W ÷ {{ n("2.4") }} MJ/kg ≈ {{ n("0.092") }} g/s ≈ <strong>{{ n("0.33") }} kg/h</strong></b></p>
+    </div>
+    <p>{{ t("অন্যান্য CFD ফলাফল: শোষিত মোট তাপ " ~ n("545.7") ~ " ওয়াট, যার " ~ n("40.6%") ~ " পানি বাষ্প করে; তাপমাত্রা " ~ n("299–346") ~ " K; বাতাসের বেগ " ~ n("0–4.4") ~ " মি/সে.; জলীয় বাষ্পের ভর-ভগ্নাংশ " ~ n("0.010–0.0135") ~ "। ফ্যান পুরো গতিতে (−" ~ n("15") ~ " প্যাসকেল), স্থির অবস্থা।", "Other CFD results: " ~ n("545.7") ~ " W absorbed in total, " ~ n("40.6%") ~ " of it evaporating water; temperatures " ~ n("299–346") ~ " K; air velocity " ~ n("0–4.4") ~ " m/s; water vapour mass fraction " ~ n("0.010–0.0135") ~ ". Steady state, fan at full speed (−" ~ n("15") ~ " Pa).") }}</p>
+    <p>{{ t("বাতাস ঢোকে " ~ n("41%") ~ " RH-এ, বের হয় " ~ n("34%") ~ " RH-এ, " ~ n("7") ~ " K গরম ও প্রতি কেজিতে " ~ n("2.0") ~ " গ্রাম বেশি পানি নিয়ে।", "Air enters at " ~ n("41%") ~ " RH and leaves at " ~ n("34%") ~ " RH, " ~ n("7") ~ " K warmer and carrying " ~ n("2.0") ~ " g more water per kg.") }}</p>
+  </div>
+</section>
+
+<section class="section" id="tests">
+  <div class="wrap narrow">
+    <p class="kicker">{{ t("পরীক্ষার ডেটা", "Test data") }}</p>
+    <h2>{{ t("শুকানোর পরীক্ষা", "Drying tests") }}</h2>
+    <dl class="specs">
+      <div><dt>{{ t("কোথায়", "Where") }}</dt><dd>{{ t("বুয়েট, ঢাকা", "BUET, Dhaka") }}</dd></div>
+      <div><dt>{{ t("ফল", "Fruit") }}</dt><dd>{{ t("আনারস ও কলা, ১% সাইট্রিক অ্যাসিডে প্রি-ট্রিট", "Pineapple and banana, pre-treated with 1% citric acid") }}</dd></div>
+      <div><dt>{{ t("ব্যাচ", "Batches") }}</dt><dd>{{ n("4") }}, {{ t("খোলা রোদে শুকানোর সঙ্গে তুলনা", "compared with open-sun drying") }}</dd></div>
+      <div><dt>{{ t("পানি বের হওয়া", "Moisture removal") }}</dt><dd>{{ t("ড্রায়ারে " ~ n("97.5–100%") ~ ", খোলা রোদে " ~ n("90.6–96.2%"), n("97.5–100%") ~ " in the dryer, " ~ n("90.6–96.2%") ~ " in open sun") }}</dd></div>
+      <div><dt>{{ t("মডেল", "Model") }}</dt><dd>{{ t("পেজ মডেল MR = exp(−ktⁿ), R² > " ~ n("0.98"), "Page model MR = exp(−ktⁿ), R² > " ~ n("0.98")) }} [{{ n("3") }}]</dd></div>
+    </dl>
+    <p><a class="link-arrow" href="{{ url('results') }}">{{ t("ফলাফলের পাতা ও শুকানোর লেখচিত্র", "Results page and drying curve") }}{{ icon("arrow") }}</a></p>
+  </div>
+</section>
+
+<section class="section section--tint" id="references">
+  <div class="wrap narrow">
+    <p class="kicker">{{ t("তথ্যসূত্র", "References") }}</p>
+    <h2>{{ t("প্রকাশিত উৎস", "Published sources") }}</h2>
+    <ol class="refs">
+      {% for r in site.references %}
+      <li id="ref-{{ r.id }}"><span class="ref-num">[{{ n(r.id) }}]</span><div>{% if r.citation %}<p class="mb-1">{{ r.citation }}</p>{% endif %}<p class="small muted mb-0">{{ t("ব্যবহৃত হয়েছে:", "Used for:") }} {{ t(r.used_bn, r.used_en) }}</p></div></li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endblock %}

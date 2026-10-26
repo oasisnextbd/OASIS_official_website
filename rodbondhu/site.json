@@ -1,0 +1,43 @@
+{
+  "_readme": "Settings for the Rod Bondhu website. Real values only: leave a value empty until it is confirmed; empty values are not shown on the site.",
+  "base_url": "https://oasisnextbd.github.io/OASIS_official_website/Rod_Bondhu",
+
+  "contact": {
+    "_readme": "Same OASIS contacts as venguard/site.json → contact.",
+    "whatsapp_number": "8801302829487",
+    "phone_display": "01302-829487",
+    "phone_tel": "+8801302829487",
+    "email": "oasisnextbd@gmail.com"
+  },
+
+  "team": [
+    {"name": "Tasnim Al Hossain", "dept_bn": "কেমিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট", "dept_en": "Department of Chemical Engineering, BUET"},
+    {"name": "Kajim Al Shahriar", "dept_bn": "মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট", "dept_en": "Department of Mechanical Engineering, BUET"},
+    {"name": "Mohammad Omayer Ahamed", "dept_bn": "কেমিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট", "dept_en": "Department of Chemical Engineering, BUET"}
+  ],
+
+  "_status_readme": "state: done | current | next",
+  "status_timeline": [
+    {"state": "done", "bn": "ড্রায়ারের নকশা ও CAD মডেল", "en": "Dryer design and CAD model"},
+    {"state": "done", "bn": "ANSYS Fluent-এ CFD সিমুলেশন", "en": "CFD simulation in ANSYS Fluent"},
+    {"state": "done", "bn": "প্রোটোটাইপ তৈরি: সোলার প্যানেল, ব্যাটারি, দুই সেন্সর ও স্মার্ট ফ্যান", "en": "Prototype built: solar panel, battery, two sensors and a smart fan"},
+    {"state": "done", "bn": "বুয়েটে আনারস ও কলার চারটি শুকানোর পরীক্ষা", "en": "Four drying tests with pineapple and banana at BUET"},
+    {"state": "done", "bn": "বাংলা ও ইংরেজি লাইভ অ্যাপ", "en": "Live app in Bangla and English"},
+    {"state": "current", "bn": "রিনিউয়েবল এনার্জি ফেস্ট ২০২৬, বুয়েট (২৬–২৮ অক্টোবর)", "en": "Renewable Energy Fest 2026, BUET (26–28 October)"},
+    {"state": "next", "bn": "অ্যালুমিনিয়াম ফ্রেমের চূড়ান্ত ইউনিট", "en": "Final unit with an aluminium frame"},
+    {"state": "next", "bn": "আর্দ্রতা অনুযায়ী ফ্যানের গতি নিয়ন্ত্রণ (PWM)", "en": "Fan speed that follows the moisture (PWM)"}
+  ],
+
+  "_references_readme": "Sources for the numbers on the site, numbered as on the poster. Paste the full citation into 'citation'; while it is empty, only what the source is used for is shown.",
+  "references": [
+    {"id": 1, "citation": "",
+     "used_bn": "আমের উৎপাদন (বছরে প্রায় ২৭ লাখ টন), ফসল তোলার পর ক্ষতি (এক-চতুর্থাংশের বেশি), শুকনো আমের দাম (কেজিপ্রতি ২,০০০–২,৪০০ টাকা) ও খামার-পর্যায়ের ড্রায়ার প্ল্যান্টের খরচ (প্রায় ১ কোটি টাকা)",
+     "used_en": "Mango production (about 27 lakh tonnes a year), post-harvest loss (more than a quarter), dried mango price (Tk 2,000–2,400 per kg) and the cost of a farm-scale drying plant (about Tk 1 crore)"},
+    {"id": 2, "citation": "",
+     "used_bn": "বিদ্যুৎচালিত ড্রায়ার চালানোর খরচ, প্রতি ইউনিট ১৫.৩৬–১৮.৪০ টাকা",
+     "used_en": "The cost of running an electric dryer, Tk 15.36–18.40 per unit (kWh)"},
+    {"id": 3, "citation": "Page, G. E. (1949). Factors influencing the maximum rates of air drying shelled corn in thin layers. M.S. thesis, Purdue University, West Lafayette, Indiana, USA.",
+     "used_bn": "শুকানোর পেজ মডেল, MR = exp(−ktⁿ)",
+     "used_en": "The Page drying model, MR = exp(−ktⁿ)"}
+  ]
+}

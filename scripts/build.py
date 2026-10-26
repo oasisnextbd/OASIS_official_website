@@ -10,6 +10,9 @@ Layout of the published site (URLs are stable; do not change them casually):
     /VENGuard/           VenGuard website (bn)      ← venguard/  (built by venguard/tools/build.py)
     /VENGuard/en/        VenGuard website (en)
     /VENGuard/app/       redirect to the VenGuard app (repository oasisnextbd/venguard-app)
+    /Rod_Bondhu/         Rod Bondhu website (bn)    ← rodbondhu/ (built by rodbondhu/tools/build.py)
+    /Rod_Bondhu/en/      Rod Bondhu website (en)
+    /Rod_Bondhu/app/     Rod Bondhu live dryer app  ← rodbondhu/app/
     /team/               VenGuard team dashboard    ← team-dashboard/ (not linked anywhere, not
                          indexed; data in Firestore behind Google sign-in and the team list)
 """
@@ -28,6 +31,7 @@ def main():
         shutil.rmtree(OUT)
     shutil.copytree(REPO / "oasis-site", OUT)
     subprocess.run([sys.executable, str(REPO / "venguard/tools/build.py"), str(OUT / "VENGuard")], check=True)
+    subprocess.run([sys.executable, str(REPO / "rodbondhu/tools/build.py"), str(OUT / "Rod_Bondhu")], check=True)
     build_dashboard(OUT / "team")
     write_sitemap_index()
     (OUT / ".nojekyll").write_text("")  # serve files as-is (no Jekyll processing)
@@ -36,7 +40,7 @@ def main():
 
 
 def write_sitemap_index():
-    """/sitemap.xml lists the OASIS page and the VenGuard sitemap, so Search Console needs one address."""
+    """/sitemap.xml lists the OASIS page and the VenGuard and Rod Bondhu sitemaps, so Search Console needs one address."""
     base = "https://oasisnextbd.github.io/OASIS_official_website"
     (OUT / "sitemap-oasis.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -44,7 +48,8 @@ def write_sitemap_index():
     (OUT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"  <sitemap><loc>{base}/sitemap-oasis.xml</loc></sitemap>\n"
-        f"  <sitemap><loc>{base}/VENGuard/sitemap.xml</loc></sitemap>\n</sitemapindex>\n", encoding="utf-8")
+        f"  <sitemap><loc>{base}/VENGuard/sitemap.xml</loc></sitemap>\n"
+        f"  <sitemap><loc>{base}/Rod_Bondhu/sitemap.xml</loc></sitemap>\n</sitemapindex>\n", encoding="utf-8")
 
 
 def build_dashboard(dest):

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, page_head %}
+{% set page_title = t("কীভাবে কাজ করে | রোদ বন্ধু", "How it works | Rod Bondhu") %}
+{% set page_desc = t("রোদ বন্ধু কীভাবে পরম আর্দ্রতা মেপে ফ্যান চালায়: সিস্টেম, নিয়ন্ত্রণের নিয়ম, ড্রায়ারের নকশা ও ভেতরের যন্ত্রাংশ।", "How Rod Bondhu measures absolute humidity to run its fan: the system, the control rules, the dryer design and the parts inside.") %}
+{% block content %}
+{{ page_head(t("কীভাবে কাজ করে", "How it works"), t("রোদে তাপ, সেন্সরে হিসাব, ফ্যানে সমাধান", "Heat from the sun, a calculation from the sensors, action from the fan"), t("রোদ বন্ধু একটি মিক্সড-মোড সোলার ড্রায়ার: রোদ সরাসরি ফলে পড়ে, আবার সংগ্রাহকে গরম হওয়া বাতাসও ফলের ওপর দিয়ে যায়। তার সঙ্গে আছে একটি ছোট কন্ট্রোলার, যে ঠিক করে কখন ভেজা বাতাস বের করতে হবে।", "Rod Bondhu is a mixed-mode solar dryer: sunlight falls on the fruit directly, and air warmed in the collector flows over it too. A small controller decides when the humid air has to go.")) }}
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <p class="kicker">{{ t("মূল ভাবনা", "The key idea") }}</p>
+      <h2>{{ t("কেন আপেক্ষিক আর্দ্রতা যথেষ্ট নয়", "Why relative humidity is not enough") }}</h2>
+      <p>{{ t("গরম বাতাস বেশি পানি ধরে রাখতে পারে। তাই ড্রায়ারের ভেতরের বাতাস ফল থেকে পানি নিলেও তার আপেক্ষিক আর্দ্রতা (RH) কমে যেতে পারে। শুধু RH দেখলে মনে হবে ভেতরটা শুকনো, অথচ বাতাসে আসলে বেশি পানি জমেছে।", "Warm air can hold more water. So the air inside the dryer can pick up water from the fruit while its relative humidity (RH) still falls. Going by RH alone, the chamber looks dry when its air is actually carrying more water.") }}</p>
+      <p>{{ t("আমাদের CFD মডেলে ঠিক এটাই দেখা গেছে: বাতাস প্রতি কেজিতে " ~ n("2.0") ~ " গ্রাম পানি তুলে নিয়েছে, কিন্তু " ~ n("7") ~ " ডিগ্রি গরম হওয়ায় তার RH " ~ n("41%") ~ " থেকে নেমে " ~ n("34%") ~ " হয়েছে।", "Our CFD model shows exactly this: the air picks up " ~ n("2.0") ~ " g of water per kg, yet because it is " ~ n("7") ~ " K warmer its RH falls from " ~ n("41%") ~ " to " ~ n("34%") ~ ".") }}</p>
+      <p>{{ t("তাই রোদ বন্ধু দুই জায়গার বাতাসকেই পরম আর্দ্রতায় (ω, প্রতি কেজি শুকনো বাতাসে কত গ্রাম পানি) রূপান্তর করে তুলনা করে:", "So Rod Bondhu turns both readings into absolute humidity (ω, grams of water per kilogram of dry air) and compares them:") }}</p>
+      <div class="formula">
+        <p>Δω = ω<sub>{{ t("ভেতরে", "chamber") }}</sub> − ω<sub>{{ t("বাইরে", "ambient") }}</sub></p>
+        <p>ω = 0.622 p<sub>v</sub> / (P − p<sub>v</sub>), &nbsp; p<sub>v</sub> = (RH/100) × p<sub>sat</sub>(T)</p>
+      </div>
+      <p class="small muted">{{ t("p_sat(T) হিসাব করা হয় বাক সমীকরণ দিয়ে। P হলো বায়ুমণ্ডলের চাপ, ঢাকায় প্রায় ১০১.৩ কিলোপ্যাসকেল।", "p_sat(T) comes from the Buck equation. P is atmospheric pressure, about 101.3 kPa in Dhaka.") }}</p>
+    </div>
+    <figure class="card airbox">
+      <p class="kicker">{{ t("ফ্যান পুরো গতিতে, CFD", "Fan at full speed, CFD") }}</p>
+      <div class="air-flow">
+        <div class="air-cell"><span>{{ t("ঢোকার বাতাস", "Air in") }}</span><b>{{ n("41%") }} RH</b></div>
+        <div class="air-arrow">{{ icon("arrow") }}</div>
+        <div class="air-cell air-cell--sun"><span>{{ t("ড্রায়িং চেম্বার", "Drying chamber") }}</span><b>{{ t(n("0.047") ~ " কেজি/সে.", n("0.047") ~ " kg/s") }}</b></div>
+        <div class="air-arrow">{{ icon("arrow") }}</div>
+        <div class="air-cell air-cell--air"><span>{{ t("বের হওয়া বাতাস", "Air out") }}</span><b>{{ n("34%") }} RH</b><small>+{{ n("7") }} K · +{{ n("2.0") }} {{ t("গ্রাম/কেজি", "g/kg") }}</small></div>
+      </div>
+      <figcaption class="small muted">{{ t("পানি বাড়লেও RH কমে, কারণ বাতাস গরম হয়েছে।", "Water goes up while RH goes down, because the air is warmer.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap">
+    <p class="kicker">{{ t("সিস্টেম", "The system") }}</p>
+    <h2>{{ t("শক্তি, সেন্সিং, নিয়ন্ত্রণ ও বাতাসের পথ", "Power, sensing, control and the air path") }}</h2>
+    <div class="sys">
+      <div class="sys-col sys-power">
+        <h3>{{ icon("sun") }}{{ t("শক্তি", "Power") }}</h3>
+        <ol><li><b>{{ t("সোলার প্যানেল", "Solar panel") }}</b>{{ t("দিনে চার্জ করে", "Charges by day") }}</li>
+        <li><b>{{ t("চার্জ কন্ট্রোলার", "Charge controller") }}</b>{{ t("সর্বোচ্চ পাওয়ার ট্র্যাকিং", "Maximum power tracking") }}</li>
+        <li><b>{{ t("ব্যাটারি", "Battery") }}</b>{{ t("বদলানো যায়, রাতেও চলে", "Swappable, runs at night") }}</li></ol>
+      </div>
+      <div class="sys-col sys-sense">
+        <h3>{{ icon("chip") }}{{ t("সেন্সিং ও নিয়ন্ত্রণ", "Sensing and control") }}</h3>
+        <ol><li><b>{{ t("দুটি আর্দ্রতা সেন্সর", "Two humidity sensors") }}</b>{{ t("ভেতরের ও বাইরের বাতাস", "Chamber air and outside air") }}</li>
+        <li><b>{{ t("কন্ট্রোলার", "Controller") }}</b>{{ t("পরম আর্দ্রতা তুলনা করে", "Compares absolute humidity") }}</li>
+        <li><b>{{ t("ফ্যান ড্রাইভার", "Fan driver") }}</b>{{ t("ফ্যান চালু বা বন্ধ করে", "Switches the fan") }}</li></ol>
+      </div>
+      <div class="sys-col sys-air">
+        <h3>{{ icon("fan") }}{{ t("বাতাসের পথ", "Air path") }}</h3>
+        <ol><li><b>{{ t("সংগ্রাহক", "Collector") }}</b>{{ t("বাইরের বাতাস গরম হয়", "Outside air warms up") }}</li>
+        <li><b>{{ t("ড্রায়িং চেম্বার", "Drying chamber") }}</b>{{ t("ফুড-গ্রেড SS 304 ট্রে", "Food-grade SS 304 trays") }}</li>
+        <li><b>{{ t("এক্সহস্ট ফ্যান", "Exhaust fan") }}</b>{{ t("ভেজা বাতাস বের করে", "Purges humid air") }}</li></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("নিয়ন্ত্রণের নিয়ম", "Control rules") }}</p>
+    <h2>{{ t("প্রতি " ~ n("2.5") ~ " সেকেন্ডে যা হয়", "What happens every " ~ n("2.5") ~ " seconds") }}</h2>
+    <div class="cards cards--2">
+      <div class="card">
+        <h3>{{ t("অটো মোড", "Auto mode") }}</h3>
+        <ul class="rules">
+          <li><span class="rule-tag rule-on">{{ t("ফ্যান চালু", "Fan on") }}</span>{{ t("Δω " ~ n("1.5") ~ " গ্রাম/কেজির বেশি হলে", "when Δω is above " ~ n("1.5") ~ " g/kg") }}</li>
+          <li><span class="rule-tag">{{ t("ফ্যান বন্ধ", "Fan off") }}</span>{{ t("Δω " ~ n("0.5") ~ " গ্রাম/কেজির কম হলে, যাতে তাপ থাকে", "when Δω is below " ~ n("0.5") ~ " g/kg, to keep the heat in") }}</li>
+          <li><span class="rule-tag rule-hold">{{ t("অপরিবর্তিত", "Hold") }}</span>{{ t("মাঝামাঝি হলে কিছু বদলায় না, তাই রিলে বারবার ক্লিক করে না", "in between, nothing changes, so the relay does not click on and off") }}</li>
+          <li><span class="rule-tag rule-hold">{{ t("১ মিনিট", "1 min") }}</span>{{ t("প্রতিটি অবস্থা অন্তত এক মিনিট থাকে", "each state lasts at least one minute") }}</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>{{ t("সুরক্ষা ও হাতে নিয়ন্ত্রণ", "Safety and manual control") }}</h3>
+        <ul class="rules">
+          <li><span class="rule-tag rule-warn">{{ n("65") }} °C</span>{{ t("ভেতরে এর বেশি গরম হলে ফ্যান চালু হয়, যেকোনো মোডে", "above this inside, the fan comes on, in every mode") }}</li>
+          <li><span class="rule-tag rule-warn">{{ t("সেন্সর", "Sensor") }}</span>{{ t("কোনো সেন্সর সাড়া না দিলে ফ্যান চালু থাকে, যাতে ভেজা বাতাস জমে না", "if a sensor stops responding, the fan stays on so humid air cannot build up") }}</li>
+          <li><span class="rule-tag">{{ t("অ্যাপ", "App") }}</span>{{ t("অ্যাপ থেকে পিন দিয়ে চালু, বন্ধ বা অটো", "on, off or auto from the app, with a PIN") }}</li>
+          <li><span class="rule-tag">{{ t("গড়", "Average") }}</span>{{ t("প্রতিটি রিডিং শেষ ছয়টি মাপের গড়, তাই হঠাৎ ঝাঁকুনিতে ভুল হয় না", "each reading averages the last six samples, so a single glitch cannot trip the fan") }}</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">{{ icon("fan") }}{{ t("বর্তমান প্রোটোটাইপ ফ্যান পুরো চালু বা বন্ধ করে। আর্দ্রতা অনুযায়ী ফ্যানের গতি কমানো-বাড়ানো (PWM) আমাদের পরবর্তী ধাপ।", "The current prototype switches the fan fully on or off. Making the fan speed follow the moisture (PWM) is our next step.") }}</p>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap split split--top">
+    <div>
+      <p class="kicker">{{ t("নকশা", "Design") }}</p>
+      <h2>{{ t("ড্রায়িং চেম্বার", "The drying chamber") }}</h2>
+      <dl class="specs">
+        <div><dt>{{ t("ভিত্তির মাপ", "Base") }}</dt><dd>{{ n("25.2″ × 37.56″") }}</dd></div>
+        <div><dt>{{ t("সংগ্রাহকের ঢাল", "Collector tilt") }}</dt><dd>{{ n("23") }}°</dd></div>
+        <div><dt>{{ t("ট্রে", "Trays") }}</dt><dd>{{ t("ফুড-গ্রেড স্টেইনলেস স্টিল SS 304", "Food-grade stainless steel SS 304") }}</dd></div>
+        <div><dt>{{ t("ঢাকনা", "Cover") }}</dt><dd>{{ t("স্বচ্ছ, ধুলা ও পোকা ঢুকতে দেয় না", "Clear, keeps out dust and insects") }}</dd></div>
+        <div><dt>{{ t("ফ্রেম", "Frame") }}</dt><dd>{{ t("প্রোটোটাইপে কাঠ; চূড়ান্ত ইউনিটে অ্যালুমিনিয়াম", "Wood on the prototype; aluminium on the final unit") }}</dd></div>
+        <div><dt>{{ t("বাতাস ঢোকার পথ", "Air inlet") }}</dt><dd>{{ t("নিচের ছিদ্রযুক্ত প্যানেল", "Perforated lower panel") }}</dd></div>
+      </dl>
+    </div>
+    <figure>
+      <img class="rounded" src="{{ root }}assets/img/cad.jpg" width="1200" height="813" loading="lazy" alt="{{ t('ড্রায়িং চেম্বারের CAD মডেল, চার দিক থেকে', 'CAD model of the drying chamber from four views') }}">
+      <figcaption class="small muted">{{ t("ড্রায়িং চেম্বারের CAD মডেল।", "CAD model of the drying chamber.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("ভেতরের যন্ত্রাংশ", "Inside the controller") }}</p>
+    <h2>{{ t("প্রোটোটাইপে যা আছে", "What the prototype uses") }}</h2>
+    <div class="cards cards--3">
+      <div class="card">{{ icon("chip") }}<h3>ESP32</h3><p>{{ t("কন্ট্রোলার, ওয়াই-ফাই সহ। ইন্টারনেট না থাকলেও নিজের নেটওয়ার্কে স্থানীয় ড্যাশবোর্ড দেখায়।", "The controller, with Wi-Fi. Without internet it still serves a local dashboard on its own network.") }}</p></div>
+      <div class="card">{{ icon("drop") }}<h3>{{ t("দুটি DHT22 সেন্সর", "Two DHT22 sensors") }}</h3><p>{{ t("তাপমাত্রা ও আর্দ্রতা মাপে: একটি চেম্বারে, একটি বাইরে ছায়ায়।", "Temperature and humidity: one in the chamber, one in shaded outside air.") }}</p></div>
+      <div class="card">{{ icon("fan") }}<h3>{{ t("১২ ভোল্ট এক্সহস্ট ফ্যান", "12 V exhaust fan") }}</h3><p>{{ t("রিলে দিয়ে চালু-বন্ধ হয়। প্রায় " ~ n("8.4") ~ " ওয়াট, শুধু দরকার হলেই চলে।", "Switched by a relay. About " ~ n("8.4") ~ " W, and it only runs when needed.") }}</p></div>
+    </div>
+  </div>
+</section>
+
+{% include "partials/cta.html" %}
+{% endblock %}

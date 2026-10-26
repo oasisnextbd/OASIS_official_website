@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, page_head %}
+{% set page_title = t("লাইভ অ্যাপ | রোদ বন্ধু", "Live app | Rod Bondhu") %}
+{% set page_desc = t("রোদ বন্ধু অ্যাপ: ড্রায়ারের লাইভ তাপমাত্রা, আর্দ্রতা ও ফ্যানের অবস্থা ফোনে। কীভাবে সংযোগ হয়, স্ট্যাটাসের মানে ও ডেমো মোড।", "The Rod Bondhu app: the dryer’s live temperature, humidity and fan state on your phone. How it connects, what each status means, and demo mode.") %}
+{% block content %}
+{{ page_head(t("লাইভ অ্যাপ", "Live app"), t("ড্রায়ার কী করছে, ফোনেই দেখুন", "See what the dryer is doing, on your phone"), t("অ্যাপটি ব্রাউজারে খোলে, কিছু ইনস্টল করতে হয় না। বাংলা ও ইংরেজি দুই ভাষাতেই চলে। অ্যাপ না খুললেও ড্রায়ার নিজে নিজেই কাজ করে।", "The app opens in the browser with nothing to install, in Bangla or English. The dryer does its job on its own whether or not anyone opens the app.")) }}
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <div class="btn-row mb-3">
+        <a class="btn btn--primary" href="{{ root }}app/">{{ icon("live") }}{{ t("লাইভ অ্যাপ খুলুন", "Open the live app") }}</a>
+        <a class="btn btn--secondary" href="{{ root }}app/?demo">{{ t("ডেমো দেখুন", "Try the demo") }}</a>
+      </div>
+      <h2>{{ t("অ্যাপে যা আছে", "What the app shows") }}</h2>
+      <div class="cards cards--2">
+        <div class="card">{{ icon("sun") }}<h3>{{ t("হোম", "Home") }}</h3><p>{{ t("সহজ ভাষায় এখনকার অবস্থা, যেমন “ভেজা বাতাস বের করা হচ্ছে”। ভেতরের বাড়তি পানি, ভেতর-বাইরের তাপমাত্রা ও আর্দ্রতা, ফ্যানের নিয়ন্ত্রণ।", "The current state in plain words, like “Pushing out moist air”. The extra water inside, inside and outside temperature and humidity, and fan control.") }}</p></div>
+        <div class="card">{{ icon("chart") }}<h3>{{ t("চার্ট", "Charts") }}</h3><p>{{ t("তাপমাত্রা, বাড়তি পানি ও আপেক্ষিক আর্দ্রতার চার্ট, ফ্যান কখন চলেছে তা চিহ্নিত।", "Charts of temperature, extra water and relative humidity, with fan-on periods shaded.") }}</p></div>
+        <div class="card">{{ icon("tray") }}<h3>{{ t("ব্যাচ", "Batch") }}</h3><p>{{ t("কী ফল শুকাচ্ছেন, তাজা ওজন, শুকানোর সময়, ফ্যান কতক্ষণ চলেছে, আনুমানিক কত পানি বের হয়েছে, কত টাকা বাঁচল। ডেটা CSV ফাইলে নামানো যায়।", "What you are drying, its fresh weight, drying time, fan run time, estimated water removed and money saved. The data downloads as a CSV file.") }}</p></div>
+        <div class="card">{{ icon("shield") }}<h3>{{ t("সতর্কতা", "Alerts") }}</h3><p>{{ t("বেশি গরম, সেন্সর বিকল বা ড্রায়ার অফলাইন হলে পরিষ্কার বার্তা।", "Clear messages when the chamber overheats, a sensor fails or the dryer goes offline.") }}</p></div>
+      </div>
+    </div>
+    <figure class="phone">
+      <img src="{{ root }}assets/img/app-{{ lang }}.jpg" width="780" height="1500" loading="lazy" alt="{{ t('রোদ বন্ধু অ্যাপের হোম স্ক্রিন, ডেমো মোডে', 'The Rod Bondhu app home screen, in demo mode') }}">
+      <figcaption class="small muted">{{ t("ছবিটি অ্যাপের ডেমো মোড থেকে নেওয়া।", "Screenshot taken in the app’s demo mode.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap">
+    <p class="kicker">{{ t("সংযোগ", "Connection") }}</p>
+    <h2>{{ t("ড্রায়ার আর অ্যাপ কীভাবে কথা বলে", "How the dryer and the app talk") }}</h2>
+    <p>{{ t("ড্রায়ার আর ফোন সরাসরি যুক্ত হয় না। দুটোই ইন্টারনেটের একটি বার্তা-সার্ভারে (MQTT ব্রোকার) যুক্ত হয়, যে বার্তা পৌঁছে দেয়।", "The dryer and the phone never connect directly. Both connect to a message server on the internet (an MQTT broker), which passes the messages along.") }}</p>
+    <ol class="flow">
+      <li><b>{{ t("ড্রায়ার", "Dryer") }}</b><span>{{ t("প্রতি " ~ n("5") ~ " সেকেন্ডে রিডিং পাঠায়", "sends readings every " ~ n("5") ~ " s") }}</span></li>
+      <li><b>{{ t("ফোনের হটস্পট", "Phone hotspot") }}</b><span>{{ t("ড্রায়ারকে ইন্টারনেট দেয়", "gives the dryer internet") }}</span></li>
+      <li><b>{{ t("বার্তা-সার্ভার", "Message server") }}</b><span>{{ t("শেষ রিডিং ধরে রাখে, সবাইকে পাঠায়", "keeps the last reading, passes it on") }}</span></li>
+      <li><b>{{ t("রোদ বন্ধু অ্যাপ", "Rod Bondhu app") }}</b><span>{{ t("যেকোনো ফোনে, যেকোনো জায়গায়", "on any phone, anywhere") }}</span></li>
+    </ol>
+    <p>{{ t("ফ্যানের বোতাম চাপলে উল্টো পথে কমান্ড যায়, আর ড্রায়ার নিশ্চিত করলে অ্যাপে দেখা যায়। ইন্টারনেট না থাকলেও ড্রায়ারের নিজের ওয়াই-ফাই নেটওয়ার্কে একটি স্থানীয় ড্যাশবোর্ড চলে।", "Fan buttons send a command back the other way, and the app shows when the dryer confirms it. With no internet at all, the dryer still runs a local dashboard on its own Wi-Fi network.") }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>{{ t("উপরের স্ট্যাটাসের মানে", "What the status at the top means") }}</h2>
+    <div class="table-wrap">
+      <table class="compare compare--status">
+        <thead><tr><th scope="col">{{ t("স্ট্যাটাস", "Status") }}</th><th scope="col">{{ t("মানে", "Meaning") }}</th><th scope="col">{{ t("কী করবেন", "What to do") }}</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill pill--ok">{{ t("লাইভ", "Live") }}</span></td><td>{{ t("সব ঠিক আছে", "Everything works") }}</td><td>–</td></tr>
+          <tr><td><span class="pill">{{ t("অপেক্ষা", "Waiting") }}</span></td><td>{{ t("ড্রায়ার থেকে এখনো কিছু আসেনি", "Nothing has come from the dryer yet") }}</td><td>{{ t("ড্রায়ার চালু ও হটস্পটে যুক্ত কি না দেখুন", "Check the dryer is on and joined to the hotspot") }}</td></tr>
+          <tr><td><span class="pill pill--bad">{{ t("ড্রায়ার অফলাইন", "Dryer offline") }}</span></td><td>{{ t("ড্রায়ার ডেটা পাঠানো বন্ধ করেছে; শেষ রিডিং দেখানো হচ্ছে", "The dryer stopped sending; the last reading is shown") }}</td><td>{{ t("হটস্পট, ডেটা প্যাক বা ড্রায়ারের বিদ্যুৎ দেখুন", "Check the hotspot, its data and the dryer’s power") }}</td></tr>
+          <tr><td><span class="pill pill--bad">{{ t("সংযোগ নেই", "No connection") }}</span></td><td>{{ t("এই ফোন সার্ভারে পৌঁছাতে পারছে না", "This phone cannot reach the server") }}</td><td>{{ t("ফোনের ইন্টারনেট দেখুন", "Check this phone’s internet") }}</td></tr>
+          <tr><td><span class="pill pill--demo">{{ t("ডেমো", "Demo") }}</span></td><td>{{ t("সিমুলেশন চলছে, আসল ড্রায়ার নয়", "A simulation is running, not the real dryer") }}</td><td>{{ t("“লাইভে যান” চাপুন", "Tap “Go live”") }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">{{ t("ডেমো মোড", "Demo mode") }}</p>
+      <h2>{{ t("কয়েক মিনিটে পুরো একটি শুকানোর দিন", "A whole drying day in a few minutes") }}</h2>
+      <p>{{ t("ডেমো মোডে ৬০ গুণ দ্রুত একটি সিমুলেটেড দিন চলে: সকালে ফল থেকে পানি বের হয়, ফ্যান চালু-বন্ধ হয়, বিকেলে শুকানো শেষের দিকে ফ্যান বিশ্রাম নেয়। বেশি গরম বা সেন্সর বিকল হলে ড্রায়ার কী করে, তা-ও বোতাম চেপে দেখা যায়।", "Demo mode plays a simulated day at 60× speed: water comes out of the fruit in the morning, the fan cycles on and off, and by the afternoon, as drying finishes, the fan rests. Buttons also show what the dryer does when it overheats or a sensor fails.") }}</p>
+      <p>{{ t("ডেমো চলার সময় প্রতিটি পর্দায় হলুদ “ডেমো” লেখা থাকে, যাতে কেউ একে আসল ড্রায়ারের ডেটা না ভাবেন। অ্যাপ নিজে থেকে কখনো ডেমোতে যায় না।", "While the demo runs, every screen carries a yellow “Demo” banner, so nobody mistakes it for the real dryer. The app never switches to the demo by itself.") }}</p>
+      <a class="btn btn--secondary" href="{{ root }}app/?demo">{{ t("ডেমো দেখুন", "Try the demo") }}</a>
+    </div>
+    <div class="card">
+      <h3>{{ t("অ্যাপের হিসাবগুলো", "How the app works out its numbers") }}</h3>
+      <ul class="checks">
+        <li>{{ icon("check") }}{{ t("বের হওয়া পানি = ফ্যানের বাতাস (" ~ n("0.047") ~ " কেজি/সে., CFD) × বাড়তি পানি × ফ্যান চলার সময়। এটি আনুমানিক, এবং পেজ খোলা থাকার সময়টুকুই গোনা হয়।", "Water removed = fan airflow (" ~ n("0.047") ~ " kg/s, from CFD) × extra water × fan-on time. An estimate, counted while the page is open.") }}</li>
+        <li>{{ icon("check") }}{{ t("সাশ্রয় = একই সময় " ~ n("2") ~ " কিলোওয়াটের বিদ্যুৎ-ড্রায়ার চালালে প্রতি ইউনিট ৳" ~ n("15.36–18.40") ~ " হারে যত খরচ হতো।", "Saving = what a " ~ n("2") ~ " kW electric dryer would cost over the same hours at Tk " ~ n("15.36–18.40") ~ " per unit.") }}</li>
+        <li>{{ icon("check") }}{{ t("ফ্যানের বিদ্যুৎ = প্রায় " ~ n("8.4") ~ " ওয়াট × ফ্যান চলার সময়, পুরোটা সৌরশক্তি থেকে।", "Fan energy = about " ~ n("8.4") ~ " W × fan-on time, all from solar.") }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,63 @@
+{#- Page frame shared by every Rod Bondhu page.
+    Child templates set: page_title, page_desc. -#}
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ page_desc }}">
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" hreflang="bn" href="{{ alt_bn }}">
+<link rel="alternate" hreflang="en" href="{{ alt_en }}">
+<link rel="alternate" hreflang="x-default" href="{{ alt_bn }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ t('রোদ বন্ধু', 'Rod Bondhu') }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_desc }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:image" content="{{ site.base_url }}/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ t('রোদে ফল শুকাচ্ছে রোদ বন্ধু প্রোটোটাইপ', 'The Rod Bondhu prototype drying fruit in the sun') }}">
+<meta property="og:locale" content="{{ 'bn_BD' if lang == 'bn' else 'en_US' }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1f4d3a">
+<link rel="icon" href="{{ root }}assets/img/favicon.svg" type="image/svg+xml">
+{% if lang == "bn" %}<link rel="preload" href="{{ root }}assets/fonts/noto-sans-bengali-bengali.woff2" as="font" type="font/woff2" crossorigin>{% endif %}
+<link rel="preload" href="{{ root }}assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+/* Language memory, shared with the live app (key rb_lang). Bangla is the default; a saved English choice
+   takes the visitor to the English page. The old app address /Rod_Bondhu/?demo now opens the app's demo. */
+(function(){try{
+{% if slug == "" and lang == "bn" %}if(/[?&]demo\b/.test(location.search)){location.replace("{{ root }}app/"+location.search);return;}{% endif %}
+var l=localStorage.getItem("rb_lang");
+if(l==="en"&&document.documentElement.lang==="bn"&&!/[?&]lang=bn/.test(location.search)){location.replace("{{ url(slug, 'en') }}"+location.hash);return;}
+localStorage.setItem("rb_lang",document.documentElement.lang);
+}catch(e){}})();
+</script>
+<link rel="stylesheet" href="{{ root }}assets/css/fonts.css">
+<link rel="stylesheet" href="{{ root }}assets/css/rodbondhu.css">
+<script src="{{ root }}assets/js/site.js" defer></script>
+<script type="application/ld+json">
+{{ {
+  "@context": "https://schema.org",
+  "@graph": [
+    {"@type": "Product", "@id": site.base_url ~ "/#product", "name": "Rod Bondhu", "alternateName": ["রোদ বন্ধু", "Rod Bondhu smart solar dryer"],
+     "description": "A smart mixed-mode solar dryer for fruit: absolute-humidity sensing, an automatic exhaust fan, solar panel and battery, food-grade SS 304 trays. Prototype.",
+     "image": site.base_url ~ "/assets/img/og-image.jpg", "url": site.base_url ~ "/",
+     "brand": {"@type": "Brand", "name": "OASIS"}},
+    {"@type": "WebSite", "@id": site.base_url ~ "/#site", "name": "Rod Bondhu", "url": site.base_url ~ "/", "inLanguage": ["bn-BD", "en"]}
+  ]
+} | tojson }}
+</script>
+</head>
+<body data-page="{{ slug or 'home' }}" data-lang="{{ lang }}">
+<a class="skip-link" href="#main">{{ t("মূল অংশে যান", "Skip to content") }}</a>
+{% include "partials/header.html" %}
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+{% include "partials/footer.html" %}
+</body>
+</html>

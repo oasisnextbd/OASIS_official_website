@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, page_head %}
+{% set c = site.contact %}
+{% set page_title = t("আমাদের কথা ও যোগাযোগ | রোদ বন্ধু", "About and contact | Rod Bondhu") %}
+{% set page_desc = t("রোদ বন্ধুর পেছনের দল, কেন আমরা এটি তৈরি করছি, আর কীভাবে যোগাযোগ করবেন।", "The team behind Rod Bondhu, why we are building it, and how to get in touch.") %}
+{% block content %}
+{{ page_head(t("আমাদের কথা", "About"), t("কৃষকের জন্য রোদের বন্ধু", "A friend of the sun, for farmers"), t("“রোদ বন্ধু” মানে রোদের বন্ধু। নামটি এমনভাবে রাখা যাতে কৃষক একবারেই বোঝেন যন্ত্রটি কী করে: রোদকে কাজে লাগিয়ে ফসল বাঁচায়।", "“Rod Bondhu” means “friend of the sun”. The name tells a farmer at once what it does: it puts the sun to work to save the harvest.")) }}
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <h2>{{ t("কেন তৈরি করছি", "Why we are building it") }}</h2>
+      <p>{{ t("মৌসুমে বাংলাদেশে প্রচুর ফল হয়, কিন্তু তার বড় একটি অংশ বাজারে পৌঁছানোর আগেই নষ্ট হয়। শুকনো ফলের দাম ভালো, অথচ ছোট কৃষকের কাছে আছে শুধু খোলা রোদ, অথবা এমন ড্রায়ার যার বিদ্যুৎ বিল বেশি আর লোডশেডিংয়ে থেমে যায়।", "Bangladesh grows a great deal of fruit each season, but a large share is lost before it reaches the market. Dried fruit sells well, yet a small farmer has only the open sun, or dryers with high power bills that stop in load shedding.") }}</p>
+      <p>{{ t("আমরা চেয়েছি এমন একটি ড্রায়ার, যা ছোট কৃষক কিনতে পারবেন, যা রোদে চলে, ফল পরিষ্কার রাখে আর ভেজা বাতাস নিজেই বের করে দেয়, এবং যা দেশেই তৈরি ও মেরামত করা যায়।", "We wanted a dryer a small farmer can afford, that runs on sunlight, keeps the fruit clean, clears out humid air by itself, and can be made and repaired locally.") }}</p>
+      <ul class="checks">
+        <li>{{ icon("check") }}{{ t("বিদ্যুৎ বিল নেই", "No electricity bill") }}</li>
+        <li>{{ icon("check") }}{{ t("লোডশেডিংয়েও শুকানো চলে", "Keeps drying in power cuts") }}</li>
+        <li>{{ icon("check") }}{{ t("দেশেই তৈরি ও মেরামতযোগ্য", "Made and repaired locally") }}</li>
+      </ul>
+    </div>
+    <div>
+      <h2>{{ t("দল", "Team") }}</h2>
+      <ul class="team">
+        {% for p in site.team %}
+        <li><span class="avatar" aria-hidden="true">{{ p.name.split()[0][0] }}{{ p.name.split()[-1][0] }}</span><div><b>{{ p.name }}</b><span>{{ t(p.dept_bn, p.dept_en) }}</span></div></li>
+        {% endfor %}
+      </ul>
+      <p class="small muted">{{ t("ইন্টার-ইউনিভার্সিটি পোস্টার প্রতিযোগিতা, রিনিউয়েবল এনার্জি ফেস্ট ২০২৬, বুয়েট। বিষয়: কৃষির প্রয়োজন সমাধান; নবায়নযোগ্য শক্তি বাস্তবায়নে উদ্ভাবনী পাওয়ার সার্কিট ও ডিজিটাল সমাধান।", "Inter-University Poster Competition, Renewable Energy Fest 2026, BUET. Themes: Solving Agro Needs; Innovative Power Circuits and Digital Interventions for RE Implementation.") }}</p>
+      <p><a class="link-arrow" href="{{ root }}../">{{ t("OASIS সম্পর্কে", "About OASIS") }}{{ icon("arrow") }}</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint" id="contact">
+  <div class="wrap">
+    <h2>{{ t("যোগাযোগ", "Contact") }}</h2>
+    <p>{{ t("পাইলট প্রকল্প, অংশীদারিত্ব, বিনিয়োগ বা গবেষণা নিয়ে কথা বলতে চাইলে লিখুন বা ফোন করুন।", "Write or call to talk about a pilot, a partnership, investment or research.") }}</p>
+    <div class="cards cards--3">
+      {% if c.whatsapp_number %}<a class="card card--link" href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener">{{ icon("whatsapp") }}<h3>WhatsApp</h3><p>{{ n(c.phone_display) }}</p></a>{% endif %}
+      {% if c.phone_tel %}<a class="card card--link" href="tel:{{ c.phone_tel }}">{{ icon("call") }}<h3>{{ t("ফোন", "Phone") }}</h3><p>{{ n(c.phone_display or c.phone_tel) }}</p></a>{% endif %}
+      {% if c.email %}<a class="card card--link" href="mailto:{{ c.email }}?subject=Rod%20Bondhu">{{ icon("mail") }}<h3>{{ t("ইমেইল", "Email") }}</h3><p>{{ c.email }}</p></a>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

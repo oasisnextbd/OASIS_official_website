@@ -22,6 +22,7 @@ backend/
   leads-sheet/           Google Apps Script: website orders → Google Sheet, email alerts
   connected-firebase/    Firebase: device API, remote close, alerts (+ DEVICE_API.md);
                          firestore.rules also guards the team dashboard
+rodbondhu/             Rod Bondhu solar dryer website + live app → /Rod_Bondhu/ (bn), /Rod_Bondhu/en/, /Rod_Bondhu/app/
 team-dashboard/        company admin site (orders, invoices, stock, promo codes, costs) → /team/
 docs/                  project documents (brand rules, developer response, setup guide)
 archive/               retired files kept for reference (not published)
