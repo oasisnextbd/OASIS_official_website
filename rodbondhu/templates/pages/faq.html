@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import page_head %}
+{% set page_title = t("প্রশ্নোত্তর | রোদ বন্ধু", "FAQ | Rod Bondhu") %}
+{% set page_desc = t("রোদ বন্ধু সোলার ড্রায়ার নিয়ে সাধারণ প্রশ্ন: কী শুকানো যায়, বিদ্যুৎ লাগে কি না, কতক্ষণ লাগে, কোথায় পাওয়া যাবে।", "Common questions about the Rod Bondhu solar dryer: what it can dry, whether it needs power, how long it takes and where to get one.") %}
+{% set faqs = [
+  (t("রোদ বন্ধুতে কী শুকানো যায়?", "What can Rod Bondhu dry?"),
+   t("আমরা আনারস ও কলা দিয়ে পরীক্ষা করেছি। এটি কাটা ফল শুকানোর জন্য তৈরি, যেমন আম, যা বাংলাদেশে মৌসুমে প্রচুর নষ্ট হয়। অন্য ফসল আমরা এখনো পরীক্ষা করিনি।", "We have tested pineapple and banana. It is designed for sliced fruit such as mango, which Bangladesh loses in large amounts every season. We have not tested other crops yet.")),
+  (t("বিদ্যুৎ সংযোগ লাগে?", "Does it need a power connection?"),
+   t("না। শুকানোর তাপ আসে রোদ থেকে। ফ্যান ও কন্ট্রোলার চলে নিজস্ব ছোট সোলার প্যানেল ও ব্যাটারিতে।", "No. The drying heat comes from the sun. The fan and controller run on their own small solar panel and battery.")),
+  (t("লোডশেডিং বা রাতে কী হয়?", "What happens in load shedding or at night?"),
+   t("গ্রিড না থাকায় লোডশেডিংয়ে কিছু বদলায় না। ব্যাটারি ফ্যান ও কন্ট্রোলার চালু রাখে, তাই বিদ্যুৎ-ড্রায়ারের মতো ফল আবার ভিজে যায় না। শুকানোর তাপ অবশ্য রোদ থেকেই আসে।", "Load shedding changes nothing, because there is no grid connection. The battery keeps the fan and controller running, so the fruit does not re-wet as it can in an electric dryer. The drying heat itself still comes from the sun.")),
+  (t("এক ব্যাচ শুকাতে কত সময় লাগে?", "How long does a batch take?"),
+   t("ফল, টুকরার পুরুত্ব ও আবহাওয়ার ওপর নির্ভর করে। আমাদের প্রথম আনারস ব্যাচে প্রায় ৪৭ ঘণ্টা শুকানোর পর আর্দ্রতা প্রায় ১০%-এ নেমেছিল, তখন খোলা রোদের ফল ছিল প্রায় ৪৫%। এই সময় কয়েক দিনের রোদের ঘণ্টা মিলিয়ে।", "It depends on the fruit, slice thickness and weather. In our first pineapple batch, the fruit was down to about 10% moisture after about 47 hours of drying, when the open-sun fruit was still near 45%. Those hours are spread over several sunny days.")),
+  (t("খোলা রোদে শুকালে সমস্যা কী?", "What is wrong with drying in the open sun?"),
+   t("খোলা রোদে ধুলা, পোকা ও পাখি ফলে পৌঁছায়, আর বৃষ্টি বা কুয়াশায় ফল আবার ভিজে যায়। রোদ বন্ধুর চেম্বার ঢাকা, ট্রে ফুড-গ্রেড স্টেইনলেস স্টিলের, আর আমাদের পরীক্ষায় ফল বেশি শুকিয়েছে এবং রং ও গঠন ভালো ছিল।", "In the open, dust, insects and birds reach the fruit, and rain or dew wets it again. Rod Bondhu’s chamber is enclosed, its trays are food-grade stainless steel, and in our tests the fruit dried further and kept better colour and texture.")),
+  (t("ইন্টারনেট বা স্মার্টফোন লাগে?", "Do I need internet or a smartphone?"),
+   t("না। ড্রায়ার নিজের সেন্সর দেখে নিজেই ফ্যান চালায়। অ্যাপটি ঐচ্ছিক: দূর থেকে দেখতে চাইলে ড্রায়ারকে একটি ফোনের হটস্পটে যুক্ত করতে হয়।", "No. The dryer reads its own sensors and runs the fan by itself. The app is optional: to watch from a distance, the dryer joins a phone hotspot.")),
+  (t("“পরম আর্দ্রতা” মানে কী?", "What does “absolute humidity” mean?"),
+   t("প্রতি কেজি শুকনো বাতাসে কত গ্রাম পানি আছে। গরম বাতাস বেশি পানি ধরে রাখে বলে শুধু আপেক্ষিক আর্দ্রতা (%) দেখলে ভুল হয়। রোদ বন্ধু ভেতর ও বাইরের পরম আর্দ্রতা তুলনা করে বোঝে কখন ভেজা বাতাস বের করার সময়।", "How many grams of water each kilogram of dry air holds. Warm air holds more water, so relative humidity (%) alone misleads. Rod Bondhu compares absolute humidity inside and outside to know when it is time to push humid air out.")),
+  (t("ফ্যান কি অ্যাপ থেকে চালানো যায়?", "Can I control the fan from the app?"),
+   t("হ্যাঁ, কন্ট্রোল পিন দিয়ে চালু, বন্ধ বা অটো করা যায়। ভেতরে ৬৫ °C ছাড়ালে সব মোডেই ফ্যান চালু হয়, ফল রক্ষার জন্য।", "Yes: on, off or auto, with a control PIN. If the chamber passes 65 °C, the fan comes on in every mode to protect the fruit.")),
+  (t("কোথায় পাওয়া যাবে? দাম কত?", "Where can I get one? What does it cost?"),
+   t("রোদ বন্ধু এখন প্রোটোটাইপ, তাই এখনো বিক্রি শুরু হয়নি এবং দাম ঠিক হয়নি। পাইলট, অংশীদারিত্ব বা বিনিয়োগে আগ্রহী হলে আমাদের সঙ্গে যোগাযোগ করুন।", "Rod Bondhu is a prototype, so it is not on sale and has no price yet. If you are interested in a pilot, partnership or investment, contact us.")),
+  (t("কারা তৈরি করেছে?", "Who made it?"),
+   t("বুয়েটের কেমিক্যাল ও মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগের তিনজন শিক্ষার্থী, OASIS-এর পণ্য হিসেবে।", "Three students from BUET’s Chemical and Mechanical Engineering departments, as an OASIS product.")),
+] %}
+{% block content %}
+{{ page_head(t("প্রশ্নোত্তর", "FAQ"), t("সাধারণ প্রশ্ন", "Common questions"), "") }}
+<section class="section">
+  <div class="wrap narrow">
+    <div class="faq">
+      {% for q, a in faqs %}
+      <details{% if loop.first %} open{% endif %}><summary>{{ q }}</summary><p>{{ a }}</p></details>
+      {% endfor %}
+    </div>
+    <p class="mt-3">{{ t("আরও প্রশ্ন?", "More questions?") }} <a href="{{ url('about') }}#contact">{{ t("আমাদের লিখুন", "Write to us") }}</a></p>
+  </div>
+</section>
+{% set ns = namespace(items=[]) %}
+{% for q, a in faqs %}{% set ns.items = ns.items + [{"@type": "Question", "name": q | striptags, "acceptedAnswer": {"@type": "Answer", "text": a | striptags}}] %}{% endfor %}
+<script type="application/ld+json">
+{{ {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": ns.items} | tojson }}
+</script>
+{% endblock %}

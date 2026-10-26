@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, ref %}
+{% set page_title = t("রোদ বন্ধু | স্মার্ট সোলার ড্রায়ার", "Rod Bondhu | Smart solar dryer for fruit") %}
+{% set page_desc = t("রোদ বন্ধু: সূর্যের তাপে ফল শুকানোর স্মার্ট ড্রায়ার। দুই সেন্সর দেখে ফ্যান নিজেই ভেজা বাতাস বের করে দেয়। বিদ্যুৎ বিল নেই, লোডশেডিংয়েও চলে। বুয়েটে পরীক্ষিত প্রোটোটাইপ।", "Rod Bondhu is a smart solar dryer for fruit. Two sensors tell its fan when to push out humid air. No electricity bill, keeps working in power cuts. A prototype tested at BUET.") %}
+{% block content %}
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="badge"><span class="dot"></span>{{ t("প্রোটোটাইপ · রিনিউয়েবল এনার্জি ফেস্ট ২০২৬", "Prototype · Renewable Energy Fest 2026") }}</p>
+      <h1>{{ t("রোদ বন্ধু", "Rod Bondhu") }}<span class="h1-sub">{{ t("ফলের জন্য স্মার্ট সোলার ড্রায়ার", "The smart solar dryer for fruit") }}</span></h1>
+      <p class="lead">{{ t("সূর্যের তাপে ফল শুকায়, আর ভেতরের ভেজা বাতাস নিজেই বের করে দেয়। বিদ্যুৎ বিল নেই, লোডশেডিংয়েও থামে না, ধুলা-পোকা থেকে ফল থাকে পরিষ্কার।", "It dries fruit with the sun’s heat and pushes out humid air by itself. No electricity bill, no stopping in power cuts, and the fruit stays clean of dust and insects.") }}</p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="{{ root }}app/">{{ icon("live") }}{{ t("ড্রায়ার লাইভ দেখুন", "Watch the dryer live") }}</a>
+        <a class="btn btn--secondary" href="{{ url('how-it-works') }}">{{ t("কীভাবে কাজ করে", "How it works") }}{{ icon("arrow") }}</a>
+      </div>
+      <ul class="hero-points">
+        <li>{{ icon("check") }}{{ t("ড্রায়ারে " ~ n("97.5–100%") ~ " পানি বের হয়েছে, খোলা রোদে " ~ n("90.6–96.2%"), n("97.5–100%") ~ " of the moisture removed in the dryer, against " ~ n("90.6–96.2%") ~ " in open sun") }}</li>
+        <li>{{ icon("check") }}{{ t("প্রতি ব্যাচ চালানোর খরচ " ~ n("0") ~ " টাকা", "Tk " ~ n("0") ~ " running cost per batch") }}</li>
+      </ul>
+    </div>
+    <figure class="hero-media">
+      <img src="{{ root }}assets/img/prototype-main.jpg" width="1200" height="880" alt="{{ t('রোদে ফল শুকাচ্ছে রোদ বন্ধু প্রোটোটাইপ: সোলার প্যানেল, স্বচ্ছ ঢাকনা ও ভেতরে ফলের টুকরা', 'The Rod Bondhu prototype drying fruit in the sun: solar panel, clear cover and fruit slices inside') }}">
+      <img class="hero-inset" src="{{ root }}assets/img/readout.jpg" width="600" height="327" alt="{{ t('প্রোটোটাইপের ডিসপ্লে: তাপমাত্রা ৪০°C, আর্দ্রতা ৩১%, ফ্যান বন্ধ', 'The prototype’s readout: 40 °C, 31% humidity, fan off') }}" loading="lazy">
+      <figcaption>{{ t("বুয়েটে রোদে ফল শুকাচ্ছে আমাদের প্রোটোটাইপ। চূড়ান্ত ইউনিটে অ্যালুমিনিয়াম ফ্রেম থাকবে।", "Our prototype drying fruit in the sun at BUET. The final unit will have an aluminium frame.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("সমস্যা", "The problem") }}</p>
+    <h2>{{ t("বাংলাদেশে অনেক ফল নষ্ট হয়, আর এখনকার ড্রায়ার ছোট খামারের উপযোগী নয়", "Bangladesh loses a lot of its fruit, and today’s dryers don’t suit small farms") }}</h2>
+    <div class="stats">
+      <div class="stat"><b>{{ t(n("27") ~ " লাখ টন", n("27") ~ " lakh t") }}</b><span>{{ t("বছরে আমের উৎপাদন", "of mango grown a year") }} {{ ref(1, url, n) }}</span></div>
+      <div class="stat stat--sun"><b>&gt;&frac14;</b><span>{{ t("ফসল তোলার পর বাজারে পৌঁছানোর আগেই নষ্ট হয়", "lost after harvest, before it reaches the market") }} {{ ref(1, url, n) }}</span></div>
+      <div class="stat"><b>{{ t("৳" ~ n("2,000–2,400"), "Tk " ~ n("2,000–2,400")) }}</b><span>{{ t("এক কেজি শুকনো আমের দাম", "for 1 kg of dried mango") }} {{ ref(1, url, n) }}</span></div>
+      <div class="stat"><b>{{ t("৳" ~ n("15.36–18.40"), "Tk " ~ n("15.36–18.40")) }}</b><span>{{ t("প্রতি ইউনিটে বিদ্যুৎ-ড্রায়ার চালানোর খরচ, আর লোডশেডিংয়ে তা থেমে যায়", "per unit to run an electric dryer, which stops during load shedding") }} {{ ref(2, url, n) }}</span></div>
+    </div>
+    <p class="mt-3">{{ t("খোলা রোদে শুকালে ফলে ধুলা ও পোকা পড়ে, বৃষ্টিতে ভিজে যায়। বিদ্যুৎ-ড্রায়ারে প্রতি ব্যাচে কয়েকশো টাকা খরচ, আর বড় প্ল্যান্টের দাম প্রায় এক কোটি টাকা। আমরা চেয়েছি এমন একটি ড্রায়ার, যা ছোট কৃষক কিনতে পারবেন, যা রোদে চলে, ফল পরিষ্কার রাখে আর ভেজা বাতাস নিজেই বের করে দেয়।", "Drying in the open sun lets in dust and insects, and rain soaks the fruit again. An electric dryer costs hundreds of taka per batch, and a farm-scale plant about Tk 1 crore. We wanted a dryer a small farmer can afford, that runs on sunlight, keeps the fruit clean and clears out humid air by itself.") }}</p>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap">
+    <p class="kicker">{{ t("কীভাবে কাজ করে", "How it works") }}</p>
+    <h2>{{ t("চার ধাপে, সারা দিন, নিজে নিজেই", "Four steps, all day, on its own") }}</h2>
+    <ol class="steps">
+      <li><span class="step-ic">{{ icon("sun") }}</span><h3>{{ t("রোদ তাপ দেয়", "The sun heats") }}</h3><p>{{ t("কালো সংগ্রাহক ও স্বচ্ছ ঢাকনা রোদের তাপ ধরে রাখে, ভেতরের বাতাস গরম হয়।", "A dark collector under a clear cover traps the sun’s heat and warms the air inside.") }}</p></li>
+      <li><span class="step-ic">{{ icon("drop") }}</span><h3>{{ t("দুই সেন্সর মাপে", "Two sensors measure") }}</h3><p>{{ t("একটি ভেতরে, একটি বাইরে। দুই জায়গার বাতাসে আসলে কত পানি আছে তা হিসাব করা হয়।", "One inside, one outside. The controller works out how much water the air in each place really holds.") }}</p></li>
+      <li><span class="step-ic">{{ icon("fan") }}</span><h3>{{ t("ফ্যান সিদ্ধান্ত নেয়", "The fan decides") }}</h3><p>{{ t("ভেতরে ভেজা বাতাস জমলে ফ্যান তা বের করে দেয়। আর্দ্রতা কমলে থেমে যায়, যাতে তাপ থাকে।", "When humid air builds up inside, the fan pushes it out. When it clears, the fan rests so the heat stays in.") }}</p></li>
+      <li><span class="step-ic">{{ icon("battery") }}</span><h3>{{ t("সৌরশক্তিতে চলে", "Solar keeps it going") }}</h3><p>{{ t("ছোট সোলার প্যানেল দিনে ব্যাটারি চার্জ করে। বিদ্যুৎ চলে গেলেও ফ্যান ও কন্ট্রোলার চলে।", "A small solar panel charges a battery by day. The fan and controller keep running when the grid goes off.") }}</p></li>
+    </ol>
+    <p><a class="link-arrow" href="{{ url('how-it-works') }}">{{ t("বিস্তারিত: নকশা, নিয়ন্ত্রণ ও CFD", "In detail: design, control and CFD") }}{{ icon("arrow") }}</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("তুলনা", "How it compares") }}</p>
+    <h2>{{ t("অন্য উপায়গুলোর সঙ্গে রোদ বন্ধু", "Rod Bondhu against the alternatives") }}</h2>
+    <div class="table-wrap">
+      <table class="compare">
+        <thead><tr><th scope="col"></th><th scope="col">{{ t("খোলা রোদ", "Open sun") }}</th><th scope="col">{{ t("বিদ্যুৎ-ক্যাবিনেট", "Electric cabinet") }}</th><th scope="col">{{ t("খামার-পর্যায়ের প্ল্যান্ট", "Farm-scale plant") }}</th><th scope="col" class="us">{{ t("রোদ বন্ধু", "Rod Bondhu") }}</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">{{ t("শক্তি", "Energy") }}</th><td>{{ t("রোদ", "Sun") }}</td><td>{{ t("গ্রিড বিদ্যুৎ", "Grid") }}</td><td>{{ t("গ্রিড / জ্বালানি", "Grid / fuel") }}</td><td class="us">{{ t("রোদ + ছোট সোলার প্যানেল", "Sun + small PV") }}</td></tr>
+          <tr><th scope="row">{{ t("প্রতি ব্যাচ খরচ", "Running cost per batch") }}</th><td>{{ t("বিনা খরচে", "Free") }}</td><td>{{ t("প্রায় ৳" ~ n("490–740") ~ "*", "≈ Tk " ~ n("490–740") ~ "*") }}</td><td>{{ t("বেশি", "High") }}</td><td class="us">{{ t("শূন্য", "Nil") }}</td></tr>
+          <tr><th scope="row">{{ t("পরিচ্ছন্নতা", "Hygiene") }}</th><td>{{ t("ধুলা, পোকা", "Dust, insects") }}</td><td>{{ t("ঢাকা", "Enclosed") }}</td><td>{{ t("ঢাকা", "Enclosed") }}</td><td class="us">{{ t("ঢাকা, SS 304 ট্রে", "Enclosed, SS 304 trays") }}</td></tr>
+          <tr><th scope="row">{{ t("আর্দ্রতা নিয়ন্ত্রণ", "Humidity control") }}</th><td>{{ t("নেই", "None") }}</td><td>{{ t("শুধু তাপমাত্রা", "Temperature only") }}</td><td>{{ t("স্বয়ংক্রিয়", "Automatic") }}</td><td class="us">{{ t("Δω সেন্সিং + স্মার্ট ফ্যান", "Δω sensing + smart fan") }}</td></tr>
+          <tr><th scope="row">{{ t("বিদ্যুৎ চলে গেলে", "In a power cut") }}</th><td>–</td><td>{{ t("ফ্যান থামে, ফল আবার ভেজে", "Fan stops, fruit re-wets") }}</td><td>{{ t("জেনারেটর লাগে", "Needs a generator") }}</td><td class="us">{{ t("ব্যাটারিতে ফ্যান চলে", "Battery keeps the fan on") }}</td></tr>
+          <tr><th scope="row">{{ t("স্থাপনের খরচ", "Setup cost") }}</th><td>{{ t("নেই", "None") }}</td><td>{{ t("মাঝারি", "Moderate") }}</td><td>{{ t("প্রায় ১ কোটি টাকা", "≈ Tk 1 crore") }} {{ ref(1, url, n) }}</td><td class="us">{{ t("কম", "Low") }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">* {{ t(n("2") ~ " কিলোওয়াটের ক্যাবিনেট " ~ n("16–20") ~ " ঘণ্টা (" ~ n("32–40") ~ " ইউনিট), প্রতি ইউনিট ৳" ~ n("15.36–18.40") ~ "।", "A 2 kW cabinet run for 16–20 h (32–40 kWh) at Tk 15.36–18.40 per kWh.") }} {{ ref(2, url, n) }} <a href="{{ url('sources') }}#running-cost">{{ t("হিসাব দেখুন", "See the working") }}</a></p>
+  </div>
+</section>
+
+<section class="section section--dark">
+  <div class="wrap">
+    <p class="kicker">{{ t("পরীক্ষার ফলাফল", "Test results") }}</p>
+    <h2>{{ t("বুয়েটে চারটি ব্যাচে পরীক্ষা করা", "Tested in four batches at BUET") }}</h2>
+    <div class="stats stats--3">
+      <div class="stat"><b>{{ n("97.5–100%") }}</b><span>{{ t("ড্রায়ারে পানি বের হয়েছে (খোলা রোদে " ~ n("90.6–96.2%") ~ ")", "moisture removed in the dryer (open sun: " ~ n("90.6–96.2%") ~ ")") }}</span></div>
+      <div class="stat"><b>R² &gt; {{ n("0.98") }}</b><span>{{ t("পেজ মডেল পরীক্ষার ডেটার সঙ্গে মিলেছে", "the Page drying model’s fit to the test data") }}</span></div>
+      <div class="stat"><b>{{ t(n("0.33") ~ " কেজি/ঘণ্টা", n("0.33") ~ " kg/h") }}</b><span>{{ t("CFD-তে সর্বোচ্চ স্থির শুকানোর হার", "maximum steady drying rate in the CFD model") }}</span></div>
+    </div>
+    <p>{{ t("আনারস ও কলা (১% সাইট্রিক অ্যাসিডে প্রি-ট্রিট করা) শুকিয়ে খোলা রোদে শুকানোর সঙ্গে তুলনা করা হয়েছে। ড্রায়ারের ফলের রং ও গঠন ভালো ছিল।", "We dried pineapple and banana (pre-treated with 1% citric acid) and compared them with open-sun drying. The fruit from the dryer kept better colour and texture.") }}</p>
+    <p><a class="link-arrow" href="{{ url('results') }}">{{ t("সব ফলাফল ও CFD", "All results and the CFD") }}{{ icon("arrow") }}</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">{{ t("লাইভ অ্যাপ", "Live app") }}</p>
+      <h2>{{ t("ফোনেই দেখুন ড্রায়ারের ভেতরে কী হচ্ছে", "See what is happening inside the dryer, on your phone") }}</h2>
+      <p>{{ t("রোদ বন্ধু অ্যাপ ড্রায়ারের তাপমাত্রা, আর্দ্রতা, ফ্যান চলছে কি না, কতক্ষণ শুকানো হলো আর বিদ্যুৎ-ড্রায়ারের তুলনায় কত টাকা বাঁচল, সব দেখায়, বাংলা ও ইংরেজিতে। অ্যাপ ছাড়াও ড্রায়ার নিজে নিজেই চলে।", "The Rod Bondhu app shows the dryer’s temperature, humidity, whether the fan is running, how long the batch has dried and how much it has saved against an electric dryer, in Bangla or English. The dryer runs on its own without the app.") }}</p>
+      <ul class="checks">
+        <li>{{ icon("check") }}{{ t("কোনো ইনস্টল লাগে না: ব্রাউজারে খুলুন", "Nothing to install: it opens in the browser") }}</li>
+        <li>{{ icon("check") }}{{ t("পিন দিয়ে ফ্যান চালু, বন্ধ বা অটো", "Fan on, off or auto, with a PIN") }}</li>
+        <li>{{ icon("check") }}{{ t("বেশি গরম ও সেন্সর বিকল হলে সতর্কতা", "Alerts for overheating and sensor faults") }}</li>
+      </ul>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="{{ root }}app/">{{ icon("live") }}{{ t("অ্যাপ খুলুন", "Open the app") }}</a>
+        <a class="btn btn--secondary" href="{{ url('live') }}">{{ t("অ্যাপ কীভাবে কাজ করে", "How the app works") }}</a>
+      </div>
+    </div>
+    <figure class="phone">
+      <img src="{{ root }}assets/img/app-{{ lang }}.jpg" width="780" height="1500" loading="lazy" alt="{{ t('রোদ বন্ধু অ্যাপের হোম স্ক্রিন, ডেমো মোডে', 'The Rod Bondhu app home screen, in demo mode') }}">
+      <figcaption class="small muted">{{ t("ছবিটি অ্যাপের ডেমো মোড থেকে নেওয়া।", "Screenshot taken in the app’s demo mode.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap">
+    <p class="kicker">{{ t("কাদের জন্য", "Who it is for") }}</p>
+    <h2>{{ t("যেখানে মৌসুমে ফল বেশি, আর বিদ্যুৎ অনিশ্চিত", "Wherever there is surplus fruit at harvest and the power is unreliable") }}</h2>
+    <div class="cards cards--4">
+      <div class="card">{{ icon("leaf") }}<h3>{{ t("ছোট কৃষক", "Smallholder farmers") }}</h3><p>{{ t("মৌসুমের বাড়তি ফল নষ্ট না করে শুকিয়ে বেশি দামে বিক্রি।", "Dry the harvest surplus instead of losing it, and sell it for more.") }}</p></div>
+      <div class="card">{{ icon("users") }}<h3>{{ t("কৃষক সমবায়", "Farmer cooperatives") }}</h3><p>{{ t("কয়েকটি ইউনিট একসঙ্গে চালিয়ে বড় পরিমাণে শুকানো।", "Run several units together to dry larger amounts.") }}</p></div>
+      <div class="card">{{ icon("factory") }}<h3>{{ t("কৃষিপণ্য প্রক্রিয়াকারী", "Agro-processors") }}</h3><p>{{ t("বিদ্যুৎ বিল ছাড়াই পরিষ্কার, একই মানের শুকনো ফল।", "Clean, consistent dried fruit without an electricity bill.") }}</p></div>
+      <div class="card">{{ icon("plug-off") }}<h3>{{ t("গ্রিডের বাইরের এলাকা", "Off-grid areas") }}</h3><p>{{ t("যেখানে বিদ্যুৎ নেই বা প্রায়ই যায়, সেখানেও চলে।", "Works where there is no grid, or where it often goes off.") }}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("কোথায় আছি", "Where we are") }}</p>
+    <h2>{{ t("প্রোটোটাইপ তৈরি ও পরীক্ষিত, এখন চূড়ান্ত ইউনিটের পথে", "Prototype built and tested, now heading for the final unit") }}</h2>
+    <ol class="timeline">
+      {% for s in site.status_timeline %}
+      <li class="tl-{{ s.state }}"><span class="tl-dot" aria-hidden="true"></span><span class="tl-state">{{ {"done": t("সম্পন্ন", "Done"), "current": t("এখন", "Now"), "next": t("পরবর্তী", "Next")}[s.state] }}</span> {{ t(s.bn, s.en) }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+{% include "partials/cta.html" %}
+{% endblock %}

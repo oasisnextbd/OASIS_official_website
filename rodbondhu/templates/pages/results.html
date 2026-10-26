@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, page_head, ref %}
+{% set page_title = t("পরীক্ষার ফলাফল | রোদ বন্ধু", "Test results | Rod Bondhu") %}
+{% set page_desc = t("বুয়েটে আনারস ও কলার চারটি শুকানোর পরীক্ষা এবং ANSYS Fluent CFD সিমুলেশনের ফলাফল।", "Results from four drying tests with pineapple and banana at BUET, and from the ANSYS Fluent CFD simulation.") %}
+{% block content %}
+{{ page_head(t("ফলাফল", "Results"), t("পরীক্ষায় যা পেয়েছি", "What our tests showed"), t("আমরা দুইভাবে রোদ বন্ধু যাচাই করেছি: আসল ফল শুকিয়ে খোলা রোদের সঙ্গে তুলনা করে, আর কম্পিউটারে বাতাস ও তাপের প্রবাহ সিমুলেট করে।", "We checked Rod Bondhu two ways: by drying real fruit next to open-sun drying, and by simulating the air and heat flow on a computer.")) }}
+
+<section class="section">
+  <div class="wrap">
+    <div class="stats stats--3">
+      <div class="stat stat--sun"><b>{{ n("97.5–100%") }}</b><span>{{ t("ড্রায়ারে পানি বের হয়েছে", "moisture removed in the dryer") }}</span></div>
+      <div class="stat"><b>{{ n("90.6–96.2%") }}</b><span>{{ t("একই সময়ে খোলা রোদে", "in open sun, over the same tests") }}</span></div>
+      <div class="stat"><b>R² &gt; {{ n("0.98") }}</b><span>{{ t("পেজ মডেলের সঙ্গে মিল", "Page model fit") }} {{ ref(3, url, n) }}</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="wrap split split--top">
+    <div>
+      <p class="kicker">{{ t("শুকানোর পরীক্ষা", "Drying tests") }}</p>
+      <h2>{{ t("আনারস ও কলার চারটি ব্যাচ", "Four batches of pineapple and banana") }}</h2>
+      <p>{{ t("বুয়েটে আমরা আনারস ও কলার চারটি ব্যাচ শুকিয়েছি। শুকানোর আগে ফল ১% সাইট্রিক অ্যাসিডে প্রি-ট্রিট করা হয়েছিল। ফলাফল খোলা রোদে শুকানোর সঙ্গে তুলনা করা হয়েছে।", "At BUET we dried four batches of pineapple and banana, pre-treated with 1% citric acid, and compared them with open-sun drying.") }}</p>
+      <ul class="checks">
+        <li>{{ icon("check") }}{{ t("ড্রায়ারে " ~ n("97.5–100%") ~ " পানি বের হয়েছে, খোলা রোদে " ~ n("90.6–96.2%") ~ "।", n("97.5–100%") ~ " of the moisture was removed in the dryer, against " ~ n("90.6–96.2%") ~ " in open sun.") }}</li>
+        <li>{{ icon("check") }}{{ t("পেজ মডেল, MR = exp(−ktⁿ), ডেটার সঙ্গে R² > " ~ n("0.98") ~ " মিলেছে।", "The Page model, MR = exp(−ktⁿ), fitted the data with R² > " ~ n("0.98") ~ ".") }} {{ ref(3, url, n) }}</li>
+        <li>{{ icon("check") }}{{ t("ড্রায়ারে শুকানো ফলের রং ও গঠন ভালো ছিল।", "The fruit from the dryer kept better colour and texture.") }}</li>
+      </ul>
+      <p>{{ t("প্রথম ব্যাচে (আনারস) প্রায় " ~ n("47") ~ " ঘণ্টা শুকানোর পর ড্রায়ারের ফলের আর্দ্রতা প্রায় " ~ n("10%") ~ " নেমেছিল, তখন খোলা রোদের ফল ছিল প্রায় " ~ n("45%") ~ "। খোলা রোদের ফল প্রায় " ~ n("68") ~ " ঘণ্টায়ও প্রায় " ~ n("20%") ~ "-এ ছিল।", "In batch 1 (pineapple), after about " ~ n("47") ~ " hours of drying the fruit in the dryer was down to about " ~ n("10%") ~ " moisture, while the open-sun fruit was still near " ~ n("45%") ~ ". The open-sun fruit was still around " ~ n("20%") ~ " at about " ~ n("68") ~ " hours.") }}</p>
+      <p class="small muted">{{ t("শুকানোর সময় মানে রোদে শুকানোর মোট ঘণ্টা, কয়েক দিন মিলিয়ে।", "Drying time counts the hours of drying, spread over several days.") }}</p>
+    </div>
+    <figure>
+      <img class="rounded" src="{{ root }}assets/img/drying-curve.jpg" width="1200" height="742" loading="lazy" alt="{{ t('প্রথম ব্যাচ আনারস: শুকানোর সময়ের সঙ্গে আর্দ্রতা। কমলা বিন্দু ড্রায়ারের ভেতরে, নীল বিন্দু খোলা রোদে।', 'Batch 1, pineapple: moisture content against drying time. Orange points inside the dryer, blue points in open sun.') }}">
+      <figcaption class="small muted">{{ t("প্রথম ব্যাচ (আনারস): শুকানোর সময়ের সঙ্গে আর্দ্রতা (%)। কমলা: ড্রায়ারের ভেতরে; নীল: খোলা রোদে।", "Batch 1 (pineapple): moisture content (%) against drying time. Orange: inside the dryer; blue: open sun.") }}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="kicker">{{ t("CFD সিমুলেশন (ANSYS Fluent)", "CFD simulation (ANSYS Fluent)") }}</p>
+    <h2>{{ t("রোদের তাপ কোথায় যায়", "Where the sun’s heat goes") }}</h2>
+    <p>{{ t("ফ্যান পুরো গতিতে (−" ~ n("15") ~ " প্যাসকেল) এবং সর্বোচ্চ স্থির শুকানোর হার (" ~ n("0.33") ~ " কেজি/ঘণ্টা) ধরে একটি স্থির অবস্থার সিমুলেশন চালানো হয়েছে।", "A steady-state run with the fan at full speed (−" ~ n("15") ~ " Pa) and evaporation set to the maximum steady drying rate, " ~ n("0.33") ~ " kg/h.") }}</p>
+    <div class="energy" role="img" aria-label="{{ t('শোষিত ৫৪৫.৭ ওয়াটের ৪০.৬% পানি বাষ্প করে, ৫৯.৪% বাতাস গরম করে বা দেয়াল দিয়ে বের হয়', 'Of 545.7 W absorbed, 40.6% evaporates water and 59.4% warms the air or leaves through the walls') }}">
+      <div class="energy-bar"><span class="e1" style="width:40.6%">{{ n("40.6%") }}</span><span class="e2" style="width:59.4%">{{ n("59.4%") }}</span></div>
+      <div class="energy-legend"><span><i class="e1"></i>{{ t("পানি বাষ্প করে (" ~ n("221.5") ~ " ওয়াট)", "evaporates water (" ~ n("221.5") ~ " W)") }}</span><span><i class="e2"></i>{{ t("বাতাস গরম করে বা দেয়াল দিয়ে বের হয়", "warms the air or leaves through the walls") }}</span><span>{{ t("মোট শোষিত: " ~ n("545.7") ~ " ওয়াট", "Total absorbed: " ~ n("545.7") ~ " W") }}</span></div>
+    </div>
+    <div class="cards cards--4 mt-3">
+      <div class="card card--num"><b>{{ n("299–346") }} K</b><span>{{ t("তাপমাত্রার পরিসর (" ~ n("26–73") ~ " °C)", "temperature range (" ~ n("26–73") ~ " °C)") }}</span></div>
+      <div class="card card--num"><b>{{ n("0–4.4") }} {{ t("মি/সে.", "m/s") }}</b><span>{{ t("বাতাসের বেগ", "air velocity") }}</span></div>
+      <div class="card card--num"><b>{{ n("0.047") }} {{ t("কেজি/সে.", "kg/s") }}</b><span>{{ t("চেম্বার দিয়ে বাতাসের প্রবাহ", "air flow through the chamber") }}</span></div>
+      <div class="card card--num"><b>{{ n("0.010–0.0135") }}</b><span>{{ t("জলীয় বাষ্পের ভর-ভগ্নাংশ", "water vapour mass fraction") }}</span></div>
+    </div>
+    <figure class="mt-3">
+      <img class="rounded" src="{{ root }}assets/img/cfd.jpg" width="1200" height="809" loading="lazy" alt="{{ t('CFD কনট্যুর: (a) ঢাকনার তাপমাত্রা, (b) বাতাসের তাপমাত্রা, (c) বাতাসের বেগ, (d) জলীয় বাষ্প', 'CFD contours: (a) cover temperature, (b) air temperature, (c) air velocity, (d) water vapour') }}">
+      <figcaption class="small muted">{{ t("(a) ঢাকনার তাপমাত্রা, (b) বাতাসের তাপমাত্রা, (c) বাতাসের বেগ, (d) জলীয় বাষ্প।", "(a) cover temperature, (b) air temperature, (c) air velocity, (d) water vapour.") }}</figcaption>
+    </figure>
+    <p class="mt-3"><a class="link-arrow" href="{{ url('sources') }}#cfd-check">{{ t("সংখ্যাগুলো কীভাবে একে অপরের সঙ্গে মেলে", "How these numbers check against each other") }}{{ icon("arrow") }}</a></p>
+  </div>
+</section>
+
+{% include "partials/cta.html" %}
+{% endblock %}

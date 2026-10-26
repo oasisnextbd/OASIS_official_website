@@ -1,0 +1,33 @@
+{% from "partials/macros.html" import icon %}
+{% set nav = [
+  ("", t("হোম", "Home")),
+  ("how-it-works", t("কীভাবে কাজ করে", "How it works")),
+  ("results", t("ফলাফল", "Results")),
+  ("live", t("লাইভ অ্যাপ", "Live app")),
+  ("sources", t("তথ্যসূত্র", "Sources")),
+  ("faq", t("প্রশ্নোত্তর", "FAQ")),
+  ("about", t("আমাদের কথা", "About")),
+] %}
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="{{ url('') }}" aria-label="{{ t('রোদ বন্ধু হোম', 'Rod Bondhu home') }}">
+      {% include "partials/logo.html" %}
+      <span class="logo-text"><b>{{ t("রোদ বন্ধু", "Rod Bondhu") }}</b><small>by OASIS</small></span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="{{ t('প্রধান মেনু', 'Main menu') }}">
+      <ul>
+        {% for s, label in nav %}
+        <li><a href="{{ url(s) }}"{% if slug == s %} aria-current="page"{% endif %}>{{ label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="{{ t('ভাষা', 'Language') }}">
+        <a href="{{ url(slug, 'bn') }}?lang=bn" hreflang="bn" lang="bn" data-lang-switch="bn" aria-current="{{ 'true' if lang == 'bn' else 'false' }}">বাংলা</a>
+        <a href="{{ url(slug, 'en') }}" hreflang="en" lang="en" data-lang-switch="en" aria-current="{{ 'true' if lang == 'en' else 'false' }}">EN</a>
+      </div>
+      <a class="btn btn--primary btn--sm hide-sm" href="{{ root }}app/">{{ icon("live") }}{{ t("লাইভ দেখুন", "See it live") }}</a>
+      <button class="icon-btn menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="{{ t('মেনু', 'Menu') }}">{{ icon("menu") }}</button>
+    </div>
+  </div>
+</header>

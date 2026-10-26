@@ -1,0 +1,14 @@
+{% from "partials/macros.html" import icon %}
+{% set c = site.contact %}
+<section class="cta-band">
+  <div class="wrap">
+    <div>
+      <h2>{{ t("পাইলট, অংশীদারিত্ব বা বিনিয়োগে আগ্রহী?", "Interested in a pilot, partnership or investment?") }}</h2>
+      <p>{{ t("রোদ বন্ধু এখন প্রোটোটাইপ পর্যায়ে, তাই এখনো বিক্রি শুরু হয়নি। কৃষক সংগঠন, এনজিও, বিনিয়োগকারী বা গবেষক হলে আমাদের সঙ্গে কথা বলুন।", "Rod Bondhu is a prototype and is not on sale yet. If you are a farmer group, NGO, investor or researcher, talk to us.") }}</p>
+    </div>
+    <div class="btn-row">
+      {% if c.whatsapp_number %}<a class="btn btn--sun" href="https://wa.me/{{ c.whatsapp_number }}" rel="noopener">{{ icon("whatsapp") }}WhatsApp</a>{% endif %}
+      {% if c.email %}<a class="btn btn--ghost-light" href="mailto:{{ c.email }}?subject=Rod%20Bondhu">{{ icon("mail") }}{{ t("ইমেইল", "Email") }}</a>{% endif %}
+    </div>
+  </div>
+</section>
