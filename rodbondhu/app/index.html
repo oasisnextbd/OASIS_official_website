@@ -83,6 +83,7 @@ dt{color:var(--muted)}dd{margin:0;font-variant-numeric:tabular-nums;font-weight:
 .seg button{font-weight:600;border:0;border-radius:9px;padding:11px 6px;background:transparent;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.18)}
 .hint{color:var(--muted);font-size:.86rem;margin:10px 0 0}
+.upd{color:var(--muted);font-size:.8rem;margin:8px 0 0}
 .leg{display:flex;gap:14px;font-size:.82rem;color:var(--muted);margin:-4px 0 6px;flex-wrap:wrap}
 .leg i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
 .leg i.box{height:10px;background:var(--shade);border:1px solid var(--leaf)}
@@ -136,6 +137,7 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
       <path d="M12 10.2C11.6 6 12.6 2.6 15.2 2.9c2.4.3 2 4.4-3.2 7.3z" transform="rotate(120 12 12)"/>
       <path d="M12 10.2C11.6 6 12.6 2.6 15.2 2.9c2.4.3 2 4.4-3.2 7.3z" transform="rotate(240 12 12)"/>
       <circle cx="12" cy="12" r="2.2"/></svg><span id="fanTxt">--</span></span><span class="mode" id="mode"></span></div>
+    <p class="upd" id="upd" aria-live="off"></p>
   </section>
 
   <section class="card" aria-live="polite">
@@ -150,10 +152,10 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
     <div class="side"><h2 data-t="inside"></h2>
       <div class="temp"><span id="tin">--</span><small> &deg;C</small></div>
       <dl><div><dt data-t="hum"></dt><dd id="rhin">--</dd></div><div><dt data-t="water"></dt><dd id="win">--</dd></div></dl></div>
-    <div class="side out"><h2 data-t="outside"></h2>
+    <div class="side out"><h2 id="outH" data-t="outside"></h2>
       <div class="temp"><span id="tout">--</span><small> &deg;C</small></div>
       <dl><div><dt data-t="hum"></dt><dd id="rhout">--</dd></div><div><dt data-t="water"></dt><dd id="wout">--</dd></div></dl></div>
-  </div></section>
+  </div><p class="hint" id="outNote" data-t="outNote" hidden></p></section>
 
   <div class="stats" style="margin-bottom:12px">
     <div class="stat"><b id="sess">--</b><small data-t="sDry"></small></div>
@@ -194,6 +196,7 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
     <label class="f"><span data-t="kgL"></span><br><input type="number" id="kg" min="0" step="0.1" inputmode="decimal" placeholder="2.0"></label>
   </section>
   <section class="card"><h2 data-t="batchH"></h2>
+    <p class="hint" id="bStart" style="margin:-4px 0 10px"></p>
     <div class="stats">
       <div class="stat"><b id="bSess">--</b><small data-t="sDry"></small></div>
       <div class="stat"><b id="bFan">--</b><small data-t="sFanTime"></small></div>
@@ -219,6 +222,7 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
     <ul class="res">
       <li data-t="r1"></li><li data-t="r2"></li><li data-t="r3"></li><li data-t="r4"></li><li data-t="r5"></li>
     </ul></section>
+  <section class="card" id="diag" hidden><h2 data-t="diagH"></h2><dl id="diagList"></dl></section>
   <section class="card"><h2 data-t="srcH"></h2>
     <div class="seg" style="grid-template-columns:1fr 1fr" role="group">
       <button id="srcLive" aria-pressed="true" data-t="srcLive"></button>
@@ -249,7 +253,8 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:14px}
 <script>
 // ===================== Settings =====================
 // TOPIC_BASE must match the ESP32 code exactly.
-const BROKER='wss://broker.hivemq.com:8884/mqtt';
+// ?broker= is accepted only for a broker on this computer (testing); the public page always uses HiveMQ.
+const BROKER=(()=>{const b=new URLSearchParams(location.search).get('broker');return b&&/^wss?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(b)?b:'wss://broker.hivemq.com:8884/mqtt'})();
 const TOPIC_BASE='oasisnextbd/solar-dryer/x7k2';
 const AIRFLOW_KGS=0.047;            // CFD, fan at full speed (poster section 8)
 const ELEC_KW=2, TARIFF=[15.36,18.40]; // poster Table 1
@@ -265,9 +270,9 @@ en:{name:'Rod Bondhu',sub:'Smart solar dryer',tHome:'Home',tCharts:'Charts',tBat
  ctlH:'Fan control',auto:'Auto',on:'On',off:'Off',
  ctlHint:'Auto decides from the humidity readings. On and Off override it and need the control PIN. Overheat protection stays on in every mode.',
  chT:'Temperature (°C)',legIn:'Inside',legOut:'Outside',chW:'Extra water in the dryer air (g/kg)',legDw:'Difference',legFan:'Fan running',
- chH:'Relative humidity (%)',chartNote:'Charts fill in while this page is open.',
+ chH:'Relative humidity (%)',chartNote:'Charts show the whole batch: earlier hours come from the dryer as 1-minute averages, then every new reading is added.',
  fruitL:'What are you drying?',kgL:'Fresh weight on the trays (kg)',batchH:'This batch',
- savedNote:'Savings compare a 2 kW electric cabinet dryer running the same hours at Tk 15.36–18.40 per unit. Water pushed out uses the fan airflow from our CFD model, 0.047 kg/s.',
+ savedNote:'Savings compare a 2 kW electric cabinet dryer running the same hours at Tk 15.36–18.40 per unit. The dryer counts the water pushed out using the fan airflow from our CFD model, 0.047 kg/s.',
  csv:'Download data (CSV)',reset:'Start new batch',
  howH:'How Rod Bondhu decides',
  how1:'One sensor sits inside the dryer and one in the outside air. Relative humidity alone is misleading because warm air holds more water, so both readings are turned into absolute humidity, the grams of water in each kilogram of air.',
@@ -283,14 +288,20 @@ en:{name:'Rod Bondhu',sub:'Smart solar dryer',tHome:'Home',tCharts:'Charts',tBat
  simH:'Show a safety feature',simHot:'Overheat',simFault:'Sensor fault',simNorm:'Back to normal',
  demoBar:'DEMO · simulated data at 60× speed, not the live dryer. ',goLive:'Go live',showDemo:'Show the demo instead',
  dept:'Departments of Chemical and Mechanical Engineering, BUET',website:'Rod Bondhu website',
+ outsideEst:'Outside air (set value)',outNote:'The outside sensor is not reading, so the dryer is using set weather values for the outside air.',
+ upd:'Updated {a}',started:'Batch started at {c}',
+ cWrong:'Wrong PIN. Nothing was changed. Try again.',cLocked:'Too many wrong PINs. Control is locked for a minute.',
+ cNoCrypto:'This browser cannot send secure commands. Open the page over https.',
+ diagH:'Dryer status',dFw:'Firmware',dSig:'Wi-Fi signal',dUp:'Running for',dOut:'Outside sensor',dHist:'History on the dryer',
+ sigStrong:'Strong',sigGood:'Good',sigWeak:'Weak',outOk:'Reading',outSet:'Not reading, using set values',histMin:'{n} min',
  pLive:'Live',pConn:'Connecting',pOff:'Dryer offline',pNo:'No connection',pWait:'Waiting',pDemo:'Demo',
  nNo:'Cannot reach the data server. Check this phone’s internet connection.',
  nOff:'The dryer is not sending data right now. Showing its last reading from {a}.',
  nWait:'Waiting for the dryer. It needs to be switched on and connected to the internet.',
  nLib:'The page could not load its connection library. Check the internet and reload.',
  hFault:'Check a sensor',hHot:'Cooling the chamber',hMan:'Manual control',hFanOn:'Pushing out moist air',hFanOff:'Keeping the heat in',hWait:'Starting up',
- sFault:'A sensor is not responding, so the fan stays on to keep moist air moving out. Check the sensor wires.',
- sHot:'The chamber is above {t} °C. The fan is on to cool it and protect the fruit.',
+ sFault:'The chamber sensor is not responding, so the fan stays on to keep moist air moving out. Check its wires.',
+ sHot:'The chamber went above {t} °C. The fan is cooling it to protect the fruit until it is back below 62 °C.',
  sHeldOn:'The fan is held on from the app.',sHeldOff:'The fan is held off from the app.',sWaitR:'Waiting for the first reading.',
  sHighOn:'Water from the fruit is building up in the air. The fan is pushing it out.',
  sHighOff:'Moist air is building up. The fan will switch on within a minute.',
@@ -314,7 +325,7 @@ bn:{name:'রোদ বন্ধু',sub:'স্মার্ট সোলার 
  ctlH:'ফ্যান নিয়ন্ত্রণ',auto:'অটো',on:'চালু',off:'বন্ধ',
  ctlHint:'অটো মোডে আর্দ্রতা দেখে ড্রায়ার নিজেই সিদ্ধান্ত নেয়। চালু বা বন্ধ করতে কন্ট্রোল পিন লাগবে। বেশি গরম হলে সুরক্ষা সব মোডেই চালু থাকে।',
  chT:'তাপমাত্রা (°C)',legIn:'ভেতরে',legOut:'বাইরে',chW:'ভেতরের বাতাসে বাড়তি পানি (গ্রাম/কেজি)',legDw:'পার্থক্য',legFan:'ফ্যান চলছে',
- chH:'আপেক্ষিক আর্দ্রতা (%)',chartNote:'এই পেজ খোলা থাকলে চার্ট ভরে উঠবে।',
+ chH:'আপেক্ষিক আর্দ্রতা (%)',chartNote:'চার্টে পুরো ব্যাচ দেখা যায়: আগের সময় আসে ড্রায়ার থেকে ১ মিনিটের গড় হিসেবে, তারপর প্রতিটি নতুন রিডিং যোগ হয়।',
  fruitL:'কী শুকাচ্ছেন?',kgL:'ট্রেতে তাজা ফলের ওজন (কেজি)',batchH:'এই ব্যাচ',
  savedNote:'সাশ্রয়ের হিসাব: একই সময় ২ কিলোওয়াটের বিদ্যুৎ-ড্রায়ার চালালে প্রতি ইউনিট ১৫.৩৬–১৮.৪০ টাকা খরচ হতো। বের হওয়া পানির হিসাবে আমাদের CFD মডেলের ফ্যানের বাতাস প্রবাহ, ০.০৪৭ কেজি/সেকেন্ড, ধরা হয়েছে।',
  csv:'ডেটা ডাউনলোড (CSV)',reset:'নতুন ব্যাচ শুরু',
@@ -332,14 +343,20 @@ bn:{name:'রোদ বন্ধু',sub:'স্মার্ট সোলার 
  simH:'সুরক্ষা ব্যবস্থা দেখান',simHot:'বেশি গরম',simFault:'সেন্সর বিকল',simNorm:'স্বাভাবিক',
  demoBar:'ডেমো · ৬০ গুণ দ্রুত সিমুলেশন, আসল ড্রায়ারের ডেটা নয়। ',goLive:'লাইভে যান',showDemo:'বদলে ডেমো দেখান',
  dept:'কেমিক্যাল ও মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগ, বুয়েট',website:'রোদ বন্ধু ওয়েবসাইট',
+ outsideEst:'বাইরের বাতাস (নির্ধারিত মান)',outNote:'বাইরের সেন্সর রিডিং দিচ্ছে না, তাই ড্রায়ার বাইরের বাতাসের জন্য নির্ধারিত আবহাওয়ার মান ব্যবহার করছে।',
+ upd:'হালনাগাদ {a}',started:'ব্যাচ শুরু {c}-এ',
+ cWrong:'পিন ভুল। কিছু বদলানো হয়নি। আবার চেষ্টা করুন।',cLocked:'অনেকবার ভুল পিন। এক মিনিটের জন্য নিয়ন্ত্রণ বন্ধ।',
+ cNoCrypto:'এই ব্রাউজার থেকে নিরাপদ কমান্ড পাঠানো যাচ্ছে না। পেজটি https দিয়ে খুলুন।',
+ diagH:'ড্রায়ারের অবস্থা',dFw:'ফার্মওয়্যার',dSig:'ওয়াই-ফাই সিগন্যাল',dUp:'চালু আছে',dOut:'বাইরের সেন্সর',dHist:'ড্রায়ারে সংরক্ষিত ইতিহাস',
+ sigStrong:'শক্তিশালী',sigGood:'ভালো',sigWeak:'দুর্বল',outOk:'রিডিং দিচ্ছে',outSet:'রিডিং নেই, নির্ধারিত মান',histMin:'{n} মিনিট',
  pLive:'লাইভ',pConn:'সংযোগ হচ্ছে',pOff:'ড্রায়ার অফলাইন',pNo:'সংযোগ নেই',pWait:'অপেক্ষা',pDemo:'ডেমো',
  nNo:'ডেটা সার্ভারে পৌঁছানো যাচ্ছে না। ফোনের ইন্টারনেট সংযোগ দেখুন।',
  nOff:'ড্রায়ার এখন ডেটা পাঠাচ্ছে না। শেষ রিডিং {a}।',
  nWait:'ড্রায়ারের অপেক্ষায়। এটি চালু ও ইন্টারনেটে যুক্ত থাকতে হবে।',
  nLib:'পেজটি সংযোগের লাইব্রেরি লোড করতে পারেনি। ইন্টারনেট দেখে আবার লোড করুন।',
  hFault:'সেন্সর পরীক্ষা করুন',hHot:'চেম্বার ঠান্ডা করা হচ্ছে',hMan:'হাতে নিয়ন্ত্রণ',hFanOn:'ভেজা বাতাস বের করা হচ্ছে',hFanOff:'ভেতরের তাপ ধরে রাখা হচ্ছে',hWait:'চালু হচ্ছে',
- sFault:'একটি সেন্সর সাড়া দিচ্ছে না, তাই ভেজা বাতাস বের করতে ফ্যান চালু রাখা হয়েছে। সেন্সরের তার দেখুন।',
- sHot:'ভেতরের তাপমাত্রা {t} °C ছাড়িয়েছে। ফল রক্ষায় ফ্যান চালিয়ে ঠান্ডা করা হচ্ছে।',
+ sFault:'ভেতরের সেন্সর সাড়া দিচ্ছে না, তাই ভেজা বাতাস বের করতে ফ্যান চালু রাখা হয়েছে। সেন্সরের তার দেখুন।',
+ sHot:'ভেতরের তাপমাত্রা {t} °C ছাড়িয়েছিল। ৬২ °C-এর নিচে না নামা পর্যন্ত ফল রক্ষায় ফ্যান চালিয়ে ঠান্ডা করা হচ্ছে।',
  sHeldOn:'অ্যাপ থেকে ফ্যান চালু রাখা হয়েছে।',sHeldOff:'অ্যাপ থেকে ফ্যান বন্ধ রাখা হয়েছে।',sWaitR:'প্রথম রিডিংয়ের অপেক্ষায়।',
  sHighOn:'ফল থেকে বের হওয়া পানি বাতাসে জমছে। ফ্যান তা বাইরে বের করে দিচ্ছে।',
  sHighOff:'ভেতরে ভেজা বাতাস জমছে। এক মিনিটের মধ্যে ফ্যান চালু হবে।',
@@ -380,17 +397,32 @@ const psat=T=>0.61121*Math.exp((18.678-T/234.5)*(T/(257.14+T)));
 const omega=(T,RH)=>{const pv=RH/100*psat(T);return 1000*0.622*pv/(P_KPA-pv)};
 
 // ===================== History + batch totals =====================
-const H={t:[],tin:[],tout:[],rhin:[],rhout:[],dw:[],fan:[]};const MAXP=1500;
+const H={t:[],tin:[],tout:[],rhin:[],rhout:[],dw:[],fan:[]};const MAXP=3000;
 function clearH(){for(const k in H)H[k].length=0}
 function push(d){const n=H.t.length;if(n&&d.sess<=H.t[n-1])return;
+ if(liveStart==null)liveStart=d.sess;
  H.t.push(d.sess);H.tin.push(d.tin);H.tout.push(d.tout);H.rhin.push(d.rhin);H.rhout.push(d.rhout);H.dw.push(d.dw);H.fan.push(d.fan);
  if(H.t.length>MAXP)for(const k in H)H[k].shift()}
-let last=null,lastN=-1,lastSess=null,waterG=0,src='live';
+let last=null,lastN=-1,lastSess=null,waterG=0,src='live',liveStart=null;
+
+// Batch history from the dryer (1-minute averages: [t,Tin,Tout,RHin,RHout,dw,fan share]).
+// It fills the time before this page opened; live readings (every 5 s) are kept where both exist.
+function mergeHist(p){
+ if(!p||!p.length)return;
+ const rows=[];for(let i=0;i<H.t.length;i++)rows.push([H.t[i],H.tin[i],H.tout[i],H.rhin[i],H.rhout[i],H.dw[i],H.fan[i]]);
+ const have=new Set(rows.map(r=>Math.round(r[0]))),cut=liveStart==null?Infinity:liveStart-20;
+ for(const q of p)if(Array.isArray(q)&&q.length>=7&&q[0]<cut&&!have.has(Math.round(q[0])))rows.push(q);
+ rows.sort((a,b)=>a[0]-b[0]);
+ for(const k in H)H[k].length=0;
+ for(const r of rows.slice(-MAXP)){H.t.push(r[0]);H.tin.push(r[1]);H.tout.push(r[2]);H.rhin.push(r[3]);H.rhout.push(r[4]);H.dw.push(r[5]);H.fan.push(r[6])}
+ draw()}
 
 function ingest(d){
- if(lastSess!=null&&d.sess<lastSess){clearH();waterG=0;lastN=-1}
- // water pushed out by the fan: airflow x extra water x time
- if(lastSess!=null&&d.sess>lastSess&&d.fan&&d.dw>0)waterG+=AIRFLOW_KGS*d.dw*Math.min(d.sess-lastSess,src==='demo'?120:30);
+ if(lastSess!=null&&d.sess<lastSess){clearH();waterG=0;lastN=-1;liveStart=null}
+ // water pushed out: counted by the dryer for the whole batch (firmware 1.1+), otherwise
+ // estimated here while the page is open: airflow x extra water x time
+ if(d.water_g!=null)waterG=d.water_g;
+ else if(lastSess!=null&&d.sess>lastSess&&d.fan&&d.dw>0)waterG+=AIRFLOW_KGS*d.dw*Math.min(d.sess-lastSess,src==='demo'?120:30);
  lastSess=d.sess;
  if(d.n!==lastN){lastN=d.n;if(d.dw!=null)push(d)}
  last=d;render(d);draw();checkPending(d);
@@ -406,8 +438,8 @@ function meter(ON,OFF,dw){
  $('lOff').style.width=p(OFF)+'%';$('lBand').style.width=(p(ON)-p(OFF))+'%';$('lOn').style.width=(100-p(ON))+'%';
  $('tOff').style.left=p(OFF)+'%';$('tOn').style.left=p(ON)+'%';
  $('tOff').textContent=f(OFF,1);$('tOn').textContent=f(ON,1);
+ $('mark').style.visibility=dw==null?'hidden':'visible';   // no reading: no marker
  if(dw!=null)$('mark').style.left=p(dw)+'%';
- else $('mark').style.left=p(0)+'%';
 }
 function render(d){
  const ON=d.on??1.5,OFF=d.off??0.5;
@@ -443,6 +475,12 @@ function render(d){
  const kg=parseFloat($('kg').value);
  $('bWaterL').textContent=kg>0?t('sWater')+' · '+t('ofKg',{p:N(Math.round(waterG/(kg*10)))}):t('sWater');
  if(src==='demo')$('simClock').textContent=t('simT',{c:N(simClock())});
+ $('outH').textContent=d.oest?t('outsideEst'):t('outside');$('outNote').hidden=!d.oest;
+ let st='';
+ if(src==='demo')st=t('started',{c:N('09:00')});
+ else if(d.ts>1700000000){const s0=new Date((d.ts-d.sess)*1000);st=t('started',{c:N(s0.toLocaleTimeString(lang==='bn'?'bn-BD':'en-GB',{hour:'2-digit',minute:'2-digit',numberingSystem:'latn'}))})}
+ $('bStart').textContent=st;
+ renderDiag(d);updLine();
  refreshStatus();
 }
 
@@ -463,7 +501,7 @@ function chart(cv,series,o){
  if(!isFinite(lo))return;
  const pad=(hi-lo)*0.12||1;lo-=pad;hi+=pad;
  const X=v=>L+(v-x0)/xr*pw,Y=v=>T+(hi-v)/(hi-lo)*ph;
- if(o.shade){c.fillStyle=col('--shade');for(let i=0;i<xs.length-1;i++)if(H.fan[i])c.fillRect(X(xs[i]),T,X(xs[i+1])-X(xs[i])+0.6,ph)}
+ if(o.shade){c.fillStyle=col('--shade');for(let i=0;i<xs.length-1;i++)if(H.fan[i]>=0.5)c.fillRect(X(xs[i]),T,X(xs[i+1])-X(xs[i])+0.6,ph)}
  const st=niceStep((hi-lo)/4);c.strokeStyle=col('--line');c.lineWidth=1;c.fillStyle=col('--muted');c.textAlign='right';c.textBaseline='middle';
  for(let v=Math.ceil(lo/st)*st;v<=hi+1e-9;v+=st){const y=Y(v);c.beginPath();c.moveTo(L,y);c.lineTo(w-Rm,y);c.stroke();c.fillText(N(st<1?v.toFixed(1):v.toFixed(0)),L-6,y)}
  c.textBaseline='top';
@@ -474,6 +512,21 @@ function chart(cv,series,o){
  for(const s of series){c.strokeStyle=col(s.c);c.lineWidth=2;c.lineJoin='round';c.beginPath();let pen=false;
   for(let i=0;i<xs.length;i++){const v=s.v[i];if(v==null){pen=false;continue}const x=X(xs[i]),y=Y(v);if(pen)c.lineTo(x,y);else c.moveTo(x,y);pen=true}c.stroke()}
 }
+function updLine(){
+ const el=$('upd');if(!el)return;
+ if(src!=='live'||!last){el.textContent='';return}
+ const age=lastTs>1700000000?Date.now()/1000-lastTs:(lastMsg?(Date.now()-lastMsg)/1000:null);
+ el.textContent=age==null?'':t('upd',{a:ago(Math.max(0,age))});
+}
+function renderDiag(d){
+ const box=$('diag');
+ if(src!=='live'||!d.fw){box.hidden=true;return}
+ const sig=d.rssi==null?'--':(d.rssi>-60?t('sigStrong'):d.rssi>-75?t('sigGood'):t('sigWeak'))+' ('+N(d.rssi)+' dBm)';
+ const rows=[[t('dFw'),d.fw],[t('dSig'),sig],[t('dUp'),dur(d.up||0)],[t('dOut'),d.oest?t('outSet'):t('outOk')],[t('dHist'),t('histMin',{n:N(d.lh||0)})]];
+ const dl=$('diagList');dl.innerHTML='';
+ for(const [k,v] of rows){const r=document.createElement('div'),a=document.createElement('dt'),b=document.createElement('dd');a.textContent=k;b.textContent=v;r.append(a,b);dl.appendChild(r)}
+ box.hidden=false;
+}
 function draw(){
  if($('v-charts').hidden)return;
  const ON=last?.on??1.5,OFF=last?.off??0.5;
@@ -483,7 +536,7 @@ function draw(){
 }
 
 // ===================== Connection status =====================
-let client=null,online=null,lastMsg=0,lastTs=0,libFail=false;
+let client=null,online=null,lastMsg=0,lastTs=0,libFail=false,needHist=false;
 function setPill(cls,txt){$('pill').className='pill '+cls;$('pillTxt').textContent=txt}
 function showNote(txt,demoBtn){$('note').hidden=!txt;$('noteTxt').textContent=txt||'';$('noteDemo').hidden=!demoBtn}
 function refreshStatus(){
@@ -498,7 +551,7 @@ function refreshStatus(){
   if(isFinite(age)){setPill('bad',t('pOff'));showNote(t('nOff',{a:ago(age)}),true)}
   else{setPill('',t('pWait'));showNote(t('nWait'),true)}
   return}
- setPill('ok',t('pLive'));showNote('');
+ setPill('ok',t('pLive'));showNote('');updLine();
 }
 
 // ===================== Live: MQTT =====================
@@ -506,11 +559,13 @@ function connect(){
  if(!window.mqtt){libFail=true;refreshStatus();return}
  if(client)return;
  client=mqtt.connect(BROKER,{clientId:'rb-'+Math.random().toString(16).slice(2,10),clean:true,reconnectPeriod:3000,connectTimeout:10000});
- client.on('connect',()=>{client.subscribe([TOPIC_BASE+'/state',TOPIC_BASE+'/status']);refreshStatus()});
+ client.on('connect',()=>{client.subscribe([TOPIC_BASE+'/state',TOPIC_BASE+'/status',TOPIC_BASE+'/ack',TOPIC_BASE+'/hist']);needHist=true;refreshStatus()});
  client.on('message',(topic,msg)=>{
   const s=msg.toString();
-  if(topic.endsWith('/status'))online=(s==='online');
-  else{try{const d=JSON.parse(s);lastMsg=Date.now();lastTs=d.ts||0;if(src==='live')ingest(d)}catch(e){}}
+  if(topic.endsWith('/status')){const was=online;online=(s==='online');if(online&&was!==true)requestHist()}
+  else if(topic.endsWith('/ack')){try{onAck(JSON.parse(s))}catch(e){}}
+  else if(topic.endsWith('/hist')){try{if(src==='live')mergeHist(JSON.parse(s).p)}catch(e){}}
+  else{try{const d=JSON.parse(s);lastMsg=Date.now();lastTs=d.ts||0;if(src==='live'){ingest(d);if(needHist){needHist=false;requestHist()}}}catch(e){}}
   if(src==='live')refreshStatus()});
  ['close','offline','error'].forEach(ev=>client.on(ev,()=>{if(src==='live')refreshStatus()}));
 }
@@ -519,26 +574,46 @@ function getPin(){let p=null;try{p=sessionStorage.getItem('rb_pin')}catch(e){}
 function forgetPin(){try{sessionStorage.removeItem('rb_pin')}catch(e){}}
 let pending=null;
 function msg(k){const el=pending&&pending.cmd==='reset'?$('batchMsg'):$('ctlMsg');el.textContent=t(k)}
-function send(cmd){
+function requestHist(){if(client&&client.connected&&src==='live')client.publish(TOPIC_BASE+'/histreq','rb')}
+// Commands are signed: HMAC-SHA256(key = PIN, "<cmd>:<nonce>") with the one-time nonce the dryer
+// publishes, so the PIN never travels and a recorded command cannot be replayed.
+async function hmacHex(key,m){const e=new TextEncoder();
+ const k=await crypto.subtle.importKey('raw',e.encode(key),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',k,e.encode(m))),b=>b.toString(16).padStart(2,'0')).join('')}
+async function publishCmd(cmd,nonce){
+ const pin=getPin();if(!pin)return false;
+ if(nonce){
+  if(!(window.crypto&&crypto.subtle)){msg('cNoCrypto');return false}
+  client.publish(TOPIC_BASE+'/cmd',cmd+':'+nonce+':'+await hmacHex(pin,cmd+':'+nonce));
+ }else client.publish(TOPIC_BASE+'/cmd',pin+':'+cmd);   // older firmware without nonces
+ return true}
+async function send(cmd){
  if(src==='demo'){simCommand(cmd);return}
  const out=cmd==='reset'?$('batchMsg'):$('ctlMsg');
  if(!client||!client.connected){out.textContent=t('cNot');return}
  if(cmd!=='reset'&&last&&['auto','on','off'][last.ctrl]===cmd){out.textContent=t('cSame');return}
- const pin=getPin();if(!pin)return;
- client.publish(TOPIC_BASE+'/cmd',pin+':'+cmd);
- pending={cmd,at:Date.now(),sess:last?last.sess:Infinity};out.textContent=t('cSent');
+ pending={cmd,at:Date.now(),sess:last?last.sess:Infinity,tries:0,legacy:!(last&&last.nonce)};
+ if(!await publishCmd(cmd,last&&last.nonce)){pending=null;return}
+ if(pending)out.textContent=t('cSent');
+}
+function onAck(a){
+ if(!pending||src!=='live'||a.cmd!==pending.cmd)return;
+ if(a.ok){msg(pending.cmd==='reset'?'cNew':'cDone');pending=null;return}
+ if(a.why==='stale'&&pending.tries<1&&a.nonce){pending.tries++;pending.at=Date.now();publishCmd(pending.cmd,a.nonce);return}
+ if(a.why==='pin'){forgetPin();msg('cWrong')}else if(a.why==='locked')msg('cLocked');else msg('cNone');
+ pending=null;
 }
 function checkPending(d){if(!pending||src!=='live')return;
  const ok=pending.cmd==='reset'?d.sess<pending.sess:['auto','on','off'][d.ctrl]===pending.cmd;
  if(ok){msg(pending.cmd==='reset'?'cNew':'cDone');pending=null}}
-setInterval(()=>{if(pending&&Date.now()-pending.at>12000){msg('cNone');forgetPin();pending=null}
+setInterval(()=>{if(pending&&Date.now()-pending.at>12000){msg('cNone');if(pending.legacy)forgetPin();pending=null}
  if(src==='live')refreshStatus()},2000);
 
 // ===================== Demo: simulated drying day =====================
 // One tick per real second = one simulated minute. The moisture source follows
 // the Page model, MR = exp(-k t^n), and the fan logic copies the ESP32.
 const SIM={timer:null};
-function simReset(){Object.assign(SIM,{min:0,tin:31,dw:0.2,fan:false,lastSw:-99,fanS:0,n:0,ctrl:0,inject:''})}
+function simReset(){Object.assign(SIM,{min:0,tin:31,dw:0.2,fan:false,lastSw:-99,fanS:0,n:0,ctrl:0,inject:'',hot:false})}
 function simClock(){const m=9*60+SIM.min,h=Math.floor(m/60)%24,mm=m%60;return(h<10?'0':'')+h+':'+(mm<10?'0':'')+mm}
 const noise=a=>(Math.random()-.5)*2*a;
 function simTick(){
@@ -551,7 +626,8 @@ function simTick(){
  const rate=k*n*Math.pow(m,n-1)*Math.exp(-k*Math.pow(m,n));
  S.dw=Math.max(0,S.dw+rate*80*(.3+.7*I)-S.dw*(S.fan?.35:.05));
  const wout=omega(tout,rhout),win=wout+S.dw,pv=win*P_KPA/(622+win),rhin=Math.min(99,100*pv/psat(S.tin));
- const fault=S.inject==='fault',over=S.tin>65;let want=S.fan,urgent=false,mode='AUTO';
+ if(S.tin>65)S.hot=true;else if(S.tin<62)S.hot=false;
+ const fault=S.inject==='fault',over=S.hot;let want=S.fan,urgent=false,mode='AUTO';
  if(S.ctrl===1){want=true;mode='MANUAL';urgent=true}
  else if(over){want=true;mode='HOT';urgent=true}
  else if(S.ctrl===2){want=false;mode='MANUAL';urgent=true}
@@ -559,8 +635,8 @@ function simTick(){
  else if(S.dw>1.5)want=true;else if(S.dw<0.5)want=false;
  if(want!==S.fan&&(urgent||S.min-S.lastSw>=1)){S.fan=want;S.lastSw=S.min}
  if(S.fan)S.fanS+=60;S.n++;
- ingest({n:S.n,tin:fault?null:S.tin,rhin:fault?null:rhin,tout:fault?null:tout,rhout:fault?null:rhout,
-  win:fault?null:win,wout:fault?null:wout,dw:fault?null:S.dw,fan:S.fan?1:0,mode,ctrl:S.ctrl,fault,
+ ingest({n:S.n,tin:fault?null:S.tin,rhin:fault?null:rhin,tout,rhout,oest:0,
+  win:fault?null:win,wout,dw:fault?null:S.dw,fan:S.fan?1:0,mode,ctrl:S.ctrl,fault,
   on:1.5,off:0.5,tmax:65,sess:S.min*60,fan_s:S.fanS,wh:S.fanS/3600*FAN_W,ts:Date.now()/1000});
 }
 function simCommand(cmd){
@@ -569,15 +645,16 @@ function simCommand(cmd){
  simTick();
 }
 function setSource(s){
- if(s===src)return;src=s;clearH();last=null;lastN=-1;lastSess=null;waterG=0;pending=null;
+ if(s===src)return;src=s;clearH();last=null;lastN=-1;lastSess=null;waterG=0;pending=null;liveStart=null;
  $('ctlMsg').textContent='';$('batchMsg').textContent='';
  clearInterval(SIM.timer);
  if(s==='demo'){simReset();simTick();SIM.timer=setInterval(simTick,1000)}
- else{connect();resetView()}
+ else{connect();resetView();needHist=true;requestHist()}
  refreshStatus();draw();
 }
 function resetView(){['dw','tin','tout','rhin','rhout','win','wout','sess','wrem','wh','saved','bSess','bFan','bWater','bSaved'].forEach(i=>$(i).textContent='--');
- $('headline').textContent=t('hWait');$('say').textContent=t('sWaitR');$('heroIc').innerHTML=SUN;$('mode').textContent='';$('fanTxt').textContent='--';$('fanBox').classList.remove('on');meter(1.5,0.5,null)}
+ $('headline').textContent=t('hWait');$('say').textContent=t('sWaitR');$('heroIc').innerHTML=SUN;$('mode').textContent='';$('fanTxt').textContent='--';$('fanBox').classList.remove('on');meter(1.5,0.5,null);
+ $('upd').textContent='';$('bStart').textContent='';$('diag').hidden=true;$('outNote').hidden=true;$('outH').textContent=t('outside')}
 
 // ===================== Batch: fruit and CSV =====================
 let fruit=store.get('fruit')||'mango';
