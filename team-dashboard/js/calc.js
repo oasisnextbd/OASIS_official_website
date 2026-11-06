@@ -192,3 +192,40 @@ export function presenceOf(p, now = Date.now()) {
 export const dhakaToday = (now = Date.now()) => new Date(now + 6 * 3600e3).toISOString().slice(0, 10);
 /** End of a "YYYY-MM-DD" day in Dhaka (UTC+6), in ms: the team list's access end date. */
 export const endOfDayDhaka = (d) => Date.parse(d + "T23:59:59+06:00");
+
+/* ---------- after-sales: payments, installations, customers, support ---------- */
+/** Every payment on every issued invoice, newest first: { at, amount, method, ref, by, invoice, customer, phone }. */
+export function paymentRows(invoices) {
+  const rows = [];
+  for (const i of invoices) {
+    if (i.status !== "issued") continue;
+    for (const p of i.payments || []) rows.push({ at: p.at, amount: Number(p.amount) || 0, method: p.method || "", ref: p.ref || "", by: p.by || "",
+      invoice: i.id, order_id: i.order_id || "", customer: (i.customer && i.customer.name) || "", phone: (i.customer && i.customer.phone) || "" });
+  }
+  return rows.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+export const INSTALL_STATUS = { to_schedule: "To schedule", scheduled: "Scheduled", installed: "Installed", tested: "Tested & handed over", cancelled: "Cancelled" };
+/** The visit checklist; an installation is "Tested & handed over" only when every item is ticked. */
+export const INSTALL_CHECKS = [["detector", "Detector fixed on the wall, at the right height"], ["valve", "Valve fitted after the regulator, clamps tight, no leak (soap test)"],
+  ["relay", "Relay wired to the exhaust fan or hood"], ["test", "Test button: alarm, valve closes, fan starts"], ["reset", "Reset lever shown to the customer"],
+  ["app", "App installed and the device added (if Connected plan)"]];
+export const checklistDone = (c) => INSTALL_CHECKS.every(([k]) => c && c[k] === true);
+export const TICKET_KINDS = { safety: "Safety (gas smell, alarm)", warranty: "Warranty claim", service: "Service visit", complaint: "Complaint", question: "Question" };
+export const TICKET_STATUS = { open: "Open", in_progress: "In progress", waiting: "Waiting for the customer", resolved: "Resolved" };
+/** "YYYY-MM-DD" plus whole months (end of month kept: 31 Jan + 1 month = 28/29 Feb). */
+export function addMonths(d, n) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d || "") || !(n > 0)) return "";
+  const [y, m, day] = d.split("-").map(Number), t = new Date(Date.UTC(y, m - 1 + Number(n), 1));
+  const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(day, last));
+  return t.toISOString().slice(0, 10);
+}
+/** Warranty or Connected plan: active (more than 30 days left), ending (30 days or less), ended, or none. */
+export function untilState(until, today) {
+  if (!until) return "none";
+  if (until < today) return "ended";
+  const days = (Date.parse(until) - Date.parse(today)) / 864e5;
+  return days <= 30 ? "ending" : "active";
+}
+/** Same customer? Bangladesh mobile numbers compared on their last 10 digits (01XXXXXXXXX / +8801XXXXXXXXX). */
+export const samePhone = (a, b) => { const k = (x) => String(x || "").replace(/\D/g, "").slice(-10); return !!k(a) && k(a) === k(b); };

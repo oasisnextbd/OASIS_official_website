@@ -7,6 +7,10 @@ import { S, whoAmI, start, stop, ROLES, startPresence, stopPresence } from "./st
 import { R } from "./redraw.js";
 import overview from "./views/overview.js";
 import tasks from "./views/tasks.js";
+import installations from "./views/installations.js";
+import customers from "./views/customers.js";
+import tickets from "./views/tickets.js";
+import payments from "./views/payments.js";
 import orders from "./views/orders.js";
 import invoices from "./views/invoices.js";
 import inventory from "./views/inventory.js";
@@ -21,7 +25,7 @@ import manual from "./views/manual.js";
 import profile, { initials, themePref, setTheme } from "./views/profile.js";
 import { stopAllEmulators } from "./emulator.js";
 
-const VIEWS = [overview, tasks, orders, invoices, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual, profile];
+const VIEWS = [overview, tasks, orders, installations, customers, tickets, invoices, payments, inventory, promos, marketing, ratings, dealers, subscriptions, emulators, settings, manual, profile];
 const cfg = window.VG_DASH || {};
 const local = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
 const DEMO = !cfg.firebase || (local && new URLSearchParams(location.search).has("demo"));

@@ -224,6 +224,70 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
+    // ---------- After-sales: installations, technicians, customers, support tickets ----------
+    // Staff read them (guests do not); founders and support create and change them; only founders delete.
+    // Keep the field lists in step with team-dashboard/js/store.js (saveInstallation, saveCustomer, saveTicket…).
+    function dateOrEmpty(d, k) { return !(k in d) || d[k] == '' || (d[k] is string && d[k].matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')); }
+    function stamped(d) { return d.updated_by == email() && d.updated_at is string && d.updated_at.size() <= 40; }
+    function person(d) {
+      return d.name is string && d.name.size() > 0 && d.name.size() <= 120 && smallText(d, 'phone', 20)
+        && smallText(d, 'email', 120) && smallText(d, 'address', 300) && smallText(d, 'area', 100) && smallText(d, 'district', 60);
+    }
+    function validTechnician() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'phone', 'area', 'district', 'dealer_code', 'active', 'notes', 'created_at', 'updated_at', 'updated_by'])
+        && person(d) && d.active is bool && smallText(d, 'dealer_code', 40) && smallText(d, 'notes', 1000) && stamped(d);
+    }
+    match /technicians/{id} {
+      allow read: if isTeam();
+      allow create, update: if hasRole(['founder', 'support']) && validTechnician();
+      allow delete: if hasRole(['founder']);
+    }
+    function validInstallation() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['order_id', 'name', 'phone', 'email', 'address', 'area', 'district', 'package', 'units', 'scheduled_date',
+            'slot', 'technician_id', 'technician_name', 'status', 'checklist', 'device_ids', 'notes', 'customer_id', 'done_at',
+            'created_at', 'created_by', 'updated_at', 'updated_by'])
+        && person(d) && d.status in ['to_schedule', 'scheduled', 'installed', 'tested', 'cancelled']
+        && dateOrEmpty(d, 'scheduled_date') && smallText(d, 'slot', 40) && smallText(d, 'order_id', 40) && smallText(d, 'package', 40)
+        && smallText(d, 'technician_id', 60) && smallText(d, 'technician_name', 120) && smallText(d, 'notes', 2000)
+        && (!('checklist' in d) || d.checklist is map) && (!('device_ids' in d) || (d.device_ids is list && d.device_ids.size() <= 50))
+        && stamped(d);
+    }
+    match /installations/{id} {
+      allow read: if isTeam();
+      allow create, update: if hasRole(['founder', 'support']) && validInstallation();
+      allow delete: if hasRole(['founder']);
+    }
+    function validCustomer() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'phone', 'email', 'address', 'area', 'district', 'package', 'units', 'order_id', 'installation_id',
+            'device_ids', 'install_date', 'warranty_until', 'plan_until', 'notes', 'created_at', 'created_by', 'updated_at', 'updated_by'])
+        && person(d) && dateOrEmpty(d, 'install_date') && dateOrEmpty(d, 'warranty_until') && dateOrEmpty(d, 'plan_until')
+        && smallText(d, 'order_id', 40) && smallText(d, 'installation_id', 60) && smallText(d, 'package', 40) && smallText(d, 'notes', 2000)
+        && (!('device_ids' in d) || (d.device_ids is list && d.device_ids.size() <= 50)) && stamped(d);
+    }
+    match /customers/{id} {
+      allow read: if isTeam();
+      allow create, update: if hasRole(['founder', 'support']) && validCustomer();
+      allow delete: if hasRole(['founder']);
+    }
+    function validTicket() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['customer_id', 'name', 'phone', 'email', 'address', 'area', 'district', 'kind', 'subject', 'details', 'priority',
+            'status', 'assigned_to', 'notes', 'resolved_at', 'created_at', 'created_by', 'updated_at', 'updated_by'])
+        && person(d) && d.kind in ['safety', 'warranty', 'service', 'complaint', 'question']
+        && d.priority in ['normal', 'urgent'] && d.status in ['open', 'in_progress', 'waiting', 'resolved']
+        && d.subject is string && d.subject.size() > 0 && d.subject.size() <= 200 && smallText(d, 'details', 3000)
+        && smallText(d, 'assigned_to', 120) && smallText(d, 'customer_id', 60)
+        && (!('notes' in d) || (d.notes is list && d.notes.size() <= 200)) && stamped(d);
+    }
+    match /tickets/{id} {
+      allow read: if isTeam();
+      allow create, update: if hasRole(['founder', 'support']) && validTicket();
+      allow delete: if hasRole(['founder']);
+    }
+
     // Paid services and their renewal dates; founders keep the list, everyone on the team can see it.
     match /subscriptions/{id} {
       allow read: if isTeam();

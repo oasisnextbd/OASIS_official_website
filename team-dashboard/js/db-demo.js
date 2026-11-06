@@ -146,7 +146,44 @@ function sample() {
       if (rnd() < 0.3) r.service = pick([5, 4, 4, 3, 1]);
       return ["R-demo" + String(i).padStart(14, "0"), r];
     })),
-    signatories: {}, invoices: {}, stockMoves: {}, counters: {},
+    signatories: {}, stockMoves: {},
+    counters: { [`invoice-${new Date().getFullYear()}`]: { next: 4 } },   // the three demo invoices below use 0001-0003
+    // After-sales (views/payments.js, installations.js, customers.js, tickets.js): made up for the demo and the manual's pictures.
+    invoices: {
+      "INV-2026-0001": { no: "INV-2026-0001", rev: 1, status: "issued", issued_at: iso(9), order_id: "", customer: { name: "Farzana Rahman", phone: "01718221043", address: "Mirpur 10, Dhaka" },
+        lines: [{ name: "VenGuard complete kit (detector, valve, relay)", qty: 1, unit_price: 3500, amount: 3500 }], subtotal: 3500, promo_discount: 0, extra_discount: 0, delivery: 0, vat_rate: 0, vat: 0,
+        total: 3500, paid: 3500, due: 0, payment_method: "bKash", notes: "", payments: [{ at: iso(9), amount: 500, method: "bKash", ref: "BK7Q2X9MDE", by: "support@example.com" }, { at: iso(2), amount: 3000, method: "Cash", by: "support@example.com" }] },
+      "INV-2026-0002": { no: "INV-2026-0002", rev: 1, status: "issued", issued_at: iso(5), order_id: "", customer: { name: "Imran Hossain", phone: "01739638107", address: "Mirpur 10, Dhaka" },
+        lines: [{ name: "VenGuard complete kit (detector, valve, relay)", qty: 1, unit_price: 1900, amount: 1900 }], subtotal: 1900, promo_discount: 0, extra_discount: 0, delivery: 0, vat_rate: 0, vat: 0,
+        total: 1900, paid: 1000, due: 900, payment_method: "bKash", notes: "", payments: [{ at: iso(5), amount: 1000, method: "Nagad", ref: "NG41H7T2", by: "support@example.com" }] },
+      "INV-2026-0003": { no: "INV-2026-0003", rev: 1, status: "issued", issued_at: iso(1), order_id: "", customer: { name: "Rose View Tower (4 flats)", phone: "01811000222", address: "Mirpur 10, Dhaka" },
+        lines: [{ name: "VenGuard complete kit (detector, valve, relay)", qty: 1, unit_price: 3500, amount: 3500 }], subtotal: 3500, promo_discount: 0, extra_discount: 0, delivery: 0, vat_rate: 0, vat: 0,
+        total: 3500, paid: 3500, due: 0, payment_method: "bKash", notes: "", payments: [{ at: iso(1), amount: 3500, method: "Bank transfer", ref: "DBBL-55120", by: "oasisnextbd@gmail.com" }] },
+    },
+    technicians: {
+      tc1: { name: "Rafiq Mia", phone: "01710000001", area: "Mirpur, Pallabi", district: "Dhaka", active: true, notes: "Trained Oct 2026", created_at: iso(30), updated_at: iso(30), updated_by: "oasisnextbd@gmail.com" },
+      tc2: { name: "Sumon Das", phone: "01810000002", area: "Board Bazar, Tongi", district: "Gazipur", dealer_code: "DH-042", active: true, created_at: iso(20), updated_at: iso(20), updated_by: "oasisnextbd@gmail.com" },
+    },
+    installations: {
+      in1: { name: "Farzana Rahman", phone: "01718221043", address: "House 12, Road 3", area: "Mirpur 10", district: "Dhaka", package: "complete", units: 1, scheduled_date: day(-1), slot: "9 am – 12 pm",
+        technician_id: "tc1", technician_name: "Rafiq Mia", status: "scheduled", checklist: { detector: true, valve: true }, device_ids: [], notes: "4th floor, lift", order_id: "", created_at: iso(3), created_by: "support@example.com", updated_at: iso(0.2), updated_by: "support@example.com" },
+      in2: { name: "Imran Hossain", phone: "01739638107", address: "", area: "Board Bazar", district: "Gazipur", package: "detector_relay", units: 1, scheduled_date: "", slot: "",
+        technician_id: "", technician_name: "", status: "to_schedule", checklist: {}, device_ids: [], notes: "", order_id: "", created_at: iso(1), created_by: "support@example.com", updated_at: iso(1), updated_by: "support@example.com" },
+      in3: { name: "Taslima Begum", phone: "01711044172", address: "Flat 5C", area: "Agrabad", district: "Chattogram", package: "complete", units: 1, scheduled_date: day(6), slot: "3 pm – 6 pm",
+        technician_id: "tc2", technician_name: "Sumon Das", status: "tested", checklist: { detector: true, valve: true, relay: true, test: true, reset: true, app: true }, device_ids: ["VG-0001A3"], done_at: iso(6), customer_id: "cu1", notes: "", order_id: "", created_at: iso(10), created_by: "support@example.com", updated_at: iso(6), updated_by: "support@example.com" },
+    },
+    customers: {
+      cu1: { name: "Taslima Begum", phone: "01711044172", address: "Flat 5C", area: "Agrabad", district: "Chattogram", package: "complete", units: 1, device_ids: ["VG-0001A3"], install_date: day(6), warranty_until: "", plan_until: day(-20), installation_id: "in3", notes: "", created_at: iso(6), created_by: "support@example.com", updated_at: iso(6), updated_by: "support@example.com" },
+      cu2: { name: "Rose View Tower (4 flats)", phone: "01811000222", address: "Road 7", area: "Dhanmondi", district: "Dhaka", package: "complete", units: 4, device_ids: ["VG-0002B1", "VG-0002B2", "VG-0002B3", "VG-0002B4"], install_date: day(40), warranty_until: "", plan_until: day(-300), notes: "Landlord: Mr Karim", created_at: iso(40), created_by: "oasisnextbd@gmail.com", updated_at: iso(40), updated_by: "oasisnextbd@gmail.com" },
+    },
+    tickets: {
+      tk1: { customer_id: "cu1", name: "Taslima Begum", phone: "01711044172", kind: "safety", subject: "Alarm sounded at night, smell of gas", details: "Called at 11 pm; valve closed itself.", priority: "urgent", status: "in_progress", assigned_to: "support@example.com",
+        notes: [{ at: iso(0.3), by: "support@example.com", note: "Told her to keep windows open and not to switch anything; Rafiq visiting tomorrow 10 am.", status: "in_progress" }], created_at: iso(0.35), created_by: "support@example.com", updated_at: iso(0.3), updated_by: "support@example.com" },
+      tk2: { customer_id: "cu2", name: "Rose View Tower (4 flats)", phone: "01811000222", kind: "question", subject: "How to add a second phone to the app", details: "", priority: "normal", status: "waiting", assigned_to: "marketing@example.com",
+        notes: [{ at: iso(2), by: "marketing@example.com", note: "Sent the App tour link; waiting for him to try.", status: "waiting" }], created_at: iso(3), created_by: "support@example.com", updated_at: iso(2), updated_by: "marketing@example.com" },
+      tk3: { customer_id: "", name: "Nusrat Jahan", phone: "01755000333", kind: "warranty", subject: "Relay does not start the hood", details: "Bought through dealer DH-042.", priority: "normal", status: "resolved", resolved_at: iso(8), assigned_to: "support@example.com",
+        notes: [{ at: iso(8), by: "support@example.com", note: "Loose wire at the hood; fixed on visit.", status: "resolved" }], created_at: iso(10), created_by: "support@example.com", updated_at: iso(8), updated_by: "support@example.com" },
+    },
     activity: { a1: { at: iso(0.1), user: "support@example.com", action: "order_update", ref: Object.keys(orders)[0], detail: "status → contacted" } },
   };
 }
