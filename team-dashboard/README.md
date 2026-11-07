@@ -60,6 +60,25 @@ have an end date (`until`, `until_ms` on their team row); the rules check it on 
   - What was spent per channel.
   - Orders, paying customers and invoiced sales per channel, cost per order, cost per paying customer,
     and taka back per taka spent.
+- **After-sales** (founders and support change them; everyone on the team sees them; guests don't):
+  - **Installations** (`js/views/installations.js`): each paid order becomes a visit (from the order: **Schedule
+    installation**). Date, time, technician, notes; at the visit a checklist (detector, valve with soap test,
+    relay, test button, reset lever shown, app) and the device IDs. **Tested & handed over** needs every
+    item ticked; it creates or updates the customer and marks the order Installed. Technicians (own and
+    dealers') are kept here too.
+  - **Customers** (`js/views/customers.js`): everyone with a kit installed, one card with devices, warranty and
+    Connected plan dates (flagged 30 days before they end), tickets, visits, orders and invoices (matched by
+    order and phone number). The warranty end date comes from **Settings → Company details → Warranty
+    (months)**; empty until the founders decide it.
+  - **Support** (`js/views/tickets.js`): tickets with a kind (safety, warranty, service, complaint, question),
+    an owner and a history of notes and status changes. Safety tickets are always urgent and show the
+    advice to read to the caller (don't switch anything, close the cylinder if safe, open windows, get out,
+    call 999).
+  - **Payments** (`js/views/payments.js`): every payment on every issued invoice (with the bKash/Nagad
+    reference typed when recording it), totals by method, what is still to collect, deposits marked on
+    orders; CSV export. Payments are still added on their invoice, so the two always agree.
+  - Rules: `technicians`, `installations`, `customers`, `tickets` in `firestore.rules` (fixed field lists,
+    statuses and dates); helpers tested in `tests/calc.test.mjs`.
 - **Tasks** (`js/views/tasks.js`): the company account assigns work to one person (daily, weekly, monthly or a
   milestone, with a due date). It shows on that person's Overview and under **My work**; they press **Submit as
   done** with a note, attached files (proof of work) and/or a link. The company account approves or sends it

@@ -100,3 +100,24 @@ test("online status and access end date", async () => {
   assert.equal(presenceOf(null, now).online, false);
   assert.equal(new Date(endOfDayDhaka("2026-11-30")).toISOString(), "2026-11-30T17:59:59.000Z");
 });
+
+test("after-sales: payments list, months, warranty and plan state, phone match, checklist", async () => {
+  const { paymentRows, addMonths, untilState, samePhone, checklistDone, INSTALL_CHECKS } = await import("../js/calc.js");
+  const rows = paymentRows([
+    { id: "INV-1", status: "issued", customer: { name: "A", phone: "017" }, payments: [{ at: "2026-11-01T10:00:00Z", amount: 500, method: "bKash", ref: "TX1" }, { at: "2026-11-05T10:00:00Z", amount: 3000, method: "Cash" }] },
+    { id: "INV-2", status: "void", payments: [{ at: "2026-11-06T10:00:00Z", amount: 999 }] }]);
+  assert.deepEqual(rows.map((r) => [r.invoice, r.amount, r.ref]), [["INV-1", 3000, ""], ["INV-1", 500, "TX1"]]);   // newest first, void skipped
+  assert.equal(addMonths("2026-11-10", 12), "2027-11-10");
+  assert.equal(addMonths("2027-01-31", 1), "2027-02-28");
+  assert.equal(addMonths("2026-11-10", 0), "");
+  assert.equal(addMonths("", 12), "");
+  assert.equal(untilState("", "2026-11-06"), "none");
+  assert.equal(untilState("2026-11-01", "2026-11-06"), "ended");
+  assert.equal(untilState("2026-11-20", "2026-11-06"), "ending");
+  assert.equal(untilState("2027-11-06", "2026-11-06"), "active");
+  assert.equal(samePhone("01712345678", "+8801712345678"), true);
+  assert.equal(samePhone("01712345678", "01812345678"), false);
+  assert.equal(samePhone("", ""), false);
+  assert.equal(checklistDone(Object.fromEntries(INSTALL_CHECKS.map(([k]) => [k, true]))), true);
+  assert.equal(checklistDone({ detector: true }), false);
+});

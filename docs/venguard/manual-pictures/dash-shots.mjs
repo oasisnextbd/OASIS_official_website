@@ -101,6 +101,28 @@ await team.click(); await p.waitForTimeout(400);
 await shot("20-add-person", [[drawer.locator('input[type="email"], input[name="email"]').first(), 1], [drawer.locator("select").first(), 2], [drawer.locator('button[type="submit"]'), 3]]);
 await closeDrawer();
 
+// After-sales: installations (and one visit), customers (and one card), support tickets (and one), payments
+await go("installations"); await hideDemo();
+await shot("29-installations", [[p.getByRole("button", { name: "New installation" }), 1], [p.locator('[data-act="ins:techs"]'), 2], [p.locator('#main .banner [data-act="ins:fromorder"]').first(), 3], [p.locator('tr[data-act="ins:open"]').first(), 4, 2]]);
+await p.locator('tr[data-act="ins:open"]').first().click(); await p.waitForTimeout(400);
+await shot("30-visit", [[drawer.locator("#f_scheduled_date"), 1], [drawer.locator("#f_technician_id"), 2], [drawer.locator('form[data-form="ins:save"] button[type="submit"]'), 3]]);
+await drawer.locator('form[data-form="ins:check"]').scrollIntoViewIfNeeded(); await p.waitForTimeout(300);
+await shot("31-checklist", [[drawer.locator('form[data-form="ins:check"] .check-row').first(), 1, 4], [drawer.locator("#f_device_ids"), 2], [drawer.locator('[data-act="ins:status"][data-s="tested"]'), 3]]);
+await closeDrawer();
+await go("customers"); await hideDemo();
+await shot("32-customers", [[p.locator("#cus_q"), 1], [p.locator('[data-change="cus:filter"][data-k="show"]'), 2], [p.locator('tr[data-act="cus:open"]').first(), 3, 2]]);
+await p.locator('tr[data-act="cus:open"]').first().click(); await p.waitForTimeout(400);
+await shot("33-customer", [[drawer.locator('[data-act="tic:new"]'), 1], [drawer.locator('[data-act="cus:edit"]'), 2]]);
+await closeDrawer();
+await go("tickets"); await hideDemo();
+await shot("34-support", [[p.getByRole("button", { name: "New ticket" }), 1], [p.locator('tr[data-act="tic:open"]').first(), 2, 2]]);
+await p.locator('tr[data-act="tic:open"]').first().click(); await p.waitForTimeout(400);
+await drawer.locator('form[data-form="tic:note"]').scrollIntoViewIfNeeded(); await p.waitForTimeout(300);
+await shot("35-ticket", [[drawer.locator("#f_note"), 1], [drawer.locator("#f_status"), 2], [drawer.locator('form[data-form="tic:note"] button[type="submit"]'), 3]]);
+await closeDrawer();
+await go("payments"); await hideDemo();
+await shot("36-payments", [[p.locator('#main .seg'), 1, 4], [p.locator('[data-act="pay:csv"]'), 2], [p.locator("#pay_q"), 3], [p.locator('#main tbody tr').first(), 4, 2]]);
+
 // Tasks (company account): review, people and online status, assign, HR summary
 await go("tasks"); await hideDemo();
 await shot("25-tasks", [[p.getByRole("button", { name: "Assign a task" }), 1], [p.locator('[data-act="task:approve"]').first(), 2], [p.locator('[data-act="task:back"]').first(), 3], [p.locator(".online-dot").first(), 4, 6]]);

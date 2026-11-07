@@ -72,6 +72,7 @@ export function openOrder(id) {
     <dl class="dl">${rows.filter((r) => r[1]).map((r) => `<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join("")}</dl>
     <section><h2>Invoices</h2>${invs.length ? `<ul class="plain">${invs.map((i) => `<li><button type="button" class="linkish" data-act="inv:open" data-id="${esc(i.id)}"><span class="mono">${esc(i.id)}</span></button> ${pill(i.status === "void" ? "void" : i.due > 0 ? "due" : "issued", i.status === "void" ? "Cancelled" : i.due > 0 ? money(i.due) + " due" : "Paid")}</li>`).join("")}</ul>` : '<p class="muted">No invoice yet.</p>'}
       ${can("invoices") ? `<button class="btn" data-act="order:invoice" data-id="${esc(o.id)}">${ICON.invoices}Create invoice</button>` : ""}</section>
+    ${installSection(o)}
     ${can("orders") ? `<form data-form="order:edit" data-id="${esc(o.id)}" class="stack">
       ${select("status", "Status", STATUSES.map((s) => [s, STATUS[s]]), o.status)}
       ${area("team_notes", "Team notes", o.team_notes, 'placeholder="e.g. Called 3 pm, will pay by bKash on Friday"')}
@@ -152,3 +153,10 @@ on.form("order:import", (f) => busy(f, async () => {
   try { const r = await importOrders(parseCsv(await file.text())); toast(`${r.added} added, ${r.skipped} skipped.`); closeDrawer(); }
   catch (e) { toast(e.message || String(e)); }
 }, "Importing…"));
+
+/* The order's installation visit (views/installations.js): its status, or a button to start one. */
+function installSection(o) {
+  const i = S.data.installations.find((x) => x.order_id === o.id && x.status !== "cancelled");
+  if (i) return `<section><h2>Installation</h2><p><button type="button" class="linkish" data-act="ins:open" data-id="${esc(i.id)}">${esc(i.scheduled_date ? i.scheduled_date + (i.slot ? " · " + i.slot : "") : "Not scheduled yet")}</button>${i.technician_name ? " · " + esc(i.technician_name) : ""}</p></section>`;
+  return can("aftersales") && ["paid", "contacted", "installed"].includes(o.status) ? `<section><h2>Installation</h2><button class="btn" data-act="ins:fromorder" data-id="${esc(o.id)}">${ICON.install}Schedule installation</button></section>` : "";
+}

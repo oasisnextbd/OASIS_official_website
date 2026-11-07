@@ -49,6 +49,40 @@ const SECTIONS = [
     ],
     pics: [[M + "03-orders.webp", "Orders list"], [M + "04-order.webp", "An open order"], [M + "05-add-order.webp", "Add order filled from a pasted message"]] },
 
+  { id: "installations", title: "Installations and technicians", who: ["founder", "support"],
+    steps: [
+      "Every paid order needs a visit. The banner lists paid orders without one (picture 1, 3): click a name, or open the order and press <b>Schedule installation</b>. <b>New installation</b> (1) starts one by hand.",
+      "Keep your installers under <b>Technicians</b> (2): name, phone, the area they cover, and the dealer code if they work for a dealer.",
+      "Open a visit (4). Choose the <b>Visit date</b> (picture 2, 1) and the <b>Technician</b> (2), add notes for them, then <b>Save visit</b> (3). WhatsApp or call the customer from the top of the card.",
+      "At the visit, tick each checklist item as it is done (picture 3, 1), type the device IDs from the stickers (2) and <b>Save checklist</b>.",
+      "<b>Tested & handed over</b> (3) works only when every item is ticked. It adds the customer to Customers (with the warranty end date, once the warranty length is set in Settings) and marks the order Installed.",
+    ],
+    pics: [[M + "29-installations.webp", "Installations"], [M + "30-visit.webp", "Planning a visit"], [M + "31-checklist.webp", "The visit checklist"]] },
+
+  { id: "customers", title: "Customers", who: ["founder", "support", "marketing"],
+    steps: [
+      "Everyone with a VenGuard installed, added at hand-over (or with <b>Add customer</b>). Search by name, phone, area or device ID (picture 1, 1), or show only warranties or Connected plans ending soon (2).",
+      "Click a customer (3) for one card with everything: devices, warranty and plan dates, support tickets, installation visits, orders and invoices.",
+      "From the card, <b>New ticket</b> (picture 2, 1) opens a support ticket for them; <b>Edit customer</b> (2) corrects details, adds devices or records a Connected plan renewal (\u201cpaid until\u201d).",
+    ],
+    pics: [[M + "32-customers.webp", "Customers"], [M + "33-customer.webp", "A customer's card"]] },
+
+  { id: "support", title: "Support tickets", who: ["founder", "support", "marketing"],
+    steps: [
+      "Every call or message after the sale gets a ticket: <b>New ticket</b> (picture 1, 1). Choose the customer (or type the name and phone), the kind, a short subject and who handles it.",
+      "<b>Safety</b> tickets (gas smell, alarm) are always urgent and come first. The ticket shows what to tell the caller straight away: don't switch anything, close the cylinder if safe, open windows, get out, call 999.",
+      "Open a ticket (2) and write every call or visit under <b>Add to the history</b> (picture 2, 1), changing the status when it moves on (2), then <b>Add</b> (3). Anyone can pick it up from the history.",
+    ],
+    pics: [[M + "34-support.webp", "Support tickets"], [M + "35-ticket.webp", "A ticket's history"]] },
+
+  { id: "payments", title: "Payments", who: ["founder", "support"],
+    steps: [
+      "Every payment recorded on an invoice, in one list: choose the period (1), search by invoice, customer, phone or bKash/Nagad reference (3), and <b>Export CSV</b> (2) for the accounts.",
+      "Payments are added on their invoice (Invoices → open it → <b>Record a payment</b>), with the TrxID or receipt number as the reference. Click a payment (4) to open its invoice.",
+      "<b>Still to collect</b> lists every invoice with a balance, oldest first. Pre-order deposits are counted from orders marked Deposit paid.",
+    ],
+    pics: [[M + "36-payments.webp", "Payments"]] },
+
   { id: "invoices", title: "Invoices", who: ["founder", "support"],
     steps: [
       "From an order press <b>Create invoice</b>, or use <b>New invoice</b> in Invoices (picture 2, 1). The company details in Settings must be filled in first.",
@@ -127,7 +161,7 @@ const SECTIONS = [
 
   { id: "settings", title: "Settings", who: ["founder"],
     steps: [
-      "<b>Company details on invoices</b> (1): legal name, address, BIN, VAT rate, terms. Needed before the first invoice.",
+      "<b>Company details on invoices</b> (1): legal name, address, BIN, VAT rate, terms, and the <b>warranty length</b> in months (each new customer's warranty end date comes from it). Needed before the first invoice.",
       "<b>Authorised signature</b> (2): add a signatory and put them in use; saved signatures can never be altered.",
       "<b>Website</b> (3): pre-orders on or off, the price shown, the notice bar. The website reads them within 10 minutes.",
       "<b>VenGuard app</b> (4): a notice shown at the top of the Android app (picture 2, 1, English) and the minimum app version (2), then <b>Save</b> (3). Set a minimum only when a release needs the new APK.",

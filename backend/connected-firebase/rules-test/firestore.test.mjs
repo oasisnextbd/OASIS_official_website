@@ -331,3 +331,30 @@ test("profile: each person may change only their own display name", async () => 
   await assertFails(updateDoc(doc(expired(), "team/expired@gmail.com"), { name: "Still here", ...by("expired@gmail.com") }));
   await assertFails(updateDoc(doc(support(), "team/support@gmail.com"), { name: "", ...by("support@gmail.com") }));
 });
+
+test("after-sales (installations, technicians, customers, tickets): staff read; founders and support write; nobody else", async () => {
+  const st = (e) => ({ updated_at: "2026-11-06T10:00:00Z", updated_by: e });
+  const tech = { name: "Rafiq Mia", phone: "01712345678", area: "Mirpur", district: "Dhaka", active: true, ...st("support@gmail.com") };
+  const inst = { order_id: "VG-261018-AAAA", name: "Rahim", phone: "01712345678", address: "House 1, Road 2", area: "Mirpur", district: "Dhaka",
+    package: "complete", units: 1, scheduled_date: "2026-11-10", slot: "10 am - 12 pm", technician_id: "tech1", technician_name: "Rafiq Mia",
+    status: "scheduled", checklist: { valve: false }, device_ids: [], ...st("support@gmail.com") };
+  const cust = { name: "Rahim", phone: "01712345678", district: "Dhaka", package: "complete", install_date: "2026-11-10", warranty_until: "2027-11-10", plan_until: "", device_ids: ["VG-0001A3"], ...st("support@gmail.com") };
+  const tick = { name: "Rahim", phone: "01712345678", email: "", address: "House 1", area: "Mirpur", district: "Dhaka", kind: "service", subject: "Valve clicks", details: "", priority: "normal", status: "open", notes: [], ...st("support@gmail.com") };
+  await assertSucceeds(setDoc(doc(support(), "technicians/tech1"), tech));
+  await assertSucceeds(setDoc(doc(support(), "installations/i1"), inst));
+  await assertSucceeds(setDoc(doc(support(), "customers/c1"), cust));
+  await assertSucceeds(setDoc(doc(support(), "tickets/k1"), tick));
+  await assertSucceeds(setDoc(doc(founder(), "tickets/k2"), { ...tick, ...st("founder@gmail.com"), kind: "safety", priority: "urgent" }));
+  for (const db of [founder(), support(), marketing()]) for (const c of ["technicians", "installations", "customers", "tickets"]) await assertSucceeds(getDocs(collection(db, c)));
+  for (const db of [guest(), stranger(), anon()]) for (const c of ["technicians", "installations", "customers", "tickets"]) await assertFails(getDocs(collection(db, c)));
+  await assertFails(setDoc(doc(marketing(), "tickets/k3"), { ...tick, ...st("marketing@gmail.com") }));
+  await assertFails(setDoc(doc(guest(), "customers/c2"), { ...cust, ...st("guest@gmail.com") }));
+  await assertFails(setDoc(doc(support(), "installations/i2"), { ...inst, status: "lost" }));
+  await assertFails(setDoc(doc(support(), "installations/i3"), { ...inst, scheduled_date: "next Tuesday" }));
+  await assertFails(setDoc(doc(support(), "customers/c3"), { ...cust, warranty_until: "forever" }));
+  await assertFails(setDoc(doc(support(), "tickets/k4"), { ...tick, kind: "spam" }));
+  await assertFails(setDoc(doc(support(), "tickets/k5"), { ...tick, updated_by: "founder@gmail.com" }));          // must sign their own change
+  await assertFails(setDoc(doc(support(), "customers/c4"), { ...cust, credit_card: "4111" }));                    // unknown field
+  await assertFails(deleteDoc(doc(support(), "customers/c1")));
+  await assertSucceeds(deleteDoc(doc(founder(), "customers/c1")));
+});

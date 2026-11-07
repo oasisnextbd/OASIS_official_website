@@ -164,10 +164,11 @@ export function openInvoice(no) {
       ${i.customer?.address ? `<dt>Address</dt><dd>${esc(i.customer.address)}</dd>` : ""}<dt>Items</dt><dd>${(i.lines || []).map((l) => `${esc(l.qty)} × ${esc(l.name)}`).join("<br>")}</dd>
       <dt>Signed by</dt><dd>${sig ? esc(sig.name + (sig.title ? ", " + sig.title : "")) : "No signature"}</dd></dl>
     ${live && can("invoices") && i.due > 0 ? `<form data-form="inv:pay" data-id="${esc(i.id)}" class="panel tight stack"><h2>Record a payment</h2><div class="form-grid">
-      ${field("amount", "Amount received (BDT)", i.due, 'inputmode="numeric" required')}${field("method", "Method", i.payment_method, 'list="payMethods2" placeholder="bKash, Nagad, cash…"')}</div>
+      ${field("amount", "Amount received (BDT)", i.due, 'inputmode="numeric" required')}${field("method", "Method", i.payment_method, 'list="payMethods2" placeholder="bKash, Nagad, cash…"')}
+      ${field("ref", "Reference (bKash/Nagad TrxID, receipt no.; optional)", "", 'maxlength="60" autocomplete="off"')}</div>
       <datalist id="payMethods2"><option>bKash</option><option>Nagad</option><option>Cash</option><option>Bank transfer</option><option>Card</option></datalist>
       <div><button class="btn primary" type="submit">Add payment</button></div></form>` : ""}
-    ${(i.payments || []).length ? `<section><h2>Payments</h2><ul class="plain">${i.payments.map((p) => `<li class="num">${when(p.at)} · ${money(p.amount)} ${esc(p.method || "")}</li>`).join("")}</ul></section>` : ""}
+    ${(i.payments || []).length ? `<section><h2>Payments</h2><ul class="plain">${i.payments.map((p) => `<li class="num">${when(p.at)} · ${money(p.amount)} ${esc(p.method || "")}${p.ref ? ` <span class="mono">${esc(p.ref)}</span>` : ""}</li>`).join("")}</ul></section>` : ""}
     <section><h2>History</h2><ul class="plain history">${(i.history || []).slice().reverse().map((h) => `<li><span class="num muted">${when(h.at)}</span> <strong>Rev ${h.rev}</strong> ${esc(h.what)} <span class="muted">· ${esc(h.by)}</span></li>`).join("")}</ul></section>
     ${live && can("void") ? `<details class="danger"><summary>Cancel this invoice</summary><form data-form="inv:void" data-id="${esc(i.id)}" class="stack">
       <p class="sub">Stock goes back and its promo use is freed. The number is kept, marked as cancelled.</p>${field("reason", "Reason", "", 'required placeholder="e.g. Order cancelled by customer"')}
@@ -182,7 +183,7 @@ on.act("inv:resign", async (t) => {
   catch (e) { t.disabled = false; toast(e.message || String(e)); }
 });
 on.form("inv:pay", (f, d) => busy(f, async () => {
-  try { await recordPayment(f.dataset.id, d.amount, d.method); toast("Payment added"); setTimeout(() => openInvoice(f.dataset.id), 50); }
+  try { await recordPayment(f.dataset.id, d.amount, d.method, d.ref); toast("Payment added"); setTimeout(() => openInvoice(f.dataset.id), 50); }
   catch (e) { toast(e.message || String(e)); }
 }));
 on.form("inv:void", (f, d) => busy(f, async () => {

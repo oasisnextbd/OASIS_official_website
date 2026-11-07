@@ -6,7 +6,8 @@ import { $, esc, when, toast, drawer, closeDrawer, on, busy, field, select, area
 import { S, can, ROLES, saveSettings, addSignatory, setSignatoryActive, saveMember } from "../store.js";
 
 const COMPANY = [["legal_name", "Legal name (as on the trade licence)"], ["address", "Address"], ["phone", "Phone"], ["email", "Email"], ["website", "Website"],
-  ["bin", "BIN (VAT registration)"], ["trade_license", "Trade licence number"], ["vat_rate", "VAT on invoices (%; 0 if not registered)"], ["invoice_prefix", "Invoice number prefix"]];
+  ["bin", "BIN (VAT registration)"], ["trade_license", "Trade licence number"], ["vat_rate", "VAT on invoices (%; 0 if not registered)"], ["invoice_prefix", "Invoice number prefix"],
+  ["warranty_months", "Warranty (months; sets each new customer's warranty end date, empty until decided)"]];
 
 export default {
   id: "settings", label: "Settings & team", icon: "settings", deps: ["settings", "signatories", "team", "activity"],
@@ -59,12 +60,13 @@ function teamPanel() {
 on.act("set:company", () => {
   const c = S.data.settings.company || {};
   drawer("Company details", `<form data-form="set:company" class="stack"><p class="sub">Printed on every new invoice. Leave a line empty if it doesn't apply.</p><div class="form-grid">
-    ${COMPANY.map(([k, l]) => field(k, l, c[k] ?? (k === "invoice_prefix" ? "INV" : k === "vat_rate" ? 0 : ""), k === "vat_rate" ? 'inputmode="decimal"' : k === "legal_name" ? "required autofocus" : k === "address" ? "required" : "")).join("")}</div>
+    ${COMPANY.map(([k, l]) => field(k, l, c[k] ?? (k === "invoice_prefix" ? "INV" : k === "vat_rate" ? 0 : ""), k === "vat_rate" || k === "warranty_months" ? 'inputmode="numeric"' : k === "legal_name" ? "required autofocus" : k === "address" ? "required" : "")).join("")}</div>
     ${area("terms", "Terms printed at the bottom", c.terms, 'placeholder="e.g. Warranty, refund of the deposit, delivery time"')}
     <div><button class="btn primary" type="submit">Save</button></div></form>`);
 });
 on.form("set:company", (f, d) => busy(f, async () => {
   d.vat_rate = Math.max(0, Number(d.vat_rate) || 0);
+  d.warranty_months = d.warranty_months === "" ? "" : Math.max(0, Math.min(120, parseInt(d.warranty_months, 10) || 0)) || "";
   try { await saveSettings("company", d); toast("Company details saved"); closeDrawer(); } catch (e) { toast(e.message || String(e)); }
 }));
 

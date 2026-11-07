@@ -2,14 +2,14 @@
    functions below; nothing else writes to the database. Live updates come in through watch(),
    so a change made by one person shows up for everyone straight away. */
 
-import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo, nextRenewal, CYCLES, TASK_KINDS, endOfDayDhaka } from "./calc.js";
+import { promoProblem, totals, stockNeeds, stockDelta, invoiceNo, nextRenewal, CYCLES, TASK_KINDS, endOfDayDhaka, INSTALL_STATUS, checklistDone, TICKET_KINDS, TICKET_STATUS, addMonths, samePhone, dhakaToday } from "./calc.js";
 import { nowIso, today } from "./ui.js";
 
 export const S = {
   db: null, cfg: {}, user: null, me: null,
   data: {
     orders: [], invoices: [], inventory: [], products: [], promos: [], marketing: [], dealers: [],
-    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], ratings: [], tasks: [], presence: [], settings: { company: {}, website: {}, app: {} },
+    team: [], signatories: [], activity: [], stockMoves: [], subscriptions: [], emulators: [], ratings: [], tasks: [], presence: [], technicians: [], installations: [], customers: [], tickets: [], settings: { company: {}, website: {}, app: {} },
   },
   loaded: new Set(),
 };
@@ -33,6 +33,7 @@ const CAN = {
   orders: ["founder", "support"], invoices: ["founder", "support"], void: ["founder"], stock: ["founder", "support"],
   items: ["founder"], promos: ["founder", "marketing"], marketing: ["founder", "marketing"], dealers: ["founder"], settings: ["founder"], subscriptions: ["founder"],
   ratings: ["founder", "support", "marketing"], "ratings:delete": ["founder"],
+  aftersales: ["founder", "support"], "aftersales:delete": ["founder"],   // installations, technicians, customers, tickets
 };
 export function can(what) {
   if (!S.me) return false;
@@ -62,6 +63,8 @@ const WATCH = {
   inventory: {}, products: {}, promos: {}, marketing: { orderBy: "date", desc: true }, dealers: {}, team: {}, signatories: {},
   activity: { orderBy: "at", desc: true, limit: 200 }, stockMoves: { orderBy: "at", desc: true, limit: 300 }, subscriptions: {},
   ratings: { orderBy: "updated_at", desc: true, limit: 2000 },
+  technicians: {}, installations: { orderBy: "updated_at", desc: true }, customers: { orderBy: "updated_at", desc: true },
+  tickets: { orderBy: "updated_at", desc: true },
 };
 let stops = [];
 export function start(onChange, onError) {
@@ -249,7 +252,7 @@ export async function resignInvoice(no) {
   log("invoice_resign", no, sig.name);
 }
 
-export async function recordPayment(no, amount, method) {
+export async function recordPayment(no, amount, method, ref) {
   amount = Math.round(Number(amount) || 0);
   if (amount <= 0) throw new Error("Enter the amount received.");
   await S.db.tx(async (t) => {
@@ -257,9 +260,9 @@ export async function recordPayment(no, amount, method) {
     if (!inv || inv.status !== "issued") throw new Error("Payments can only be added to an issued invoice.");
     const paid = (inv.paid || 0) + amount;
     t.update("invoices", no, { paid, due: inv.total - paid, payment_method: method || inv.payment_method || "", updated_at: nowIso(),
-      payments: [...(inv.payments || []), { at: nowIso(), amount, method: method || "", by: by() }] });
+      payments: [...(inv.payments || []), clean({ at: nowIso(), amount, method: method || "", ref: String(ref || "").trim().slice(0, 60) || undefined, by: by() })] });
   });
-  log("invoice_payment", no, `${amount} ${method || ""}`);
+  log("invoice_payment", no, `${amount} ${method || ""}${ref ? " " + ref : ""}`);
 }
 
 /** Founders only: cancels an invoice, puts its stock back and frees its promo use. The number is never reused. */
@@ -581,4 +584,121 @@ export async function removeEmulator(id) {
   try { await S.db.rtdbUpdate({ [`deviceAuth/${id}`]: null, [`claimCodes/${id}`]: null, [`devices/${id}/meta`]: null }); } catch (err) { /* rules not published: entries stay, harmless */ }
   await S.db.del("emulators", id);
   log("emulator_remove", id, "");
+}
+
+/* ---------- after-sales: technicians, installations, customers, support tickets ---------- */
+const stamp = () => ({ updated_at: nowIso(), updated_by: by() });
+const text = (v, n) => String(v == null ? "" : v).trim().slice(0, n);
+const isDate = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+function needAftersales() { if (!can("aftersales")) throw new Error("Only founders and support change after-sales records."); }
+function personFields(v) {
+  const name = text(v.name, 120);
+  if (!name) throw new Error("Type the customer's name.");
+  return { name, phone: text(v.phone, 20), email: text(v.email, 120), address: text(v.address, 300), area: text(v.area, 100), district: text(v.district, 60) };
+}
+
+export async function saveTechnician(id, v) {
+  needAftersales();
+  const name = text(v.name, 120);
+  if (!name) throw new Error("Type the technician's name.");
+  const data = { name, phone: text(v.phone, 20), area: text(v.area, 100), district: text(v.district, 60), dealer_code: text(v.dealer_code, 40).toUpperCase(),
+    active: v.active !== false && v.active !== "false", notes: text(v.notes, 1000), ...stamp() };
+  if (id) await S.db.update("technicians", id, data); else id = await S.db.add("technicians", { ...data, created_at: nowIso() });
+  log("technician_save", id, name);
+  return id;
+}
+
+/** An installation visit, usually started from an order (its name, phone, address and kit are copied). */
+export async function saveInstallation(id, v) {
+  needAftersales();
+  const tech = S.data.technicians.find((t) => t.id === v.technician_id);
+  const status = id ? (S.data.installations.find((x) => x.id === id) || {}).status || "to_schedule" : "to_schedule";
+  const data = { ...personFields(v), order_id: text(v.order_id, 40), package: text(v.package, 40), units: Math.max(1, parseInt(v.units, 10) || 1),
+    scheduled_date: isDate(v.scheduled_date) ? v.scheduled_date : "", slot: text(v.slot, 40), technician_id: tech ? tech.id : "", technician_name: tech ? tech.name : "",
+    notes: text(v.notes, 2000), ...stamp() };
+  // Choosing a date moves a new visit to "Scheduled"; removing it moves it back.
+  data.status = ["installed", "tested", "cancelled"].includes(status) ? status : data.scheduled_date ? "scheduled" : "to_schedule";
+  if (id) await S.db.update("installations", id, data);
+  else id = await S.db.add("installations", { ...data, checklist: {}, device_ids: [], created_at: nowIso(), created_by: by() });
+  log("installation_save", id, `${data.name} ${data.scheduled_date || "(no date yet)"}`);
+  return id;
+}
+export async function setInstallChecklist(id, checklist, deviceIds) {
+  needAftersales();
+  const ids = String(deviceIds || "").toUpperCase().split(/[\s,]+/).filter(Boolean).slice(0, 50);
+  await S.db.update("installations", id, { checklist, device_ids: ids, ...stamp() });
+}
+/** installed → after the visit; tested → every checklist item ticked: the customer record is created or
+    updated (warranty from Settings → company details), and the order is marked Installed. */
+export async function setInstallStatus(id, status) {
+  needAftersales();
+  if (!INSTALL_STATUS[status]) throw new Error("Unknown status.");
+  const i = S.data.installations.find((x) => x.id === id);
+  if (!i) return;
+  if (status === "tested" && !checklistDone(i.checklist)) throw new Error("Tick every item of the checklist first.");
+  const ch = { status, ...stamp() };
+  if (status === "installed" || status === "tested") ch.done_at = i.done_at || nowIso();
+  if (status === "tested") ch.customer_id = await customerFromInstallation(i);
+  await S.db.update("installations", id, ch);
+  if (status === "tested" && i.order_id && S.data.orders.some((o) => o.id === i.order_id)) await updateOrder(i.order_id, { status: "installed" });
+  log("installation_" + status, id, i.name);
+}
+async function customerFromInstallation(i) {
+  const day = String(i.done_at || nowIso()).slice(0, 10), months = Number((S.data.settings.company || {}).warranty_months) || 0;
+  const old = S.data.customers.find((c) => (i.customer_id && c.id === i.customer_id) || samePhone(c.phone, i.phone));
+  const base = { name: i.name, phone: i.phone || "", email: i.email || "", address: i.address || "", area: i.area || "", district: i.district || "",
+    package: i.package || "", units: i.units || 1, order_id: i.order_id || "", installation_id: i.id, ...stamp() };
+  if (old) {
+    const devices = [...new Set([...(old.device_ids || []), ...(i.device_ids || [])])];
+    await S.db.update("customers", old.id, clean({ ...base, device_ids: devices, install_date: old.install_date || day,
+      warranty_until: old.warranty_until || addMonths(day, months) }));
+    return old.id;
+  }
+  return S.db.add("customers", clean({ ...base, device_ids: i.device_ids || [], install_date: day, warranty_until: addMonths(day, months), plan_until: "",
+    notes: "", created_at: nowIso(), created_by: by() }));
+}
+
+export async function saveCustomer(id, v) {
+  needAftersales();
+  const data = { ...personFields(v), package: text(v.package, 40), install_date: isDate(v.install_date) ? v.install_date : "",
+    warranty_until: isDate(v.warranty_until) ? v.warranty_until : "", plan_until: isDate(v.plan_until) ? v.plan_until : "",
+    device_ids: String(v.device_ids || "").toUpperCase().split(/[\s,]+/).filter(Boolean).slice(0, 50), notes: text(v.notes, 2000), ...stamp() };
+  if (!id && S.data.customers.some((c) => samePhone(c.phone, data.phone))) throw new Error("A customer with this phone number is already in the list.");
+  if (id) await S.db.update("customers", id, data); else id = await S.db.add("customers", { ...data, created_at: nowIso(), created_by: by() });
+  log("customer_save", id, data.name);
+  return id;
+}
+
+export async function saveTicket(id, v) {
+  needAftersales();
+  if (!TICKET_KINDS[v.kind]) throw new Error("Choose what the ticket is about.");
+  const subject = text(v.subject, 200);
+  if (!subject) throw new Error("Write a short subject.");
+  const cust = S.data.customers.find((c) => c.id === v.customer_id);
+  const who = cust ? { name: cust.name, phone: cust.phone || "", email: cust.email || "", address: cust.address || "", area: cust.area || "", district: cust.district || "" } : personFields(v);
+  const data = { ...who, customer_id: cust ? cust.id : "", kind: v.kind, subject, details: text(v.details, 3000),
+    priority: v.kind === "safety" || v.priority === "urgent" ? "urgent" : "normal", assigned_to: text(v.assigned_to, 120), ...stamp() };
+  if (id) await S.db.update("tickets", id, data);
+  else id = await S.db.add("tickets", { ...data, status: "open", notes: [], created_at: nowIso(), created_by: by() });
+  log("ticket_save", id, subject);
+  return id;
+}
+/** A line on the ticket's history, optionally with a new status. */
+export async function addTicketNote(id, note, status) {
+  needAftersales();
+  const t = S.data.tickets.find((x) => x.id === id);
+  if (!t) return;
+  note = text(note, 1000);
+  if (!note && !status) throw new Error("Write a note or choose a new status.");
+  if (status && !TICKET_STATUS[status]) throw new Error("Unknown status.");
+  const notes = [...(t.notes || []), clean({ at: nowIso(), by: by(), note: note || undefined, status: status || undefined })].slice(-200);
+  const ch = { notes, ...stamp() };
+  if (status) { ch.status = status; ch.resolved_at = status === "resolved" ? nowIso() : null; }
+  await S.db.update("tickets", id, clean(ch));
+  log("ticket_" + (status || "note"), id, t.subject);
+}
+export async function deleteAftersales(col, id) {
+  if (!can("aftersales:delete")) throw new Error("Only founders delete.");
+  await S.db.del(col, id);
+  log(col.replace(/s$/, "") + "_delete", id, "");
 }

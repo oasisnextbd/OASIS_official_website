@@ -423,16 +423,27 @@ table.tot tr:last-child th, table.tot tr:last-child td { border-bottom: 0; }
 
 /* Shorter windows (a laptop, or zoomed in): a more compact menu so every section fits without scrolling.
    Kept at the end so it overrides the menu rules above. */
-@media (min-width: 761px) and (max-height: 900px) {
-  .rail { padding: 14px 12px; gap: 12px; }
+@media (min-width: 761px) and (max-height: 960px) {
+  .rail { padding: 12px 12px; gap: 10px; }
   .nav { gap: 0; }
-  .nav button { padding: 7px 12px; }
-  .me-btn { padding: 6px 8px; }
+  .nav button { padding: 5px 12px; }
+  .me-btn { padding: 5px 8px; }
   .me-btn .avatar { width: 30px; height: 30px; font-size: .8rem; }
 }
-@media (min-width: 761px) and (max-height: 720px) {
+@media (min-width: 761px) and (max-height: 760px) {
   .brand small { display: none; }
-  .brand-logo { height: 28px; }
-  .nav button { padding: 5px 12px; font-size: .92rem; }
-  .nav button svg { width: 18px; height: 18px; }
+  .brand-logo { height: 26px; }
+  .rail { gap: 8px; padding: 10px 10px; }
+  .nav button { padding: 3px 10px; font-size: .88rem; gap: 8px; }
+  .nav button svg { width: 17px; height: 17px; }
+  .me-btn .avatar { width: 26px; height: 26px; font-size: .74rem; }
 }
+/* After-sales (views/installations.js, customers.js, tickets.js, payments.js) */
+.banner.error { border-style: solid; border-color: #C8102E; background: #FFF1F2; color: #5B0A16; }
+.banner.error svg { color: #C8102E; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .banner.error { background: #3A0A12; color: #FFD5DA; } }
+:root[data-theme="dark"] .banner.error { background: #3A0A12; color: #FFD5DA; }
+tr.urgent td:first-child { box-shadow: inset 3px 0 0 #C8102E; }
+.check-row { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; line-height: 1.4; cursor: pointer; }
+.check-row input { margin-top: 3px; width: 16px; height: 16px; flex: none; accent-color: var(--accent); }
+.stack > .grid2, .stack .panel { margin: 0; }
