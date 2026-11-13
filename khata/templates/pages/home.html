@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import icon, school_cover, school_page %}
+{% set page_title = brand ~ t(": স্কুলের নামে খাতা, A4 কাগজ ও রিং খাতা", ": school khatas, A4 paper and ring khatas") %}
+{% set page_desc = t("কিন্ডারগার্টেনের জন্য স্কুলের নামে ছাপা বাংলা, ইংরেজি চার-লাইন ও গণিত ব্লক খাতা, ফটোকপির দোকানের জন্য A4 কাগজ, আর ২০০ পৃষ্ঠার রিং খাতা। নিজে সাজিয়ে অর্ডার মেমো পাঠান।", "Bangla, English four-line and maths block khatas printed in your school's name, A4 paper for copy shops, and 200-page ring khatas. Build your order and send the memo.") %}
+{% set sp = site.show_prices %}
+{% set s = site.school %}{% set a = site.a4 %}{% set r = site.ring %}
+{% macro tk(v) %}৳{{ n("{:,}".format(v)) }}{% endmacro %}
+{% macro span(pair) %}{{ tk(pair[0]) }}{% if pair[0] != pair[1] %} – {{ tk(pair[1]) }}{% endif %}{% endmacro %}
+
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="kicker">{{ t("স্কুল · দোকান · শিক্ষার্থী", "Schools · shops · students") }}</p>
+      <h1>{{ t("খাতার মলাটে <em>আপনার নাম</em>।", "Khatas with <em>your name</em> on the cover.") }}</h1>
+      <p class="lead">{{ t("কিন্ডারগার্টেনের জন্য স্কুলের নামে ছাপা খাতা, ফটোকপির দোকানের জন্য A4 কাগজ, আর কলেজ-ভার্সিটির জন্য নিজের নামে ২০০ পৃষ্ঠার রিং খাতা।", "Khatas printed in your school's name for kindergartens, A4 paper for copy shops, and 200-page ring khatas with a student's own name for college and university.") }}</p>
+      <div class="try">
+        <label for="hero-name">{{ t("স্কুলের নাম লিখুন, মলাটে দেখুন", "Type your school's name and watch the cover") }}</label>
+        <input id="hero-name" type="text" maxlength="48" autocomplete="organization" data-field="school-name" placeholder="{{ t('যেমন: আলোর পাঠশালা', 'e.g. Alor Pathshala') }}">
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="#school">{{ t("পুরো খাতা সাজান", "Build the whole khata") }}{{ icon("arrow") }}</a>
+        <a class="btn btn--secondary" href="#rates">{{ t("দরের তালিকা", "Rate sheet") }}</a>
+      </div>
+    </div>
+    <div class="hero-desk" aria-hidden="true">
+      <div class="ream ream--hero"><span class="ream-a4">A4</span><b>{{ brand }}</b><span>{{ n(a.ream_sheets) }} {{ t("শিট", "sheets") }}</span></div>
+      <div class="book book--ring book--mini" data-series="stem" data-wire="black">
+        <div class="book-cover"><p class="ring-title">{{ t("উচ্চতর গণিত", "Higher Maths") }}</p><p class="ring-foot">{{ n(r.pages) }} {{ t("পৃষ্ঠা", "pages") }}</p></div>
+        <div class="wire"></div>
+      </div>
+      <div class="book book--school book--hero" data-theme="emerald" data-book-theme>
+        <div class="book-cover">{{ school_cover(t, n, brand) }}</div>
+      </div>
+      <span class="pencil"></span>
+    </div>
+  </div>
+</section>
+
+<section class="doors" aria-label="{{ t('তিন ধরনের ক্রেতা', 'Three kinds of customer') }}">
+  <div class="wrap doors-grid">
+    <a class="door door--school" href="#school">
+      {{ icon("school") }}
+      <span class="door-for">{{ t("স্কুলের জন্য", "For schools") }}</span>
+      <b>{{ t("স্কুলের নামে ছাপা খাতা", "Khatas in your school's name") }}</b>
+      <span class="door-meta">{{ t("সর্বনিম্ন", "From") }} {{ n(s.moq) }} {{ t("টি", "pieces") }}</span>
+    </a>
+    <a class="door door--a4" href="#a4">
+      {{ icon("shop") }}
+      <span class="door-for">{{ t("দোকানের জন্য", "For shops") }}</span>
+      <b>{{ t("কার্টনে A4 কাগজ", "A4 paper by the carton") }}</b>
+      <span class="door-meta">{{ n(a.carton_reams) }} {{ t("রিম = ১ কার্টন", "reams = 1 carton") }}</span>
+    </a>
+    <a class="door door--ring" href="#ring">
+      {{ icon("student") }}
+      <span class="door-for">{{ t("শিক্ষার্থীর জন্য", "For students") }}</span>
+      <b>{{ t("নিজের নামে রিং খাতা", "A ring khata with your name") }}</b>
+      <span class="door-meta">{{ n(r.pages) }} {{ t("পৃষ্ঠা", "pages") }} · {{ n(r.gsm) }} GSM</span>
+    </a>
+  </div>
+</section>
+
+<section class="line line--school" id="school">
+  <div class="wrap">
+    <header class="line-head">
+      <p class="kicker">{{ t("১ · কিন্ডারগার্টেন ও প্রি-স্কুল", "1 · Kindergartens and pre-schools") }}</p>
+      <h2>{{ t("স্কুলের নামে ছাপা খাতা", "Khatas printed in your school's name") }}</h2>
+      <p class="lead">{{ t("মলাটে স্কুলের নাম, ঠিকানা আর শিক্ষার্থীর নাম-শ্রেণি-রোল লেখার ঘর। ভেতরে বাংলা রুল, ইংরেজি চার-লাইন, গণিতের ব্লক, অথবা তিনটিই এক খাতায়।", "The school's name and address on the cover, with a box for the pupil's name, class and roll. Inside: Bangla rule, English four-line, maths blocks, or all three in one khata.") }}</p>
+    </header>
+    <div class="builder">
+      <form class="panel" data-form="school">
+        <div class="field-row">
+          <div class="field">
+            <label for="kg-name">{{ t("স্কুলের নাম", "School name") }}</label>
+            <input id="kg-name" type="text" maxlength="48" autocomplete="organization" data-field="school-name" placeholder="{{ t('যেমন: আলোর পাঠশালা', 'e.g. Alor Pathshala') }}">
+          </div>
+          <div class="field">
+            <label for="kg-motto">{{ t("ঠিকানা বা মূলমন্ত্র", "Address or motto") }}</label>
+            <input id="kg-motto" type="text" maxlength="48" data-field="school-motto" placeholder="{{ t('যেমন: মিরপুর, ঢাকা', 'e.g. Mirpur, Dhaka') }}">
+          </div>
+        </div>
+        <fieldset>
+          <legend>{{ t("ভেতরের পাতার রুলিং", "Ruling inside") }}</legend>
+          <div class="opts opts--2">
+            <label class="opt"><input type="radio" name="ruling" value="bangla" checked><span class="opt-body"><i class="swatch rp--bangla"></i><b>{{ t("বাংলা রুল", "Bangla rule") }}</b><small>{{ t("চওড়া লাইন, বাঁয়ে লাল মার্জিন", "Wide lines, red margin on the left") }}</small></span></label>
+            <label class="opt"><input type="radio" name="ruling" value="english"><span class="opt-body"><i class="swatch rp--english"></i><b>{{ t("ইংরেজি চার-লাইন", "English four-line") }}</b><small>{{ t("লাল-নীল-নীল-লাল, হাতের লেখার জন্য", "Red, blue, blue, red for handwriting") }}</small></span></label>
+            <label class="opt"><input type="radio" name="ruling" value="block"><span class="opt-body"><i class="swatch rp--block"></i><b>{{ t("গণিত ব্লক", "Maths blocks") }}</b><small>{{ t("সংখ্যা লেখার চৌকো ঘর", "Square boxes for writing numbers") }}</small></span></label>
+            <label class="opt"><input type="radio" name="ruling" value="combo"><span class="opt-body"><i class="swatch swatch--combo"><i class="rp--bangla"></i><i class="rp--english"></i><i class="rp--block"></i></i><b>{{ t("তিনটিই এক খাতায়", "All three in one") }}</b><small>{{ t("তিন ভাগে তিন রুলিং", "Three rulings in three parts") }}{% if sp and s.combo_extra %} · +{{ tk(s.combo_extra) }}{% endif %}</small></span></label>
+          </div>
+        </fieldset>
+        <div class="field-row">
+          <fieldset>
+            <legend>{{ t("পৃষ্ঠা", "Pages") }}</legend>
+            <div class="chips">
+              {% for p in s.base_by_pages %}
+              <label class="chip"><input type="radio" name="pages" value="{{ p }}"{% if p == "60" %} checked{% endif %}><span>{{ n(p) }}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>{{ t("কাগজ (GSM)", "Paper (GSM)") }}</legend>
+            <div class="chips">
+              {% for g in s.gsm_extra %}
+              <label class="chip"><input type="radio" name="gsm" value="{{ g }}"{% if g == "70" %} checked{% endif %}><span>{{ n(g) }}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        </div>
+        <div class="field-row">
+          <fieldset>
+            <legend>{{ t("মলাটের রং", "Cover colour") }}</legend>
+            <div class="chips">
+              {% for key, bn, en in [("emerald", "সবুজ", "Green"), ("sky", "নীল", "Blue"), ("sun", "হলুদ", "Yellow"), ("coral", "গোলাপি", "Pink")] %}
+              <label class="chip chip--tone" data-theme="{{ key }}"><input type="radio" name="theme" value="{{ key }}"{% if loop.first %} checked{% endif %}><span>{{ t(bn, en) }}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="kg-qty">{{ t("কতগুলো খাতা", "How many khatas") }}</label>
+            <div class="stepper">
+              <button type="button" data-step="-50" aria-label="{{ t('৫০টি কম', '50 fewer') }}">{{ icon("minus") }}</button>
+              <input id="kg-qty" type="number" name="qty" inputmode="numeric" min="{{ s.moq }}" step="50" value="300">
+              <button type="button" data-step="50" aria-label="{{ t('৫০টি বেশি', '50 more') }}">{{ icon("plus") }}</button>
+            </div>
+            <p class="hint">{{ t("সর্বনিম্ন", "Minimum") }} {{ n(s.moq) }} {{ t("টি", "pieces") }}</p>
+          </div>
+        </div>
+      </form>
+
+      <div class="stage">
+        <div class="book book--school" id="kg-book" data-theme="emerald" data-ruling="bangla" data-book-theme>
+          <div class="book-page">{{ school_page(t) }}</div>
+          <div class="book-cover">{{ school_cover(t, n, brand) }}</div>
+        </div>
+        <button class="btn btn--ghost btn--sm" type="button" data-flip="kg-book" aria-pressed="false">{{ icon("flip") }}<span data-flip-label>{{ t("খাতা খুলে দেখুন", "Open the khata") }}</span></button>
+        <div class="result" aria-live="polite">
+          {% if sp %}
+          <p class="result-main"><output data-out="school-unit"></output><span>{{ t("প্রতি খাতা", "per khata") }}</span></p>
+          <p class="result-sub">{{ t("মোট", "Total") }} <output data-out="school-total"></output> · <output data-out="school-qty"></output></p>
+          <p class="hint" data-out="school-tier"></p>
+          {% else %}
+          <p class="result-sub"><output data-out="school-qty"></output></p>
+          {% endif %}
+          <button class="btn btn--primary" type="button" data-add="school">{{ icon("plus") }}{{ t("মেমোতে যোগ করুন", "Add to the memo") }}</button>
+        </div>
+        <ul class="ticks">
+          <li>{{ icon("check") }}{{ t("৩০০ GSM আর্ট কার্ডের রঙিন মলাট, মাঝখানে পিন বাঁধাই", "Full-colour cover on 300 GSM art card, pinned at the centre") }}</li>
+          <li>{{ icon("check") }}{{ t("ছাপার আগে মলাটের ডিজাইন আপনাকে দেখানো হয়", "You see the cover design before anything is printed") }}</li>
+          {% if s.free_design_from %}<li>{{ icon("check") }}{{ n(s.free_design_from) }}{{ t("টি বা তার বেশি খাতায় মলাটের ডিজাইন বিনা খরচে", " khatas or more: the cover design is free") }}</li>{% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="line line--a4" id="a4">
+  <div class="wrap">
+    <header class="line-head">
+      <p class="kicker">{{ t("২ · ফটোকপি ও কম্পোজের দোকান", "2 · Copy and compose shops") }}</p>
+      <h2>{{ t("দোকানের জন্য A4 কাগজ, কার্টনে", "A4 paper for your shop, by the carton") }}</h2>
+      <p class="lead">{{ t("প্রতি রিমে পুরো ৫০০ শিট, প্রতি কার্টনে ৫ রিম। নিয়মিত নিলে প্রতি রিমে দাম কমে।", "A full 500 sheets in every ream, 5 reams in every carton. A regular order brings the price per ream down.") }}</p>
+    </header>
+    <div class="builder">
+      <form class="panel" data-form="a4">
+        <fieldset>
+          <legend>{{ t("কাগজের গ্রেড", "Paper grade") }}</legend>
+          <div class="opts opts--3">
+            {% for g, bn, en, dbn, den in [
+              ("70", "ফটোকপির জন্য", "For photocopying", "বেশি কপি, দুই পিঠে ছাপা", "High volume, both sides"),
+              ("75", "কম্পোজ ও লেজার", "Compose and laser", "প্রিন্টারে একটু শক্ত কাগজ", "A little stiffer in the printer"),
+              ("80", "অফিস ও থিসিস", "Office and thesis", "দলিল, থিসিস, রঙিন প্রিন্ট", "Deeds, theses, colour prints")] %}
+            <label class="opt opt--stack"><input type="radio" name="gsm" value="{{ g }}"{% if loop.first %} checked{% endif %}><span class="opt-body"><b class="opt-big">{{ n(g) }} <small>GSM</small></b><b>{{ t(bn, en) }}</b><small>{{ t(dbn, den) }}</small>{% if sp %}<small class="opt-price">{{ tk(a.base[g]) }} / {{ t("রিম", "ream") }}</small>{% endif %}</span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        <div class="field-row">
+          <div class="field">
+            <label for="a4-reams">{{ t("কত রিম", "How many reams") }}</label>
+            <div class="stepper">
+              <button type="button" data-step="-{{ a.carton_reams }}" aria-label="{{ t('এক কার্টন কম', 'One carton fewer') }}">{{ icon("minus") }}</button>
+              <input id="a4-reams" type="number" name="reams" inputmode="numeric" min="{{ a.carton_reams }}" step="{{ a.carton_reams }}" value="25">
+              <button type="button" data-step="{{ a.carton_reams }}" aria-label="{{ t('এক কার্টন বেশি', 'One carton more') }}">{{ icon("plus") }}</button>
+            </div>
+            <p class="hint">{{ t("সর্বনিম্ন ১ কার্টন", "Minimum 1 carton") }} ({{ n(a.carton_reams) }} {{ t("রিম", "reams") }})</p>
+          </div>
+          <fieldset>
+            <legend>{{ t("কত দিন পরপর", "How often") }}</legend>
+            <div class="chips chips--col">
+              {% for key, bn, en in [("weekly", "প্রতি সপ্তাহে", "Every week"), ("biweekly", "দুই সপ্তাহে একবার", "Every two weeks"), ("once", "শুধু এবার", "Just this once")] %}
+              <label class="chip"><input type="radio" name="plan" value="{{ key }}"{% if loop.first %} checked{% endif %}><span>{{ t(bn, en) }}{% if sp and a.plan_discounts[key] %} <em>−{{ tk(a.plan_discounts[key]) }}/{{ t("রিম", "ream") }}</em>{% endif %}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        </div>
+      </form>
+
+      <div class="stage">
+        <div class="ream" id="a4-ream">
+          <span class="ream-a4">A4</span>
+          <b>{{ brand }}</b>
+          <span><span data-bind="a4-gsm">{{ n("70") }}</span> GSM · {{ n(a.ream_sheets) }} {{ t("শিট", "sheets") }}</span>
+        </div>
+        <div class="cartons" data-bind="a4-cartons" aria-hidden="true"></div>
+        <div class="result" aria-live="polite">
+          {% if sp %}
+          <p class="result-main"><output data-out="a4-rate"></output><span>{{ t("প্রতি রিম", "per ream") }}</span></p>
+          <p class="result-sub">{{ t("মোট", "Total") }} <output data-out="a4-total"></output> · <output data-out="a4-sheet"></output> {{ t("প্রতি শিট", "per sheet") }}</p>
+          {% endif %}
+          <p class="hint"><output data-out="a4-cartons-text"></output></p>
+          <button class="btn btn--primary" type="button" data-add="a4">{{ icon("plus") }}{{ t("মেমোতে যোগ করুন", "Add to the memo") }}</button>
+        </div>
+        <ul class="ticks">
+          <li>{{ icon("check") }}{{ t("প্রতি রিমে পুরো ৫০০ শিট, গুনে দেখে নিন", "A full 500 sheets in every ream. Count them.") }}</li>
+          <li>{{ icon("check") }}{{ t("প্রথমবার এক কার্টন নিয়ে নিজের মেশিনে চালিয়ে দেখুন", "Start with one carton and run it in your own machine") }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="line line--ring" id="ring">
+  <div class="wrap">
+    <header class="line-head">
+      <p class="kicker">{{ t("৩ · স্কুল, কলেজ ও ভার্সিটি", "3 · School, college and university") }}</p>
+      <h2>{{ t("নিজের নামে ২০০ পৃষ্ঠার রিং খাতা", "A 200-page ring khata with your name on it") }}</h2>
+      <p class="lead">{{ t("টুইন-ওয়্যার বাঁধাই, তাই ছোট বেঞ্চেও পুরো ভাঁজ করে লেখা যায়। মলাটে বিষয়ের নাম আর নিজের নাম বা ব্যাচ।", "Twin-wire bound, so it folds right back on a small bench. Your subject on the cover, with your name or batch.") }}</p>
+    </header>
+    <div class="builder">
+      <form class="panel" data-form="ring">
+        <fieldset>
+          <legend>{{ t("মলাটের ধরন", "Cover style") }}</legend>
+          <div class="opts opts--2">
+            {% for key, bn, en, dbn, den in [
+              ("stem", "সূত্র ও বিজ্ঞান", "Formulas and science", "পদার্থ, গণিত, ইঞ্জিনিয়ারিং", "Physics, maths, engineering"),
+              ("minimal", "সাদামাটা", "Minimal", "পরিষ্কার রঙের ব্লক", "Clean blocks of colour"),
+              ("bangla", "বাংলা হরফ", "Bangla lettering", "বড় বাংলা অক্ষরের নকশা", "A design of large Bangla letters"),
+              ("campus", "ক্যাম্পাস ও ব্যাচ", "Campus and batch", "নাম, রোল আর ব্যাচ সামনে", "Name, roll and batch up front")] %}
+            <label class="opt"><input type="radio" name="series" value="{{ key }}"{% if loop.first %} checked{% endif %}><span class="opt-body"><i class="swatch swatch--series" data-series="{{ key }}"></i><b>{{ t(bn, en) }}</b><small>{{ t(dbn, den) }}</small></span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        <div class="field-row">
+          <div class="field">
+            <label for="ring-title">{{ t("মলাটের শিরোনাম বা বিষয়", "Cover title or subject") }}</label>
+            <input id="ring-title" type="text" maxlength="40" data-field="ring-title" placeholder="{{ t('যেমন: উচ্চতর গণিত', 'e.g. Higher Maths') }}">
+          </div>
+          <div class="field">
+            <label for="ring-name">{{ t("নাম বা ব্যাচ", "Name or batch") }}</label>
+            <input id="ring-name" type="text" maxlength="40" autocomplete="name" data-field="ring-name" placeholder="{{ t('যেমন: এইচএসসি ২০২৭', 'e.g. HSC 2027') }}">
+          </div>
+        </div>
+        <div class="field-row">
+          <fieldset>
+            <legend>{{ t("ভেতরের কাগজ", "Paper inside") }}</legend>
+            <div class="chips">
+              {% for key, bn, en in [("ruled", "রুল টানা", "Ruled"), ("cream", "ক্রিম রুল", "Cream ruled"), ("dot", "ডট গ্রিড", "Dot grid"), ("blank", "সাদা", "Blank")] %}
+              <label class="chip"><input type="radio" name="paper" value="{{ key }}"{% if loop.first %} checked{% endif %}><span>{{ t(bn, en) }}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>{{ t("রিংয়ের রং", "Ring colour") }}</legend>
+            <div class="chips">
+              {% for key, bn, en in [("black", "কালো", "Black"), ("silver", "রুপালি", "Silver"), ("bronze", "ব্রোঞ্জ", "Bronze")] %}
+              <label class="chip chip--tone" data-wire="{{ key }}"><input type="radio" name="wire" value="{{ key }}"{% if loop.first %} checked{% endif %}><span>{{ t(bn, en) }}</span></label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        </div>
+        <fieldset>
+          <legend>{{ t("কয়টি নেবেন", "How many") }}</legend>
+          <div class="opts opts--4">
+            {% for k, bn, en in [("1", "একটি", "Single"), ("3", "৩টির প্যাক", "Pack of 3"), ("5", "৫টির সেট", "Set of 5"), ("10", "১০টির দল", "Group of 10")] %}
+            {% if k in r.packs %}
+            <label class="opt opt--stack"><input type="radio" name="pack" value="{{ k }}"{% if k == "3" %} checked{% endif %}><span class="opt-body"><b class="opt-big">{{ n(k) }}</b><b>{{ t(bn, en) }}</b>{% if sp %}<small class="opt-price">{{ tk(r.packs[k]) }}</small>{% set save = r.packs["1"] * (k|int) - r.packs[k] %}{% if save > 0 %}<small class="opt-save">{{ tk(save) }} {{ t("কম", "saved") }}</small>{% endif %}{% endif %}</span></label>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="stage">
+        <div class="book book--ring" id="ring-book" data-series="stem" data-wire="black" data-paper="ruled">
+          <div class="book-page"><span class="hand">{{ t("আজকের নোট", "Today's notes") }}</span></div>
+          <div class="book-cover">
+            <p class="ring-tag" data-bind="ring-tag"></p>
+            <p class="ring-title" data-bind="ring-title">{{ t("বিষয়ের নাম", "Your subject") }}</p>
+            <p class="ring-name" data-bind="ring-name">{{ t("আপনার নাম বা ব্যাচ", "Your name or batch") }}</p>
+            <p class="ring-foot">{{ n(r.pages) }} {{ t("পৃষ্ঠা", "pages") }} · {{ n(r.gsm) }} GSM</p>
+          </div>
+          <div class="wire" aria-hidden="true"></div>
+        </div>
+        <button class="btn btn--ghost btn--sm" type="button" data-flip="ring-book" aria-pressed="false">{{ icon("flip") }}<span data-flip-label>{{ t("খাতা খুলে দেখুন", "Open the khata") }}</span></button>
+        <div class="result" aria-live="polite">
+          {% if sp %}
+          <p class="result-main"><output data-out="ring-total"></output><span data-out="ring-pack"></span></p>
+          <p class="result-sub"><output data-out="ring-unit"></output> {{ t("প্রতি খাতা", "per khata") }}</p>
+          {% else %}
+          <p class="result-sub"><span data-out="ring-pack"></span></p>
+          {% endif %}
+          <button class="btn btn--primary" type="button" data-add="ring">{{ icon("plus") }}{{ t("মেমোতে যোগ করুন", "Add to the memo") }}</button>
+        </div>
+        <ul class="ticks">
+          <li>{{ icon("check") }}{{ n(r.pages) }}{{ t(" পৃষ্ঠা (১০০ পাতা), ", " pages (100 sheets), ") }}{{ n(r.gsm) }}{{ t(" GSM কাগজ, শক্ত মলাট", " GSM paper, hard cover") }}</li>
+          {% if r.cod %}<li>{{ icon("check") }}{{ t("হাতে পেয়ে টাকা দিন (ক্যাশ অন ডেলিভারি)", "Pay when it arrives (cash on delivery)") }}</li>{% endif %}
+          {% if r.free_delivery_pack and (r.free_delivery_pack|string) in r.packs %}<li>{{ icon("check") }}{{ n(r.free_delivery_pack) }}{{ t("টির দলে ডেলিভারি ফ্রি", " together: free delivery") }}</li>{% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="steps-sec" id="order">
+  <div class="wrap">
+    <header class="line-head">
+      <p class="kicker">{{ t("অর্ডার", "Ordering") }}</p>
+      <h2>{{ t("অর্ডার যেভাবে হয়", "How ordering works") }}</h2>
+    </header>
+    <ol class="steps">
+      <li><b>{{ t("সাজান", "Build it") }}</b><p>{{ t("উপরে নিজের খাতা বা কাগজ বেছে নিন। দাম সঙ্গে সঙ্গে হিসাব হয়।", "Choose your khata or paper above. The price works itself out as you go.") }}</p></li>
+      <li><b>{{ t("মেমোতে তুলুন", "Add it to the memo") }}</b><p>{{ t("একই মেমোতে খাতা, কাগজ আর রিং খাতা একসঙ্গে রাখা যায়।", "Khatas, paper and ring khatas can all go on one memo.") }}</p></li>
+      <li><b>{{ t("মেমো পাঠান", "Send the memo") }}</b><p>{% if site.contact.whatsapp_number %}{{ t("নাম আর মোবাইল নম্বর লিখে এক চাপে WhatsApp-এ পাঠান।", "Add your name and mobile number and send it on WhatsApp in one tap.") }}{% else %}{{ t("নাম আর মোবাইল নম্বর লিখে মেমো কপি করে আমাদের পাঠান।", "Add your name and mobile number, copy the memo and send it to us.") }}{% endif %}</p></li>
+      <li><b>{{ t("আমরা নিশ্চিত করি", "We confirm") }}</b><p>{{ t("চূড়ান্ত দাম আর ডেলিভারির সময় জানাই। স্কুলের খাতায় ছাপার আগে মলাটের ডিজাইন দেখাই।", "We reply with the final price and the delivery date. For school khatas you see the cover design before printing.") }}</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="rates-sec" id="rates">
+  <div class="wrap">
+    <header class="line-head">
+      <p class="kicker">{{ t("এক নজরে", "At a glance") }}</p>
+      <h2>{{ t("দরের তালিকা", "Rate sheet") }}</h2>
+      {% if sp %}<p class="lead">{{ t("দাম টাকায়, পরিমাণ অনুযায়ী কমবেশি হয়। চূড়ান্ত দাম মেমোর উত্তরে জানানো হয়।", "Prices in taka; they move with quantity. The final price comes with our reply to your memo.") }}</p>{% endif %}
+    </header>
+    <div class="table-wrap">
+      <table class="rates">
+        <thead>
+          <tr><th scope="col">{{ t("পণ্য", "Product") }}</th><th scope="col">{{ t("বিবরণ", "Details") }}</th><th scope="col">{{ t("সর্বনিম্ন অর্ডার", "Minimum order") }}</th>{% if sp %}<th scope="col">{{ t("দাম", "Price") }}</th>{% endif %}</tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row"><a href="#school">{{ t("স্কুলের খাতা", "School khata") }}</a></th><td>{{ t("বাংলা, ইংরেজি চার-লাইন বা গণিত ব্লক · ৬০ পৃষ্ঠা · ৭০ GSM", "Bangla, English four-line or maths blocks · 60 pages · 70 GSM") }}</td><td>{{ n(s.moq) }} {{ t("টি", "pieces") }}</td>{% if sp %}<td>{{ span(rates.school_60_70) }} / {{ t("টি", "piece") }}</td>{% endif %}</tr>
+          <tr><th scope="row"><a href="#school">{{ t("তিন রুলিংয়ের খাতা", "Three-in-one khata") }}</a></th><td>{{ t("বাংলা + চার-লাইন + ব্লক এক খাতায় · ৮০ পৃষ্ঠা · ৭০ GSM", "Bangla + four-line + blocks in one · 80 pages · 70 GSM") }}</td><td>{{ n(s.moq) }} {{ t("টি", "pieces") }}</td>{% if sp %}<td>{{ span(rates.school_combo_80_70) }} / {{ t("টি", "piece") }}</td>{% endif %}</tr>
+          {% for g, pair in rates.a4.items() %}
+          <tr><th scope="row"><a href="#a4">{{ t("A4 কাগজ", "A4 paper") }} {{ n(g) }} GSM</a></th><td>{{ n(a.ream_sheets) }} {{ t("শিটের রিম", "sheets a ream") }}</td><td>{{ n(a.carton_reams) }} {{ t("রিম (১ কার্টন)", "reams (1 carton)") }}</td>{% if sp %}<td>{{ span(pair) }} / {{ t("রিম", "ream") }}</td>{% endif %}</tr>
+          {% endfor %}
+          <tr><th scope="row"><a href="#ring">{{ t("রিং খাতা", "Ring khata") }}</a></th><td>{{ n(r.pages) }} {{ t("পৃষ্ঠা", "pages") }} · {{ n(r.gsm) }} GSM · {{ t("টুইন-ওয়্যার, নিজের নামে মলাট", "twin-wire, your name on the cover") }}</td><td>{{ n("1") }} {{ t("টি", "piece") }}</td>{% if sp %}<td>{{ span(rates.ring) }} / {{ t("টি", "piece") }}</td>{% endif %}</tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="faq-sec" id="faq">
+  <div class="wrap narrow">
+    <header class="line-head">
+      <p class="kicker">{{ t("জেনে নিন", "Good to know") }}</p>
+      <h2>{{ t("প্রশ্নোত্তর", "Questions and answers") }}</h2>
+    </header>
+    <div class="faq">
+      <details><summary>{{ t("সর্বনিম্ন কতটা অর্ডার করা যায়?", "What is the smallest order?") }}</summary><p>{{ t("স্কুলের খাতা", "School khatas: ") }} {{ n(s.moq) }}{{ t("টি থেকে, A4 কাগজ এক কার্টন (", " pieces. A4 paper: one carton (") }}{{ n(a.carton_reams) }}{{ t(" রিম) থেকে, আর রিং খাতা একটি থেকেই।", " reams). Ring khatas: a single piece.") }}</p></details>
+      <details><summary>{{ t("মলাটের ডিজাইন কে করে?", "Who designs the cover?") }}</summary><p>{{ t("আপনি স্কুলের নাম, ঠিকানা আর লোগো দেন, আমরা মলাট সাজিয়ে আপনাকে দেখাই। আপনি ঠিক আছে বললে তবেই ছাপা হয়।", "You give us the school's name, address and logo; we lay out the cover and show it to you. Nothing is printed until you approve it.") }}</p></details>
+      <details><summary>{{ t("এক খাতায় তিন রুলিং মানে কী?", "What does three rulings in one khata mean?") }}</summary><p>{{ t("খাতার প্রথম ভাগে বাংলা রুল, মাঝের ভাগে ইংরেজি চার-লাইন, শেষ ভাগে গণিতের ব্লক। ছোট ক্লাসের শিশুকে তিনটি আলাদা খাতা বইতে হয় না।", "The first third is Bangla rule, the middle third English four-line and the last third maths blocks, so a small child carries one khata instead of three.") }}</p></details>
+      <details><summary>{{ t("A4 কাগজ কি এক রিম করে নেওয়া যায়?", "Can I buy A4 paper one ream at a time?") }}</summary><p>{{ t("না, কাগজ কার্টন হিসেবে দেওয়া হয়। এক কার্টনে", "No, paper is supplied by the carton. One carton holds") }} {{ n(a.carton_reams) }} {{ t("রিম, অর্থাৎ", "reams, which is") }} {{ n("{:,}".format(a.carton_reams * a.ream_sheets)) }} {{ t("শিট।", "sheets.") }}</p></details>
+      <details><summary>{{ t("রিং খাতার মলাটে কী লেখানো যায়?", "What can go on a ring khata's cover?") }}</summary><p>{{ t("একটি শিরোনাম বা বিষয়ের নাম, আর নিচে আপনার নাম, রোল বা ব্যাচ। একই প্যাকের প্রতিটি খাতায় আলাদা বিষয় চাইলে মেমো পাঠানোর সময় লিখে দিন।", "A title or subject, and under it your name, roll or batch. If you want a different subject on each khata in a pack, say so when you send the memo.") }}</p></details>
+      {% if sp %}<details><summary>{{ t("এখানে দেখানো দামই কি চূড়ান্ত?", "Are the prices here final?") }}</summary><p>{{ t("এগুলো আনুমানিক দাম। পরিমাণ, কাগজ আর ডেলিভারির জায়গা দেখে মেমোর উত্তরে চূড়ান্ত দাম জানানো হয়।", "They are estimates. The final price comes with our reply to your memo, once we have seen the quantity, the paper and where it is going.") }}</p></details>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block after %}
+<dialog class="memo" id="memo" aria-labelledby="memo-title">
+  <div class="memo-paper">
+    <header class="memo-head">
+      <div><h2 id="memo-title">{{ t("অর্ডার মেমো", "Order memo") }}</h2><p>{{ brand }}</p></div>
+      <button class="icon-btn icon-btn--show" type="button" data-memo-close aria-label="{{ t('বন্ধ করুন', 'Close') }}">{{ icon("close") }}</button>
+    </header>
+    <ol class="memo-items" data-memo-items></ol>
+    <p class="memo-empty" data-memo-empty>{{ t("মেমো এখনো খালি। উপরে খাতা বা কাগজ সাজিয়ে “মেমোতে যোগ করুন” চাপুন।", "The memo is empty. Build a khata or a paper order above and press “Add to the memo”.") }}</p>
+    {% if sp %}<p class="memo-total"><span>{{ t("মোট (আনুমানিক)", "Total (estimate)") }}</span><output data-memo-total></output></p>{% endif %}
+    <div class="memo-form">
+      <div class="field"><label for="memo-name">{{ t("আপনার নাম, স্কুল বা দোকান", "Your name, school or shop") }}</label><input id="memo-name" type="text" autocomplete="name" maxlength="60"></div>
+      <div class="field"><label for="memo-phone">{{ t("মোবাইল নম্বর", "Mobile number") }}</label><input id="memo-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20"></div>
+    </div>
+    <div class="btn-row">
+      {% if site.contact.whatsapp_number %}<a class="btn btn--primary" href="https://wa.me/{{ site.contact.whatsapp_number }}" target="_blank" rel="noopener" data-memo-wa>{{ icon("whatsapp") }}{{ t("WhatsApp-এ পাঠান", "Send on WhatsApp") }}</a>{% endif %}
+      <button class="btn {{ 'btn--secondary' if site.contact.whatsapp_number else 'btn--primary' }}" type="button" data-memo-copy>{{ icon("copy") }}{{ t("মেমো কপি করুন", "Copy the memo") }}</button>
+      <button class="btn btn--ghost" type="button" data-memo-clear>{{ t("সব মুছুন", "Clear all") }}</button>
+    </div>
+  </div>
+</dialog>
+<p class="toast" role="status" aria-live="polite" data-toast hidden></p>
+<script type="application/json" id="kh-data">{{ {
+  "lang": lang, "brand": brand, "showPrices": sp, "calc": calc,
+  "s": {
+    "piece": t("টি", "pcs"), "pages": t("পৃষ্ঠা", "pages"), "ream": t("রিম", "reams"), "carton": t("কার্টন", "cartons"), "sheet": t("শিট", "sheets"),
+    "khata": t("খাতা", "khatas"), "pack": t("টির প্যাক", "-pack"), "single": t("১টি খাতা", "1 khata"),
+    "ruling": {"bangla": t("বাংলা খাতা", "Bangla khata"), "english": t("ইংরেজি চার-লাইন খাতা", "English four-line khata"), "block": t("গণিত ব্লক খাতা", "Maths block khata"), "combo": t("তিন রুলিংয়ের খাতা", "Three-in-one khata")},
+    "theme": {"emerald": t("সবুজ মলাট", "green cover"), "sky": t("নীল মলাট", "blue cover"), "sun": t("হলুদ মলাট", "yellow cover"), "coral": t("গোলাপি মলাট", "pink cover")},
+    "plan": {"weekly": t("প্রতি সপ্তাহে", "every week"), "biweekly": t("দুই সপ্তাহে একবার", "every two weeks"), "once": t("একবার", "one time")},
+    "series": {"stem": t("সূত্র ও বিজ্ঞান", "Formulas and science"), "minimal": t("সাদামাটা", "Minimal"), "bangla": t("বাংলা হরফ", "Bangla lettering"), "campus": t("ক্যাম্পাস ও ব্যাচ", "Campus and batch")},
+    "paper": {"ruled": t("রুল টানা", "ruled"), "cream": t("ক্রিম রুল", "cream ruled"), "dot": t("ডট গ্রিড", "dot grid"), "blank": t("সাদা", "blank")},
+    "wire": {"black": t("কালো রিং", "black rings"), "silver": t("রুপালি রিং", "silver rings"), "bronze": t("ব্রোঞ্জ রিং", "bronze rings")},
+    "lineSchool": t("স্কুলের খাতা", "School khatas"), "lineA4": t("A4 কাগজ", "A4 paper"), "lineRing": t("রিং খাতা", "Ring khatas"),
+    "schoolFallback": t("স্কুলের নাম পরে জানাব", "School name to follow"),
+    "tierNext": t("আর {n}টি নিলে প্রতি খাতায় {d} কমবে", "{n} more and each khata is {d} cheaper"),
+    "tierBest": t("এই পরিমাণে সবচেয়ে কম দর পাচ্ছেন", "You are on the lowest rate for quantity"),
+    "open": t("খাতা খুলে দেখুন", "Open the khata"), "close": t("মলাট বন্ধ করুন", "Close the cover"),
+    "added": t("মেমোতে যোগ হয়েছে", "Added to the memo"), "copied": t("মেমো কপি হয়েছে, এবার পাঠিয়ে দিন", "Memo copied. Now send it."), "copyFail": t("কপি করা গেল না, লেখাটি নিজে বেছে কপি করুন", "Could not copy. Select the text and copy it yourself."),
+    "cleared": t("মেমো খালি করা হয়েছে", "Memo cleared"), "emptyWarn": t("আগে মেমোতে কিছু যোগ করুন", "Add something to the memo first"), "remove": t("বাদ দিন", "Remove"),
+    "memoTitle": t("অর্ডার মেমো", "Order memo"), "memoName": t("নাম", "Name"), "memoPhone": t("মোবাইল", "Mobile"), "memoTotal": t("মোট (আনুমানিক)", "Total (estimate)")
+  }
+} | tojson }}</script>
+{% endblock %}

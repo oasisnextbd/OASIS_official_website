@@ -23,6 +23,7 @@ backend/
   connected-firebase/    Firebase: device API, remote close, alerts (+ DEVICE_API.md);
                          firestore.rules also guards the team dashboard
 rodbondhu/             Rod Bondhu solar dryer website + live app → /Rod_Bondhu/ (bn), /Rod_Bondhu/en/, /Rod_Bondhu/app/
+khata/                 Khata and paper website (not launched yet) → /Khata/ (bn), /Khata/en/
 team-dashboard/        company admin site (orders, invoices, stock, promo codes, costs) → /team/
 docs/                  project documents (brand rules, developer response, setup guide)
 archive/               retired files kept for reference (not published)
@@ -65,6 +66,7 @@ One-time setting: **Settings → Pages → Build and deployment → Source: GitH
 | Firebase backend (for the VenGuard app, repo oasisnextbd/venguard-app) | [`backend/connected-firebase/README.md`](backend/connected-firebase/README.md) |
 | Firmware contract for devices | [`backend/connected-firebase/DEVICE_API.md`](backend/connected-firebase/DEVICE_API.md) |
 | Orders → Google Sheet | [`backend/leads-sheet/README.md`](backend/leads-sheet/README.md) |
+| Khata and paper website | [`khata/README.md`](khata/README.md) |
 | Team dashboard (admin: orders, invoices, stock, promo codes, marketing costs) | [`team-dashboard/README.md`](team-dashboard/README.md) |
 | Answers to the founders' brief | [`docs/venguard/developer-response.md`](docs/venguard/developer-response.md) |
 | Switching on Google Sheet / Firebase | [`docs/venguard/setup-guide.md`](docs/venguard/setup-guide.md) |

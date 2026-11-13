@@ -1,0 +1,55 @@
+{
+  "_readme": "Settings for the khata and paper website. Real values only: leave a value empty until it is confirmed; empty values are not shown on the site.",
+  "base_url": "https://oasisnextbd.github.io/OASIS_official_website/Khata",
+
+  "_launched_readme": "false = the pages ask search engines not to index them and are left out of the main sitemap. Set true once the brand name, contacts and prices below are confirmed.",
+  "launched": false,
+
+  "brand": {
+    "_readme": "WORKING TITLE. Replace both names with the real brand before launch; they appear in the header, on the ream wrapper, on khata back covers and in the order memo.",
+    "name_bn": "খাতাঘর",
+    "name_en": "Khataghor"
+  },
+
+  "contact": {
+    "_readme": "All empty = no contact block is shown and the order memo can only be copied. whatsapp_number: digits only with country code (8801…), turns on the 'Send on WhatsApp' button.",
+    "whatsapp_number": "",
+    "phone_display": "",
+    "phone_tel": "",
+    "email": "",
+    "facebook_url": "",
+    "area_bn": "",
+    "area_en": ""
+  },
+
+  "_prices_readme": "All amounts are in BDT and come from the founders' first draft (November 2026). show_prices false = no amount appears anywhere; the calculators then only build a quote request.",
+  "show_prices": true,
+
+  "school": {
+    "_readme": "Unit price = base_by_pages + gsm_extra (+ combo_extra for the 3-in-1 ruling) − the first qty_discounts row whose quantity is reached. free_design_from: 0 hides the free cover design offer.",
+    "moq": 100,
+    "base_by_pages": {"40": 18, "60": 23, "80": 28, "100": 33},
+    "gsm_extra": {"65": 0, "70": 2, "80": 5},
+    "combo_extra": 3,
+    "qty_discounts": [[1000, 3], [500, 2], [200, 1]],
+    "free_design_from": 200
+  },
+
+  "a4": {
+    "_readme": "Rate per ream = base − volume discount − schedule discount.",
+    "ream_sheets": 500,
+    "carton_reams": 5,
+    "base": {"70": 410, "75": 445, "80": 485},
+    "qty_discounts": [[50, 15], [25, 10], [10, 5]],
+    "plan_discounts": {"weekly": 10, "biweekly": 5, "once": 0}
+  },
+
+  "ring": {
+    "_readme": "packs: pieces → pack price. free_delivery_pack: 0 hides the free delivery offer. cod: true shows 'cash on delivery'.",
+    "pages": 200,
+    "gsm": 80,
+    "packs": {"1": 165, "3": 450, "5": 700, "10": 1300},
+    "free_delivery_pack": 10,
+    "cod": true
+  }
+}
