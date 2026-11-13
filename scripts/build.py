@@ -13,8 +13,6 @@ Layout of the published site (URLs are stable; do not change them casually):
     /Rod_Bondhu/         Rod Bondhu website (bn)    ← rodbondhu/ (built by rodbondhu/tools/build.py)
     /Rod_Bondhu/en/      Rod Bondhu website (en)
     /Rod_Bondhu/app/     Rod Bondhu live dryer app  ← rodbondhu/app/
-    /Khata/              Khata and paper website (bn) ← khata/     (built by khata/tools/build.py)
-    /Khata/en/           Khata and paper website (en)
     /team/               VenGuard team dashboard    ← team-dashboard/ (not linked anywhere, not
                          indexed; data in Firestore behind Google sign-in and the team list)
 """
@@ -34,7 +32,6 @@ def main():
     shutil.copytree(REPO / "oasis-site", OUT)
     subprocess.run([sys.executable, str(REPO / "venguard/tools/build.py"), str(OUT / "VENGuard")], check=True)
     subprocess.run([sys.executable, str(REPO / "rodbondhu/tools/build.py"), str(OUT / "Rod_Bondhu")], check=True)
-    subprocess.run([sys.executable, str(REPO / "khata/tools/build.py"), str(OUT / "Khata")], check=True)
     build_dashboard(OUT / "team")
     write_sitemap_index()
     (OUT / ".nojekyll").write_text("")  # serve files as-is (no Jekyll processing)
@@ -43,10 +40,8 @@ def main():
 
 
 def write_sitemap_index():
-    """/sitemap.xml lists the OASIS page and each product site's sitemap, so Search Console needs one address.
-    The khata site is listed only once khata/site.json says it is launched."""
+    """/sitemap.xml lists the OASIS page and the VenGuard and Rod Bondhu sitemaps, so Search Console needs one address."""
     base = "https://oasisnextbd.github.io/OASIS_official_website"
-    khata = json.loads((REPO / "khata/site.json").read_text(encoding="utf-8"))["launched"]
     (OUT / "sitemap-oasis.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"  <url><loc>{base}/</loc></url>\n</urlset>\n", encoding="utf-8")
@@ -54,9 +49,7 @@ def write_sitemap_index():
         '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"  <sitemap><loc>{base}/sitemap-oasis.xml</loc></sitemap>\n"
         f"  <sitemap><loc>{base}/VENGuard/sitemap.xml</loc></sitemap>\n"
-        f"  <sitemap><loc>{base}/Rod_Bondhu/sitemap.xml</loc></sitemap>\n"
-        + (f"  <sitemap><loc>{base}/Khata/sitemap.xml</loc></sitemap>\n" if khata else "")
-        + "</sitemapindex>\n", encoding="utf-8")
+        f"  <sitemap><loc>{base}/Rod_Bondhu/sitemap.xml</loc></sitemap>\n</sitemapindex>\n", encoding="utf-8")
 
 
 def build_dashboard(dest):
