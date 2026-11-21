@@ -6,9 +6,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<script>
+  // The VenGuard site and team dashboard moved to https://www.venguard.tech. scripts/build.py leaves a
+  // forwarding page at every old page address; this catches the rest (files, mistyped paths).
+  (function () {
+    var m = location.pathname.match(/^\/OASIS_official_website\/(VENGuard|team)(\/.*)?$/i);
+    if (m) location.replace("https://www.venguard.tech" + (m[1].toLowerCase() === "team" ? "/team" : "") + (m[2] || "/") + location.search + location.hash);
+  })();
+</script>
 <title>পাতাটি পাওয়া যায়নি · Page not found</title>
 <meta name="theme-color" content="#0B2A4A">
-<link rel="icon" href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/assets/img/icon-orange.svg" type="image/svg+xml">
+<link rel="icon" href="https://www.venguard.tech/assets/img/favicon.svg" type="image/svg+xml">
 <style>
   :root { --navy: #0B2A4A; --paper: #FFFFFF; --orange: #E85D0C; --orange-text: #FF8A4C; --muted: #A9BFD6; --line: #1F4670; }
   * { box-sizing: border-box; }
@@ -34,8 +42,8 @@
   <h1>পাতাটি পাওয়া যায়নি<span lang="en">This page could not be found</span></h1>
   <p>ঠিকানাটি বদলে গেছে বা ভুল টাইপ হয়েছে। নিচের যেকোনো জায়গা থেকে শুরু করুন।<br><span lang="en">The address may have changed or been mistyped. Start from one of these:</span></p>
   <ul>
-    <li><a href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/">VenGuard <small>বাংলা</small></a></li>
-    <li><a href="https://oasisnextbd.github.io/OASIS_official_website/VENGuard/en/" lang="en">VenGuard <small>English</small></a></li>
+    <li><a href="https://www.venguard.tech/">VenGuard <small>বাংলা</small></a></li>
+    <li><a href="https://www.venguard.tech/en/" lang="en">VenGuard <small>English</small></a></li>
     <li><a href="https://oasisnextbd.github.io/OASIS_official_website/" lang="en">OASIS <small>Home</small></a></li>
   </ul>
 </main>
