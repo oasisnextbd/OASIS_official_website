@@ -1,7 +1,7 @@
 # Rod Bondhu website
 
 Bilingual (Bangla default, English) site for **Rod Bondhu (রোদ বন্ধু)**, the OASIS smart solar dryer,
-plus its live dryer app. Built the same way as the VenGuard site (`../venguard/`).
+plus its live dryer app. Built the same way as the VenGuard site (repository oasisnextbd/venguard-website).
 
 Published at `/Rod_Bondhu/` (Bangla), `/Rod_Bondhu/en/` (English) and `/Rod_Bondhu/app/` (live app).
 `/Dryer_Name/` (the RE Fest 2026 poster QR code) redirects to `/Rod_Bondhu/`, and `/Rod_Bondhu/?demo`
@@ -31,7 +31,7 @@ python3 -m http.server 8000 -d _site     # http://localhost:8000/Rod_Bondhu/
 | A reference's full citation | `site.json → references[].citation` (shown once filled in) |
 | Status timeline | `site.json → status_timeline` (`done` / `current` / `next`) |
 | Team | `site.json → team` |
-| Contacts | `site.json → contact` (same values as `venguard/site.json`) |
+| Contacts | `site.json → contact` (same values as the VenGuard site's `venguard/site.json`) |
 | Add a page | `templates/pages/<name>.html` + `PAGES` in `tools/build.py` + `nav` in `templates/partials/header.html` |
 | App: MQTT topic | `TOPIC_BASE` in `app/index.html` and `firmware/solar_dryer_cloud/solar_dryer_cloud.ino` (must match) |
 | Firmware or app protocol change | run `firmware/test/run.sh` (21 end-to-end checks, no hardware) |

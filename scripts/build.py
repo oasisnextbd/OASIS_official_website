@@ -7,14 +7,12 @@
 
 Layout of the published site (URLs are stable; do not change them casually):
     /                    OASIS main site            ← oasis-site/
-    /VENGuard/           VenGuard website (bn)      ← venguard/  (built by venguard/tools/build.py)
-    /VENGuard/en/        VenGuard website (en)
-    /VENGuard/app/       redirect to the VenGuard app (repository oasisnextbd/venguard-app)
+    /VENGuard/…          redirects to https://www.venguard.tech/… (the VenGuard site moved to its own
+                         repository, oasisnextbd/venguard-website, in November 2026)
     /Rod_Bondhu/         Rod Bondhu website (bn)    ← rodbondhu/ (built by rodbondhu/tools/build.py)
     /Rod_Bondhu/en/      Rod Bondhu website (en)
     /Rod_Bondhu/app/     Rod Bondhu live dryer app  ← rodbondhu/app/
-    /team/               VenGuard team dashboard    ← team-dashboard/ (not linked anywhere, not
-                         indexed; data in Firestore behind Google sign-in and the team list)
+    /team/               redirects to https://www.venguard.tech/team/ (the VenGuard team dashboard)
 """
 import json
 import pathlib
@@ -30,9 +28,8 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     shutil.copytree(REPO / "oasis-site", OUT)
-    subprocess.run([sys.executable, str(REPO / "venguard/tools/build.py"), str(OUT / "VENGuard")], check=True)
     subprocess.run([sys.executable, str(REPO / "rodbondhu/tools/build.py"), str(OUT / "Rod_Bondhu")], check=True)
-    build_dashboard(OUT / "team")
+    write_venguard_redirects()
     write_sitemap_index()
     (OUT / ".nojekyll").write_text("")  # serve files as-is (no Jekyll processing)
     files = sum(1 for p in OUT.rglob("*") if p.is_file())
@@ -40,7 +37,7 @@ def main():
 
 
 def write_sitemap_index():
-    """/sitemap.xml lists the OASIS page and the VenGuard and Rod Bondhu sitemaps, so Search Console needs one address."""
+    """/sitemap.xml lists the OASIS page and the Rod Bondhu sitemap, so Search Console needs one address."""
     base = "https://oasisnextbd.github.io/OASIS_official_website"
     (OUT / "sitemap-oasis.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -48,30 +45,49 @@ def write_sitemap_index():
     (OUT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"  <sitemap><loc>{base}/sitemap-oasis.xml</loc></sitemap>\n"
-        f"  <sitemap><loc>{base}/VENGuard/sitemap.xml</loc></sitemap>\n"
         f"  <sitemap><loc>{base}/Rod_Bondhu/sitemap.xml</loc></sitemap>\n</sitemapindex>\n", encoding="utf-8")
 
 
-def build_dashboard(dest):
-    """Copies team-dashboard/ to /team/ and puts its settings (config.json) into the page."""
-    src = REPO / "team-dashboard"
-    shutil.copytree(src, dest, ignore=shutil.ignore_patterns("README.md", "config.json", "tests"))
-    cfg = json.loads((src / "config.json").read_text(encoding="utf-8"))
-    cfg.pop("_readme", None)
-    fb = "https://www.gstatic.com/firebasejs/11.10.0/"
-    head = (
-        f"<script>window.VG_DASH = {json.dumps(cfg)};</script>\n"
-        # Start the slow downloads and connections while the page is still loading.
-        + "".join(f'<link rel="modulepreload" href="{fb}firebase-{m}.js">\n' for m in ("app", "auth", "firestore"))
-        + '<link rel="preconnect" href="https://firestore.googleapis.com">\n'
-        + '<link rel="preconnect" href="https://securetoken.googleapis.com">\n'
-        + '<link rel="preconnect" href="https://identitytoolkit.googleapis.com">\n'
+# The VenGuard site and team dashboard moved to https://www.venguard.tech (repository
+# oasisnextbd/venguard-website). Old links, ads and dealer QR stickers point here, so every page
+# that existed keeps an address that forwards to the same page there, query string included
+# (dealer codes travel in ?dealer=…). Anything not listed is caught by oasis-site/404.html.
+VENGUARD = "https://www.venguard.tech"
+VENGUARD_PAGES = (
+    "", "about", "agro-marine", "app", "app-guide", "contact", "cookies", "dealers", "faq", "guides",
+    "home-kit", "how-it-works", "landlords", "landlords-restaurants", "pre-order", "pre-order/thank-you",
+    "privacy", "products", "refund-policy", "restaurants", "terms",
+)
+
+
+def redirect_page(target):
+    t = html_escape(target)
+    return (
+        '<!DOCTYPE html>\n<html lang="bn"><head><meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        f'<title>VenGuard · www.venguard.tech</title>\n<link rel="canonical" href="{t}">\n'
+        f'<meta http-equiv="refresh" content="0; url={t}">\n'
+        f"<script>location.replace({json.dumps(target)} + location.search + location.hash);</script>\n"
+        '</head><body style="font-family:system-ui,sans-serif;padding:24px">\n'
+        f'<p>VenGuard এখন নতুন ঠিকানায় · VenGuard has moved: <a href="{t}">{t}</a></p>\n</body></html>\n'
     )
-    page = dest / "index.html"
-    marker = "<!-- scripts/build.py inserts window.VG_DASH (config.json) and preload hints here. -->\n"
-    html = page.read_text(encoding="utf-8")
-    assert marker in html, "team-dashboard/index.html lost its config marker"
-    page.write_text(html.replace(marker, head), encoding="utf-8")
+
+
+def write_venguard_redirects():
+    pages = {f"VENGuard/{p}": f"{VENGUARD}/{p}" for lang in ("", "en/") for p in (lang + q for q in VENGUARD_PAGES)}
+    pages["team/"] = f"{VENGUARD}/team/"
+    for path, target in pages.items():
+        path = path.rstrip("/")
+        target = target if target.endswith("/") else target + "/"
+        out = OUT / path / "index.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(redirect_page(target), encoding="utf-8")
+    old = OUT / "VENGuard" / "VENGuard_Dashboard.html"  # the 2025 dashboard prototype
+    old.write_text(redirect_page(f"{VENGUARD}/VENGuard_Dashboard.html"), encoding="utf-8")
+
+
+def html_escape(s):
+    return s.replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
 
 
 if __name__ == "__main__":

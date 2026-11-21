@@ -32,12 +32,6 @@ jobs:
         run: python scripts/build.py
       - name: Check internal links
         run: python scripts/check_links.py
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - name: Test Connected backend helpers
-        working-directory: backend/connected-firebase/functions
-        run: node --test test/keys.test.js
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

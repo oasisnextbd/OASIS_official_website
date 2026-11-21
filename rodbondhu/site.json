@@ -3,7 +3,7 @@
   "base_url": "https://oasisnextbd.github.io/OASIS_official_website/Rod_Bondhu",
 
   "contact": {
-    "_readme": "Same OASIS contacts as venguard/site.json → contact.",
+    "_readme": "Same OASIS contacts as the VenGuard site (oasisnextbd/venguard-website, venguard/site.json → contact).",
     "whatsapp_number": "8801302829487",
     "phone_display": "01302-829487",
     "phone_tel": "+8801302829487",
